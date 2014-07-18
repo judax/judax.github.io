@@ -1,0 +1,500 @@
+<html>
+	<body style="overflow:hidden; margin:0;">
+		<script src="CocoonJSExtensions/CocoonJS.js"></script>
+		<script src="CocoonJSExtensions/CocoonJS_App.js"></script>
+		<script src="CocoonJSExtensions/CocoonJS_App_ForCocoonJS.js"></script>
+		<script src="tween.min.js"></script>
+		<script src="effect.js"></script>
+		<script src="cmGeneral.js"></script>
+		<script src="hammer.min.js"></script>
+		<script>
+
+			var CANVAS_SCALE = 0.35;
+
+		    function scaleCanvasToFullScreen(canvas) {
+ 				var style = canvas.getAttribute('style') || '';
+ 		        var scale = {x: 1, y: 1};
+		        scale.x = (window.innerWidth) / canvas.width;
+		        scale.y = (window.innerHeight) / canvas.height;
+		        var scaleString = scale.x + ", " + scale.y;
+		        console.log(scaleString);
+		        canvas.setAttribute('style', style + ' ' + '-ms-transform-origin: left top; -webkit-transform-origin: left top; -moz-transform-origin: left top; -o-transform-origin: left top; transform-origin: left top; -ms-transform: scale(' + scaleString + '); -webkit-transform: scale3d(' + scaleString + ', 1); -moz-transform: scale(' + scaleString + '); -o-transform: scale(' + scaleString + '); transform: scale(' + scaleString + ');');
+		        return scale;
+		    }
+
+		    function processXY(x, y) {
+		    	window.x = x / (navigator.isCocoonJS ? 1 : canvasScale.x);
+		    	window.y = canvas.height - y / (navigator.isCocoonJS ? 1 : canvasScale.y);
+		    }
+
+            function normalizePerformanceNow() {
+				window.performance = window.performance || {};
+				performance.now = (function() {
+				  return performance.now       ||
+				         performance.mozNow    ||
+				         performance.msNow     ||
+				         performance.oNow      ||
+				         performance.webkitNow ||
+				         function() { return new Date().getTime(); };
+				})();
+            };
+
+		    function normalizeRequestAnimationFrame() {
+		        var raf = 
+		        	window.requestAnimationFrame || 
+		        	window.webkitRequestAnimationFrame ||
+		        	window.mozRequestAnimationFrame ||
+		        	window.oRequestAnimationFrame ||
+		        	window.msRequestAnimationFrame ||
+		        	function(callback) {
+		            	window.setTimeout( callback, 1000 / 60 );
+		        	};
+		        window.requestAnimationFrame = raf;
+		    };
+
+            normalizePerformanceNow();
+            normalizeRequestAnimationFrame();
+
+			// Create the canvas
+			var canvas = document.createElement("canvas");
+			var canvasScale = { x: 1.0, y: 1.0 };
+			canvas.screencanvas = false;
+            canvas.style.cssText = "idtkscale:ScaleAspectFit;";
+			canvas.width = window.innerWidth * CANVAS_SCALE;
+			canvas.height = window.innerHeight * CANVAS_SCALE;
+			document.body.appendChild(canvas);
+
+			var canvasScale = scaleCanvasToFullScreen(canvas);
+
+			// Create the WebGL context
+			var canvasWebGLContext = createGlContext(canvas);
+			canvasWebGLContext.clearColor(0.0, 0.0, 0.0, 1.0);                    
+
+			// Create the shader effect instance
+			var DEFAULT_SHADERS = [
+				[{
+					ver: "0.1",
+					info: {
+						name: "Spiral",
+						username: "MortimerGoro"
+					},
+					renderpass: [{
+						inputs: [],
+						code: "void main(void){vec2 position= gl_FragCoord.xy - iMouse.xy; float angle= degrees(atan(position.x, position.y));float r= length(position);float fc= 1.0 - 1.0 * r/length(iResolution.xy);float f= mod( angle/3.0 - iGlobalTime*10.0 + log(r) * 40.0, 30.0) ;if ( f<15.0 ) {gl_FragColor = vec4(1.0*fc, 1.0*fc, 1.0*fc, 1.0-1.0*fc);} else {gl_FragColor = vec4(1.0*fc, 0.0, 1.0*fc, 1.0-1.0*fc);}}"
+					}]
+				}],
+				[{
+					ver: "0.1",
+					info: {
+						name: "Gradient",
+						username: "Iq/Pol Jeremias"
+					},
+					renderpass: [{
+						inputs: [],
+						code: "void main(void) { vec2 uv = (gl_FragCoord.xy + vec2(1.0, 1.0)) / iResolution.xy; gl_FragColor = vec4(uv, 0.0, 1.0); }"
+					}]
+				}],
+				[{
+					ver: "0.1",
+					info: {
+						name: "Checker",
+						username: "????"
+					},
+					renderpass: [{
+						inputs: [],
+						code: "vec2 sim2d(  in vec2 p,  in float s){   vec2 ret=p;   ret=p+s/2.0;   ret=fract(ret/s)*s-s/2.0;   return ret;}vec3 stepspace(  in vec3 p,  in float s){  return p-mod(p-s/2.0,s);}float obj(in vec3 p){   vec3 fp=stepspace(p,2.0);;  float d=sin(fp.x*0.3+iGlobalTime*4.0)+cos(fp.z*0.3+iGlobalTime*2.0);  p.y=p.y+d;  p.xz=sim2d(p.xz,2.0);  float c1=length(max(abs(p)-vec3(0.6,0.6,0.6),0.0))-0.35;  float c2=length(p)-1.0;  float cf=sin(iGlobalTime)*0.5+0.5;  return mix(c1,c2,cf);}vec3 obj_c(vec3 p){  vec2 fp=sim2d(p.xz-1.0,4.0);  if (fp.y>0.0) fp.x=-fp.x;  if (fp.x>0.0) return vec3(0.0,0.0,0.0);    else return vec3(1.0,1.0,1.0);   }float PI=3.14159265;vec3 phong(  in vec3 pt,  in vec3 prp,  in vec3 normal,  in vec3 light,  in vec3 color,  in float spec,  in vec3 ambLight){   vec3 lightv=normalize(light-pt);   float diffuse=dot(normal,lightv);   vec3 refl=-reflect(lightv,normal);   vec3 viewv=normalize(prp-pt);   float specular=pow(max(dot(refl,viewv),0.0),spec);   return (max(diffuse,0.0)+ambLight)*color+specular;}float raymarching(  in vec3 prp,  in vec3 scp,  in int maxite,  in float precis,  in float startf,  in float maxd,  out int objfound){   const vec3 e=vec3(0.1,0,0.0);  float s=startf;  vec3 c,p,n;  float f=startf;  objfound=1;  for(int i=0;i<256;i++){    if (abs(s)<precis||f>maxd||i>maxite) break;    f+=s;    p=prp+scp*f;    s=obj(p);  }  if (f>maxd) objfound=-1;  return f;}vec3 camera(  in vec3 prp,  in vec3 vrp,  in vec3 vuv,  in float vpd){  vec2 vPos=-1.0+2.0*gl_FragCoord.xy/iResolution.xy;  vec3 vpn=normalize(vrp-prp);  vec3 u=normalize(cross(vuv,vpn));  vec3 v=cross(vpn,u);  vec3 scrCoord=prp+vpn*vpd+vPos.x*u*iResolution.x/iResolution.y+vPos.y*v;  return normalize(scrCoord-prp);}vec3 normal(in vec3 p){  const float n_er=0.01;  float v1=obj(vec3(p.x+n_er,p.y-n_er,p.z-n_er));  float v2=obj(vec3(p.x-n_er,p.y-n_er,p.z+n_er));  float v3=obj(vec3(p.x-n_er,p.y+n_er,p.z-n_er));  float v4=obj(vec3(p.x+n_er,p.y+n_er,p.z+n_er));  return normalize(vec3(v4+v1-v3-v2,v3+v4-v1-v2,v2+v4-v3-v1));}vec3 render(  in vec3 prp,  in vec3 scp,  in int maxite,  in float precis,  in float startf,  in float maxd,  in vec3 background,  in vec3 light,  in float spec,  in vec3 ambLight,  out vec3 n,  out vec3 p,  out float f,  out int objfound){   objfound=-1;  f=raymarching(prp,scp,maxite,precis,startf,maxd,objfound);  if (objfound>0){    p=prp+scp*f;    vec3 c=obj_c(p);    n=normal(p);    vec3 cf=phong(p,prp,n,light,c,spec,ambLight);    return vec3(cf);  }  f=maxd;  return vec3(background);}void main(void){  vec3 vuv=vec3(0,1,0);  vec3 vrp=vec3(iGlobalTime*4.0,0.0,0.0);  float mx=iMouse.x/iResolution.x*PI*2.0;  float my=iMouse.y/iResolution.y*PI/2.01;  if ((iMouse.x<=0.0)||(iMouse.y<=0.0)){mx=1.0,my=0.5;};  vec3 prp=vrp+vec3(cos(my)*cos(mx),sin(my),cos(my)*sin(mx))*12.0;   float vpd=1.5;  vec3 light=prp+vec3(5.0,0,5.0);    vec3 scp=camera(prp,vrp,vuv,vpd);  vec3 n,p;  float f;  int o;  const float maxe=0.01;  const float startf=0.1;  const vec3 backc=vec3(0.0,0.0,0.0);  const float spec=8.0;  const vec3 ambi=vec3(0.1,0.1,0.1);    vec3 c1=render(prp,scp,256,maxe,startf,60.0,backc,light,spec,ambi,n,p,f,o);  c1=c1*max(1.0-f*.015,0.0);  vec3 c2=backc;  if (o>0){    scp=reflect(scp,n);    c2=render(p+scp*0.05,scp,32,maxe,startf,10.0,backc,light,spec,ambi,n,p,f,o);  }  c2=c2*max(1.0-f*.1,0.0);  gl_FragColor=vec4(c1.xyz*0.75+c2.xyz*0.25,1.0);}"
+					}]
+				}]
+			];
+
+			var shaders = [
+			];
+			var blackShader = [{
+					ver: "0.1",
+					info: {
+						name: "BlackShader",
+						username: "JudaX"
+					},
+					renderpass: [{
+						inputs: [],
+						code: "void main() { gl_FragColor = vec4(0.0,0.0,0.0,1.0); }"
+					}]
+				}];
+			var currentShaderIndex = 0;
+			var x = 0, y = 0;
+			var prevEffect = new Effect( null, canvasWebGLContext, canvas.width, canvas.height, null, null, false, false );
+			prevEffect.newScriptJSON(blackShader[0]);
+			prevEffect.x = -3.0;
+			prevEffect.initialTime = performance.now();
+			var currentEffect = new Effect( null, canvasWebGLContext, canvas.width, canvas.height, null, null, false, false );
+			currentEffect.newScriptJSON(shaders.length > 0 ? shaders[currentShaderIndex][0] : blackShader[0]);
+			currentEffect.initialTime = performance.now();
+			var nextEffect = new Effect( null, canvasWebGLContext, canvas.width, canvas.height, null, null, false, false );
+			nextEffect.newScriptJSON(shaders.length > 1 ? shaders[currentShaderIndex + 1] : blackShader[0]);
+			nextEffect.x = 1.0;
+			nextEffect.initialTime = performance.now();
+
+			// Load the shader info webview
+			CocoonJS.App.onLoadInTheWebViewFailed.addEventListener(function() {
+			});
+			CocoonJS.App.onLoadInTheWebViewSucceed.addEventListener(function() {
+				CocoonJS.App.showTheWebView(0, 0, window.innerWidth, window.innerHeight);
+				CocoonJS.App.enableTouchInCocoonJS();
+				CocoonJS.App.enableTouchInTheWebView();
+			});
+			CocoonJS.App.loadInTheWebView("wv.html");
+
+			function update() {
+				TWEEN.update();
+
+		        var time = performance.now();
+		        var prevEffectTime = time - prevEffect.initialTime;
+		        var currentEffectTime = time - currentEffect.initialTime;
+		        var nextEffectTime = time - nextEffect.initialTime;
+
+				canvasWebGLContext.clear(canvasWebGLContext.COLOR_BUFFER_BIT);
+
+		        if (prevEffect.isTweening) 
+		        {
+		        	prevEffect.Paint(prevEffectTime/1000.0, 0, 0, x, y);
+		        }
+		        currentEffect.Paint(currentEffectTime/1000.0, 0, 0, x, y);
+		        if (nextEffect.isTweening) 
+		        {
+		        	nextEffect.Paint(nextEffectTime/1000.0, 0, 0, x, y);
+		        }
+
+		        canvasWebGLContext.flush();
+
+				requestAnimationFrame(update);
+			}
+
+			function forwardCurrentShaderToTheWebView(index) {
+				var jsCode = "setShader(" + JSON.stringify(shaders[typeof(index) !== "undefined" ? index : currentShaderIndex]) + ");";
+				CocoonJS.App.forwardAsync(jsCode);
+			}
+
+			function setShaderCode(shaderCode) {
+				var res = currentEffect.NewShader(shaderCode);
+				if (res === null || res === "null") {
+					shaders[currentShaderIndex][0].renderpass[0].code = shaderCode;
+					currentEffect.initialTime = prevEffect.nitialTime = nextEffect.initialTime = performance.now();
+				}
+				else {
+					console.error("ERROR COMPILING SHADER: " + res);
+				}
+				var stringifiedRes = JSON.stringify(res);
+				return stringifiedRes;
+			}
+
+			// Handle user input (touch or mouse)
+			if (!navigator.isCocoonJS) {
+				window.addEventListener("dblclick", function() {
+					CocoonJS.App.forwardAsync("showShaderInfo();");
+				});
+			}
+
+			if (typeof(window.ontouchstart) === "undefined") {
+				var mouseDown = false;
+				window.addEventListener("mousedown", function(event) {
+					processXY(event.pageX, event.pageY);
+					mouseDown = true;
+				});
+				window.addEventListener("mouseup", function(event) {
+					processXY(event.pageX, event.pageY);
+					mouseDown = false;
+				});
+				window.addEventListener("mousemove", function(event) {
+					if (mouseDown) {
+						processXY(event.pageX, event.pageY);
+					}
+				});
+			}
+			else {
+				window.addEventListener("touchstart", function(event) {
+					if (event.touches.length > 1) {
+						currentEffect.initialTime = prevEffect.nitialTime = nextEffect.initialTime = performance.now();
+						// CocoonJS.App.forwardAsync("showShaderInfo();");
+					}
+					else {
+						processXY(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+					}
+				});
+				window.addEventListener("touchend", function(event) {
+					processXY(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+				});
+				window.addEventListener("touchmove", function(event) {
+					processXY(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+				});
+			}
+
+			function effectTween(effect, to, callback, time, easing, yoyo) {
+				if (effect.tween) {
+					effect.tween.stop();
+				}
+				else {
+					effect.tween = new TWEEN.Tween(effect);
+					effect.to = { x : 0.0 };
+				}
+				effect.tween.easing( easing ? easing : TWEEN.Easing.Exponential.Out )
+				if (!!yoyo) {
+					effect.tween.repeat(1);
+					effect.repeatCounter = 1;
+					effect.tween.yoyo(true);
+				}
+				effect.endCallback = callback;
+				effect.tween.onComplete(function() {
+					if (this.repeatCounter && this.repeatCounter > 0) {
+						this.repeatCounter--;
+						return;
+					}
+					this.isTweening = false;
+					if (this.endCallback) {
+						this.endCallback();
+						this.endCallback = null;
+					}
+				});
+				effect.to.x = to;
+				effect.tween.to(effect.to, time ? time : 1000);
+				effect.tween.start();
+				effect.isTweening = true;
+			}
+
+			function resetEffects(prev, current, next) {
+				var currentEffectWasTweening = currentEffect.isTweening;
+				if (prevEffect.isTweening) {
+					prevEffect.isTweening = false;
+					prevEffect.tween.stop();
+				}
+				if (currentEffect.isTweening) {
+					currentEffect.isTweening = false;
+					currentEffect.tween.stop();	
+				} 
+				if (nextEffect.isTweening) {
+					nextEffect.isTweening = false;
+					nextEffect.tween.stop();
+				}
+				prevEffect = prev;
+				currentEffect = current;
+				nextEffect = next;
+				prevEffect.x = -3.0;
+				currentEffect.x = -1.0;
+				nextEffect.x = 1.0;
+
+				checkForMoreShaders();
+			}
+
+			function prevShaderTweenEnded() {
+				currentShaderIndex--;
+				resetEffects(nextEffect, prevEffect, currentEffect);
+				var prevShader = currentShaderIndex === 0 ? blackShader[0] : shaders[currentShaderIndex - 1][0];
+				prevEffect.newScriptJSON(prevShader);
+			}
+
+			function startPrevShaderTween() {
+				if (currentEffect.isTweening && currentEffect.endCallback) {
+					currentEffect.endCallback();
+					currentEffect.endCallback = null;
+				}
+				if (currentShaderIndex > 0) {
+					prevEffect.initialTime = performance.now();
+					effectTween(prevEffect, -1.0, null);
+					effectTween(currentEffect, 1.0, prevShaderTweenEnded);
+					forwardCurrentShaderToTheWebView(currentShaderIndex - 1);
+				}
+				else {
+					effectTween(prevEffect, -2.75, null, 500, null, true);
+					effectTween(currentEffect, -0.75, null, 500, null, true);
+				}
+			}
+
+			function nextShaderTweenEnded() {
+				currentShaderIndex++;
+				resetEffects(currentEffect, nextEffect, prevEffect);
+				var nextShader = currentShaderIndex === shaders.length - 1 ? blackShader[0] : shaders[currentShaderIndex + 1][0];
+				nextEffect.newScriptJSON(nextShader);
+			}
+
+			function startNextShaderTween() {
+				if (currentEffect.isTweening && currentEffect.endCallback) {
+					currentEffect.endCallback();
+					currentEffect.endCallback = null;
+				}
+				if (currentShaderIndex < shaders.length - 1) {
+					nextEffect.initialTime = performance.now();
+					effectTween(nextEffect, -1.0, null);
+					effectTween(currentEffect, -3.0, nextShaderTweenEnded);
+					forwardCurrentShaderToTheWebView(currentShaderIndex + 1);
+				}
+				else {
+					effectTween(nextEffect, 0.75, null, 500, null, true);
+					effectTween(currentEffect, -1.25, null, 500, null, true);
+				}
+			}
+
+	        function handleHammer(ev) {
+	            switch(ev.type) {
+	                case 'swipeleft':
+	                	startNextShaderTween();
+	                    break;
+
+	                case 'swiperight':
+	                	startPrevShaderTween();
+	                    break;
+	            }
+	        }
+
+	        var hammer = Hammer(window).on("swipeleft swiperight", handleHammer);
+
+			requestAnimationFrame(update);
+
+			function ord(string) {
+				//  discuss at: http://phpjs.org/functions/ord/
+				// original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+				// bugfixed by: Onno Marsman
+				// improved by: Brett Zamir (http://brett-zamir.me)
+				//    input by: incidence
+				//   example 1: ord('K');
+				//   returns 1: 75
+				//   example 2: ord('\uD800\uDC00'); // surrogate pair to create a single Unicode character
+				//   returns 2: 65536
+
+				var str = string + '',
+				code = str.charCodeAt(0);
+				if (0xD800 <= code && code <= 0xDBFF) { 
+					// High surrogate (could change last hex to 0xDB7F to treat high private surrogates as single characters)
+					var hi = code;
+					if (str.length === 1) {
+						// This is just a high surrogate with no following low surrogate, so we return its value;
+						// we could also throw an error as it is not a complete character, but someone may want to know						
+						return code; 
+					}
+					var low = str.charCodeAt(1);
+					return ((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000;
+					}
+				if (0xDC00 <= code && code <= 0xDFFF) { // Low surrogate
+					// This is just a low surrogate with no preceding high surrogate, so we return its value;
+					// we could also throw an error as it is not a complete character, but someone may want to know
+					return code; 
+				}
+				return code;
+			}
+
+			function stringEncode(str)
+			{
+				var i, n, c;
+		        var dic = "cDfN3WX4dms7twlM";
+		        var res = "";
+		        var len = str.length;
+		        var r = 3876781;
+		        for( i=0; i<len; i++ )
+		        {
+		            // random number
+		            r = (r * 0x343fd + 0x269ec3) & 0xffffffff;
+		            n = (r >> 20) & 0xff;
+
+		            // xor with random number
+		            c = ord(str[i]) ^ n;
+
+		            // base256 to base16
+		            res = res + dic[((c)>>4)&0xf] + dic[(c)&0xf];
+		        }
+
+		        return res;
+			}
+
+			function makeXHR(url, successCallback, failCallback) {
+				var request = new XMLHttpRequest();
+				request.successCallback = successCallback;
+				request.failCallback = failCallback;
+				request.open("GET", url, true);
+				request.onload = function(event) {
+				    var request = event.target;
+				    var response = request.response;
+				    request.successCallback && request.successCallback(response);
+				};
+				request.onerror = function(event) {
+				    var request = event.target;
+				    request.failCallback && request.failCallback(event);
+				};
+				request.send(null);
+
+			}
+
+			var downloadingShaders = false;
+
+			function requestShaders(from, shaderCount) {
+				console.log("requestShaders from = " + from + ", shaderCount = " + shaderCount);
+				downloadingShaders = true;
+				var stringToEncode = "time=" + new Date().getTime() + "&sort=popular&from=" + from + "&num=" + shaderCount + "&device=iPhone5S";
+				var encodedString = stringEncode(stringToEncode);
+				var shaderToyRequestURL = "https://www.shadertoy.com/mobile/";
+				makeXHR(shaderToyRequestURL + encodedString, 
+					function(response) {
+						var shaders = JSON.parse(response);
+						var numberOfShadersBeingDownloaded = shaders.length;
+						var i, stringToEncode, encodedString;
+						for (i = 0; i < shaders.length; i++) {
+							stringToEncode = "time=" + new Date().getTime() + "&s=" + shaders[i];
+							encodedString = stringEncode(stringToEncode);
+							makeXHR(shaderToyRequestURL + encodedString,
+								function(response) {
+									numberOfShadersBeingDownloaded--;
+									// console.log("Shader downloaded! number of shaders being downloaded = " + numberOfShadersBeingDownloaded);
+									if (numberOfShadersBeingDownloaded === 0) {
+										downloadingShaders = false;
+										// console.log("Done downloading shaders!");
+									}
+									var shader = JSON.parse(response);
+
+									// Set the correct SRC for the textures
+									for (var j = 0; j < shader[0].renderpass[0].inputs.length; j++) {
+										console.log("Changing src from '" + shader[0].renderpass[0].inputs[j].src + "'...");
+										shader[0].renderpass[0].inputs[j].src = "https://www.shadertoy.com" + shader[0].renderpass[0].inputs[j].src;
+										console.log("...to '" + shader[0].renderpass[0].inputs[j].src + "'");
+									}
+
+									var numberOfShadersBeforeAddingThisOne = window.shaders.length;
+									window.shaders.push(shader);
+									if (numberOfShadersBeforeAddingThisOne === 0) {
+										currentEffect.newScriptJSON(shader[0]);
+										forwardCurrentShaderToTheWebView();
+									}
+									else if (numberOfShadersBeforeAddingThisOne === 1) {
+										nextEffect.newScriptJSON(shader[0]);
+									}
+								},
+								function() {
+									numberOfShadersBeingDownloaded--;
+									console.error("Error while downloading shader information.");
+									// console.log("number of shaders being downloaded = " + numberOfShadersBeingDownloaded);
+									if (numberOfShadersBeingDownloaded === 0) {
+										downloadingShaders = false;
+										// console.log("Done downloading shaders!");
+									}
+								});
+						}
+					}, 
+					function(error) {
+						console.error("Could not load the remote shaders. Fallback to predefined shaders.");
+						shaders = DEFAULT_SHADERS;
+						if (shaders.length > 0) {
+							currentEffect.newScriptJSON(shaders[0][0]);
+							forwardCurrentShaderToTheWebView();
+						}
+						if (shaders.length > 1) {
+							nextEffect.newScriptJSON(shaders[1][0]);
+						}
+					});
+			}
+
+			function checkForMoreShaders() {
+				if (!downloadingShaders && currentShaderIndex >= shaders.length - 5) {
+					// console.log("Downloading more shaders!");
+					requestShaders(shaders.length, 12);
+				}
+			}
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,218 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="codemirror.css">
+	</head>
+	<body style="overflow:hidden;">
+		<script src="glmatrix.js"></script>
+		<script src="tween.min.js"></script>
+		<script src="codemirror.js"></script>
+		<script src="glsl.js"></script>
+		<script src="CocoonJSExtensions/CocoonJS.js"></script>
+		<script src="CocoonJSExtensions/CocoonJS_App.js"></script>
+		<script src="CocoonJSExtensions/CocoonJS_App_ForWebView.js"></script>
+		<script src="divengine.js"></script>
+		<script src="fastclick.min.js"></script>
+		<script>
+			var editor = null;
+			var errors = [];
+			var shaderInfoDiv = null;
+
+			var TITLE_FONT_SIZE = 30;
+			var AUTHOR_FONT_SIZE = 20;
+
+			function update() {
+				if (shaderInfoDiv.isTweening()) {
+					DivEngine.update();
+					window.requestAnimationFrame(update);
+				}
+			}
+
+			function showShaderInfoEnded() {
+				editor.readOnly = false;
+			}
+
+			function showShaderInfo() {
+				shaderInfoDiv.createTween({
+					type: DivEngine.TWEEN_TYPE_TRANSLATION, 
+					to: { y: 0 }, 
+					duration: 1000, 
+					easing: TWEEN.Easing.Exponential.InOut, 
+					onComplete: showShaderInfoEnded
+				});
+				window.requestAnimationFrame(update);
+			}
+
+			function hideShaderInfo() {
+				editor.readOnly = true;
+				tweenId = shaderInfoDiv.createTween({
+					type: DivEngine.TWEEN_TYPE_TRANSLATION, 
+					to: { y: window.innerHeight - TITLE_FONT_SIZE - AUTHOR_FONT_SIZE }, 
+					duration: 1000, 
+					easing: TWEEN.Easing.Exponential.InOut
+				});
+				window.requestAnimationFrame(update);
+			}
+
+			function apply() {
+				CocoonJS.App.forwardAsync("setShaderCode(" + JSON.stringify(editor.getValue()) + ");", function(res) {
+				    var eleWrapper = document.getElementById('editorWrapper');
+
+				    // Remove any previous error marks in the text editor
+				    while( errors.length > 0 ) {
+				        var mark = errors.pop();
+				        editor.removeLineWidget( mark );
+				    }
+
+				    // Check if there was an error in the shader compilation
+				    if( res && res !== "null" ) {
+				        var lineOffset = CocoonJS.App.forward('currentEffect.GetHeaderSize();');
+				        var lines = res.match(/^.*((\r\n|\n|\r)|$)/gm);
+				        for( var i=0; i<lines.length; i++ )
+				        {
+				            var parts = lines[i].split(":");
+				            if( parts.length===5 || parts.length===6 )
+				            {
+				                var lineNumber = parseInt( parts[2] ) - lineOffset;
+				                var msg = document.createElement("div");
+				                msg.appendChild(document.createTextNode( parts[3] + " : " + parts[4] ));
+				                msg.className = "errorMessage";
+				                var mark = editor.addLineWidget( lineNumber - 1, msg, {coverGutter: false, noHScroll: true} );
+				                errors.push( mark );
+				            }
+				            else if( lines[i] != null && lines[i]!="" && lines[i].length>1 && parts[0]!="Warning")
+				            {
+				                console.log( parts.length + " **" + lines[i] );
+
+				                var txt = "";
+				                if( parts.length==4 )
+				                    txt = parts[2] + " : " + parts[3];
+				                else
+				                    txt = "Unkown error";
+
+				                var msg = document.createElement("div");
+				                msg.appendChild(document.createTextNode( txt ));
+				                msg.className = "errorMessage";
+				                var mark = editor.addLineWidget( 0, msg, {coverGutter: false, noHScroll: true, above: true} );
+				                errors.push( mark );
+				            }
+				         }
+				    }
+				});
+			}
+
+			function setShader(shader) {
+				document.getElementById("title").childNodes[0].nodeValue = shader[0].info.name;
+				document.getElementById("author").childNodes[0].nodeValue = shader[0].info.username;
+				editor.setValue(shader[0].renderpass[0].code);
+				editor.clearHistory();
+			}
+
+            glMatrix.setMatrixArrayType(Float64Array);
+
+            DivEngine.initialize();
+            DivEngine.normalizeRequestAnimationFrame();
+
+			function start() {
+				var windowDiv = new DivEngine.Div();
+				windowDiv.setSize(window.innerWidth, window.innerHeight);
+
+				shaderInfoDiv = new DivEngine.Div();
+				shaderInfoDiv.setPosition(0, window.innerHeight - TITLE_FONT_SIZE - AUTHOR_FONT_SIZE);
+				shaderInfoDiv.setSize(window.innerWidth, window.innerHeight);
+				shaderInfoDiv.getDiv().style.backgroundColor = "black";
+				shaderInfoDiv.setOpacity(0.7);
+				windowDiv.addChild(shaderInfoDiv);
+
+				var shaderTitleDiv = new DivEngine.Div();
+				shaderTitleDiv.setSize(shaderInfoDiv.getWidth(), TITLE_FONT_SIZE);
+				shaderTitleDiv.getDiv().style.textAlign = "left";
+				shaderTitleDiv.getDiv().style.backgroundColor = "black";
+				shaderTitleDiv.getDiv().style.fontSize = TITLE_FONT_SIZE;
+				shaderTitleDiv.getDiv().style.color = "white";
+				shaderTitleDiv.getDiv().style.fontFamily = "Arial";
+				shaderTitleDiv.getDiv().style.marginLeft = "10%";				
+				shaderTitleDiv.getDiv().id = "title";
+				shaderTitleDiv.getDiv().addEventListener("click", function() {
+					showShaderInfo();
+				});
+				var shaderTitle = document.createTextNode("Shader");
+				shaderTitleDiv.getDiv().appendChild(shaderTitle);
+				shaderInfoDiv.addChild(shaderTitleDiv);
+
+				var shaderAuthorDiv = new DivEngine.Div();
+				shaderAuthorDiv.setY(shaderTitleDiv.getHeight());
+				shaderAuthorDiv.setSize(shaderInfoDiv.getWidth(), AUTHOR_FONT_SIZE);
+				shaderAuthorDiv.getDiv().style.textAlign = "left";
+				// shaderAuthorDiv.getDiv().style.backgroundColor = "black";
+				shaderAuthorDiv.getDiv().style.fontSize = AUTHOR_FONT_SIZE;
+				shaderAuthorDiv.getDiv().style.color = "white";
+				shaderAuthorDiv.getDiv().style.fontFamily = "Arial";
+				shaderAuthorDiv.getDiv().style.marginLeft = "10%";
+				shaderAuthorDiv.getDiv().id = "author";
+				shaderAuthorDiv.getDiv().addEventListener("click", function() {
+					showShaderInfo();
+				});
+				var shaderAuthor = document.createTextNode("Author");
+				shaderAuthorDiv.getDiv().appendChild(shaderAuthor);
+				shaderInfoDiv.addChild(shaderAuthorDiv);
+
+				var shaderEditorDiv = new DivEngine.Div();
+				shaderEditorDiv.setY(shaderAuthorDiv.getY() + shaderAuthorDiv.getHeight());
+				shaderEditorDiv.setSize(shaderInfoDiv.getWidth(), shaderInfoDiv.getHeight() - shaderTitleDiv.getHeight() - shaderAuthorDiv.getHeight() - 30);
+				shaderEditorDiv.setScrollable(true);
+			    editor = CodeMirror(shaderEditorDiv.getDiv(), {
+			    	lineNumbers: true, 
+			    	matchBrackets: true, 
+			    	indentWithTabs: true,
+					tabSize: 4, 
+					indentUnit: 4, 
+					viewportMargin: Infinity,
+					lineWrapping: true,
+					mode: "text/x-glsl"
+				} );
+				editor.on("focus", function() {
+					CocoonJS.App.disableTouchInCocoonJS();
+				});
+				editor.on("blur", function() {
+					CocoonJS.App.enableTouchInCocoonJS();
+				});
+				editor.readOnly = true;
+				shaderInfoDiv.addChild(shaderEditorDiv);
+
+				var shaderEditorButtonsDiv = new DivEngine.Div();
+				shaderEditorButtonsDiv.setY(shaderEditorDiv.getY() + shaderEditorDiv.getHeight());
+				shaderEditorButtonsDiv.setSize(window.innerWidth, 30);
+				shaderEditorButtonsDiv.getDiv().style.textAlign = "center";
+				shaderEditorButtonsDiv.getDiv().innerHTML = "" +
+					"<button onclick='apply();'>Apply</button>" +
+					"<button onclick='hideShaderInfo();'>Hide</button>";
+				shaderInfoDiv.addChild(shaderEditorButtonsDiv);
+
+				DivEngine.update();
+
+				var jsCode = "requestShaders(0, 12);";
+				CocoonJS.App.forwardAsync(jsCode);
+			}
+
+			window.addEventListener("load", function() {
+				FastClick.attach(document.body);
+				if (!CocoonJS.App.forward("navigator.isCocoonJS;") || navigator.userAgent.toLowerCase().indexOf("android") >= 0) {
+					var onresizecalled = false;
+					window.onresize = function() {
+						onresizecalled = true;
+						start();
+					};
+					// Just a watchdog in case the resize event is never called.
+					setTimeout(function() {
+						if (!onresizecalled) {
+							start();
+						}
+					}, 1000);
+				}
+				else {
+					start();
+				}
+			});
+		</script>
+	</body>
+</html>
