@@ -145,7 +145,44 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	videoTexture.format = THREE.RGBFormat;			
 	videoTexture.flipY = false;
 
-	var material = new THREE.MeshBasicMaterial( {color: 0xFFFFFF, side: THREE.DoubleSide, map: videoTexture } );
+    var vertexShaderSource = [
+        'attribute vec3 position;',
+        'attribute vec2 uv;',
+        '',
+        'uniform mat4 modelViewMatrix;',
+        'uniform mat4 projectionMatrix;',
+        '',
+        'varying vec2 vUV;',
+        '',
+        'void main(void) {',
+        '    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+        '    vUV = uv;',
+        '}'
+    ];
+
+    var fragmentShaderSource = [
+        '#extension GL_OES_EGL_image_external : require',
+        'precision mediump float;',
+        '',
+        'varying vec2 vUV;',
+        '',
+        'uniform samplerExternalOES map;',
+        '',
+        'void main(void) {',
+        '   gl_FragColor = texture2D(map, vUV);',
+        '}'
+    ];
+
+    material = new THREE.RawShaderMaterial({
+        uniforms: {
+            map: {type: 't', value: videoTexture},
+        },
+        vertexShader: vertexShaderSource.join( '\r\n' ),
+        fragmentShader: fragmentShaderSource.join( '\r\n' ),
+        side: THREE.DoubleSide,
+    });
+
+	// var material = new THREE.MeshBasicMaterial( {color: 0xFFFFFF, side: THREE.DoubleSide, map: videoTexture } );
 	var mesh = new THREE.Mesh(geometry, material);
 	return mesh;
 };
