@@ -161,6 +161,9 @@
     };
 
     VideoQuad.prototype.render = function(gl) {
+
+        console.log("Kaixo!!!!!!!!!!!!");
+
         gl.useProgram(this.program);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
