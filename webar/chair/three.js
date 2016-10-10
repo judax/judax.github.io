@@ -4508,7 +4508,7 @@
 			case 0x8b5b: return setValue3fm; // _MAT3
 			case 0x8b5c: return setValue4fm; // _MAT4
 
-			case 0x8b5e: return setValueT1; // SAMPLER_2D
+			case 0x8b5e: case 36198: return setValueT1; // SAMPLER_2D  // case 36198: ADDED by WebAR
 			case 0x8b60: return setValueT6; // SAMPLER_CUBE
 
 			case 0x1404: case 0x8b56: return setValue1i; // INT, BOOL
