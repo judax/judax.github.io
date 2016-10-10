@@ -19,6 +19,7 @@
 <!-- <meta name="viewport" content="initial-scale=1.0, user-scalable=no"> -->
 
 <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+<script type="text/javascript" src="stats.min.js"></script>
 
 <script id="shader-fs-oes" type="x-shader/x-fragment">
     #extension GL_OES_EGL_image_external : require
@@ -162,8 +163,6 @@
 
     VideoQuad.prototype.render = function(gl) {
 
-        console.log("Kaixo!!!!!!!!!!!!");
-
         gl.useProgram(this.program);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
@@ -295,7 +294,11 @@
         }
     });
 
+    var stats;
+
     function raf() {
+        stats.update();
+        
         videoQuad.update(gl);
 
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -321,6 +324,10 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             document.body.appendChild(canvas);
+
+            stats = new Stats();
+            document.body.appendChild( stats.dom );
+
             var gl = getGL(canvas);
             var program = getProgram(gl);
             window.gl = gl;
