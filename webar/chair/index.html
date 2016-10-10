@@ -148,12 +148,12 @@
 
 				sceneCamera = new THREE.Scene();
 				cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
-				sceneCamera.add(THREE.createVRSeeThroughCameraMesh(vrDisplay));
+				sceneCamera.add(THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay));
 
 				// 
 
 				scene = new THREE.Scene();
-				cameraPersp = THREE.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
+				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
 				if (!model) {
 					model = new THREE.Mesh(new THREE.BoxBufferGeometry(0.1, 0.1, 0.1), new THREE.MeshLambertMaterial( {color: 0x888888 } ));
 				}
