@@ -120,7 +120,7 @@
 										model = new THREE.Object3D();
 										model.add(colladaScene);
 										init(vrDisplay);
-										animate();
+										updateAndRender();
 									} );
 								}
 								else {
@@ -138,7 +138,7 @@
 				$('body').addClass('loaded');
 				$('h1').css('color','#222222');
 	            init();
-	            animate();
+	            updateAndRender();
 	        }
 
 			function init(vrDisplay) {
@@ -185,28 +185,24 @@
 			}
 
 			//
-			function animate() {
+			function updateAndRender() {
 
 				stats.update();
 
-				vrControls.update();
-
-				pointCloud.update();
-
-				render();
-
-				requestAnimationFrame( animate );
-
-			}
-
-			function render() {
-
+				// Render the see through camera scene
 				renderer.clear();
 				if (gui.showSeeThroughCamera)
 					renderer.render( sceneCamera, cameraOrtho );
+
+				// Update the perspective scene
+				vrControls.update();
+				pointCloud.update();
+
+				// Render the perspective scene
 				renderer.clearDepth();
 				renderer.render( scene, cameraPersp );
 
+				requestAnimationFrame( updateAndRender );
 			}
 
 		    window.addEventListener("click", function(event) {
