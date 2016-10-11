@@ -140,8 +140,8 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	geometry.computeBoundingSphere();
 
 	var videoTexture = new THREE.VideoTexture(video);
-	videoTexture.minFilter = THREE.LinearFilter;
-	videoTexture.magFilter = THREE.LinearFilter;
+	videoTexture.minFilter = THREE.NearestFilter;
+	videoTexture.magFilter = THREE.NearestFilter;
 	videoTexture.format = THREE.RGBFormat;			
 	videoTexture.flipY = false;
 
