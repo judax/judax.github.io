@@ -145,54 +145,59 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	videoTexture.format = THREE.RGBFormat;			
 	videoTexture.flipY = false;
 
-    var vertexShaderSource = [
-        'attribute vec3 position;',
-        'attribute vec2 uv;',
-        '',
-        'uniform mat4 modelViewMatrix;',
-        'uniform mat4 projectionMatrix;',
-        '',
-        'varying vec2 vUV;',
-        '',
-        'void main(void) {',
-        '    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
-        '    vUV = uv;',
-        '}'
-    ];
+	var material;
+	if (vrDisplay) {
+	    var vertexShaderSource = [
+	        'attribute vec3 position;',
+	        'attribute vec2 uv;',
+	        '',
+	        'uniform mat4 modelViewMatrix;',
+	        'uniform mat4 projectionMatrix;',
+	        '',
+	        'varying vec2 vUV;',
+	        '',
+	        'void main(void) {',
+	        '    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+	        '    vUV = uv;',
+	        '}'
+	    ];
 
-    var fragmentShaderSource = [
-        '#extension GL_OES_EGL_image_external : require',
-        'precision mediump float;',
-        '',
-        'varying vec2 vUV;',
-        '',
-        'uniform samplerExternalOES map;',
-        '',
-        'void main(void) {',
-        '   gl_FragColor = texture2D(map, vUV);',
-        '}'
-    ];
+	    var fragmentShaderSource = [
+	        '#extension GL_OES_EGL_image_external : require',
+	        'precision mediump float;',
+	        '',
+	        'varying vec2 vUV;',
+	        '',
+	        'uniform samplerExternalOES map;',
+	        '',
+	        'void main(void) {',
+	        '   gl_FragColor = texture2D(map, vUV);',
+	        '}'
+	    ];
 
-    material = new THREE.RawShaderMaterial({
-        uniforms: {
-            map: {type: 't', value: videoTexture},
-        },
-        vertexShader: vertexShaderSource.join( '\r\n' ),
-        fragmentShader: fragmentShaderSource.join( '\r\n' ),
-        side: THREE.DoubleSide,
-    });
+	    material = new THREE.RawShaderMaterial({
+	        uniforms: {
+	            map: {type: 't', value: videoTexture},
+	        },
+	        vertexShader: vertexShaderSource.join( '\r\n' ),
+	        fragmentShader: fragmentShaderSource.join( '\r\n' ),
+	        side: THREE.DoubleSide,
+	    });
+	}
+	else {
+		material = new THREE.MeshBasicMaterial( {color: 0xFFFFFF, side: THREE.DoubleSide, map: videoTexture } );
+	}
 
-	// var material = new THREE.MeshBasicMaterial( {color: 0xFFFFFF, side: THREE.DoubleSide, map: videoTexture } );
 	var mesh = new THREE.Mesh(geometry, material);
 	return mesh;
 };
 
 /**
-* A utility function to create a THREE.Camera instance with an orthogonal projection matrix to be used along with a quad mesh to represent a the see through camera in the background of an application.
-* @param {VRDisplay} vrDisplay - The VRDisplay that is capable to provide a correct VRSeeThroughCamera instance.
+* A utility function to create a THREE.Camera instance with as frustum that is obtainer from the underlying vrdisplay see through camera information. This camera can be used to correctly render 3D objects on top of the underlying camera image.
+* @param {VRDisplay} vrDisplay - The VRDisplay that is capable to provide a correct VRSeeThroughCamera instance in order to obtain the camera lens information and create the correct projection matrix/frustum.
 * @param {number} near - The near plane value to be used to create the correct projection matrix frustum.
 * @param {number} far - The far plane value to be used to create the correct projection matrix frustum.
-* @return {THREE.Camera} - A camera instance to be used to render the see through camera quad.
+* @return {THREE.Camera} - A camera instance to be used to correctly render a scene on top of the camera video feed.
 */
 THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	var camera;
