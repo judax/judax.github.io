@@ -247,6 +247,10 @@
 
     function getProgram(gl) {
         var fragmentShader = getShader(gl, "shader-fs-oes");
+        // Fallback for browsers without external image OES extension support :)
+        if (!fragmentShader) {
+            fragmentShader = getShader(gl, "shader-fs");
+        }
         var vertexShader = getShader(gl, "shader-vs");
 
         var shaderProgram = gl.createProgram();
