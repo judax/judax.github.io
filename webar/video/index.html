@@ -149,13 +149,13 @@
             // [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
 
         ];
-        this.f32TextureCoords = [
-            new Float32Array(textureCoords[0]),
-            new Float32Array(textureCoords[1]),
-            new Float32Array(textureCoords[2]),
-            new Float32Array(textureCoords[3])
-        ];
+        this.f32TextureCoords = [];
+        for (var i = 0; i < textureCoords.length; i++) {
+            this.f32TextureCoords.push(new Float32Array(textureCoords[i]));
+        }
         this.combinedOrientation = 0; //combineOrientations(screen.orientation.angle, this.seeThroughCamera.orientation);
+
+        alert(textureCoords[this.combinedOrientation]);
 
         gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
         this.textureCoordBuffer.itemSize = 2;
