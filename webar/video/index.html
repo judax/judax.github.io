@@ -213,8 +213,11 @@
         gl.vertexAttribPointer(this.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
-        var combinedOrientation = combineOrientations(screen.orientation.angle, this.seeThroughCamera.orientation);
+        var combinedOrientation =   combineOrientations(screen.orientation.angle, this.seeThroughCamera.orientation);
         if (combinedOrientation !== this.combinedOrientation) {
+
+            alert("combinedOrientation changed: from " + this.combinedOrientation + " to " + combinedOrientation);
+            
             this.combinedOrientation = combinedOrientation;
             gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
         }
