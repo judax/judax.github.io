@@ -65,6 +65,10 @@
 		<script>window.jQuery || document.write('<script src="jquery-1.9.1.min.js"><\/script>')</script>
 
 		<script>
+			function removeLoadSpinner() {
+				$('body').addClass('loaded');
+				$('h1').css('color','#222222');
+			}
 
 			function GUI() {
 				this.showPointCloud = true;
@@ -108,10 +112,7 @@
 									var loader = new THREE.ColladaLoader();
 									loader.options.convertUpAxis = true;
 									loader.load( 'geometry_5.dae', function ( collada ) {
-
-										$('body').addClass('loaded');
-										$('h1').css('color','#222222');
-
+										removeLoadSpinner();
 										var colladaScene = collada.scene;
 										colladaScene.rotateX(THREE.Math.degToRad(90));
 										colladaScene.updateMatrix();
@@ -122,6 +123,7 @@
 									} );
 								}
 								else {
+									removeLoadSpinner();
 									init(vrDisplay);
 									updateAndRender();									
 								}
@@ -133,8 +135,7 @@
 	        }
 	        else {
 	            alert("No navigator.getVRDisplays");
-				$('body').addClass('loaded');
-				$('h1').css('color','#222222');
+	            removeLoadSpinner();
 	            init();
 	            updateAndRender();
 	        }
