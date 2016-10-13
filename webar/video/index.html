@@ -144,16 +144,16 @@
             // 0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight],
 
             [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
-            // [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
-            // [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-            // [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
+            [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
+            [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+            [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
 
         ];
         this.f32TextureCoords = [];
         for (var i = 0; i < textureCoords.length; i++) {
             this.f32TextureCoords.push(new Float32Array(textureCoords[i]));
         }
-        this.combinedOrientation = 0; //combineOrientations(screen.orientation.angle, this.seeThroughCamera.orientation);
+        this.combinedOrientation = combineOrientations(screen.orientation.angle, this.seeThroughCamera.orientation);
 
         alert(textureCoords[this.combinedOrientation]);
 
@@ -213,7 +213,7 @@
         gl.vertexAttribPointer(this.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
-        var combinedOrientation = 0;//combineOrientations(screen.orientation.angle, this.seeThroughCamera.orientation);
+        var combinedOrientation = combineOrientations(screen.orientation.angle, this.seeThroughCamera.orientation);
         if (combinedOrientation !== this.combinedOrientation) {
             this.combinedOrientation = combinedOrientation;
             gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
