@@ -340,6 +340,10 @@
                 requestAnimationFrame(raf);
             });
             gl.clearColor(0.2, 0.2, 0.2, 1.0);
+
+            window.addEventListener("orientationchange", function(event) {
+                alert(window.orientation);
+            });
         }
     </script>
 </body>
