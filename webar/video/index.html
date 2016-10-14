@@ -144,9 +144,14 @@
             // 0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight],
 
             [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
-            [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
-            [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-            [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
+
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+            // [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
+            // [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+            // [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
 
         ];
         this.f32TextureCoords = [];
@@ -217,7 +222,7 @@
         if (combinedOrientation !== this.combinedOrientation) {
 
             alert("combinedOrientation changed: from " + this.combinedOrientation + " to " + combinedOrientation);
-            
+
             this.combinedOrientation = combinedOrientation;
             gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
         }
