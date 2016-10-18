@@ -155,8 +155,6 @@
         }
         this.combinedOrientation = combineOrientations(screen.orientation.angle, this.seeThroughCamera.orientation);
 
-        alert(textureCoords[this.combinedOrientation]);
-
         gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
         this.textureCoordBuffer.itemSize = 2;
         this.textureCoordBuffer.numItems = 8;
@@ -216,7 +214,7 @@
         var combinedOrientation =   combineOrientations(screen.orientation.angle, this.seeThroughCamera.orientation);
         if (combinedOrientation !== this.combinedOrientation) {
 
-            alert("combinedOrientation changed: from " + this.combinedOrientation + " to " + combinedOrientation);
+            alert("combinedOrientation changed: from " + this.combinedOrientation + " to " + combinedOrientation + ", screen = " + screen.orientation.angle + ", camera = " + this.seeThroughCamera.orientation);
 
             this.combinedOrientation = combinedOrientation;
             gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
@@ -384,10 +382,8 @@
             gl.clearColor(0.2, 0.2, 0.2, 1.0);
 
             window.addEventListener("orientationchange", function(event) {
-                if (videoQuad) {
-                    alert(screen.orientation.angle + ", " + videoQuad.seeThroughCamera.orientation);
-                }
             });
+
             window.addEventListener("resize", function(event) {
                 var canvas = document.createElement("canvas");
                 canvas.width = window.innerWidth;
