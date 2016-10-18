@@ -81,7 +81,6 @@
         seeThroughCameraOrientationIndex = 0;
         switch (seeThroughCameraOrientation) {
             case 90:
-            case -90:
                 seeThroughCameraOrientationIndex = 1;
                 break;
             case 180:
@@ -94,8 +93,22 @@
                 seeThroughCameraOrientationIndex = 0;
                 break;
         }
-
-        ret = Math.abs(screenOrientation) - seeThroughCameraOrientationIndex;
+        screenOrientationIndex = 0;
+        switch (screenOrientation) {
+            case 90:
+                screenOrientationIndex = 1;
+                break;
+            case 180:
+                screenOrientationIndex = 2;
+                break;
+            case 270:
+                screenOrientationIndex = 3;
+                break;
+            default:
+                screenOrientationIndex = 0;
+                break;
+        }
+        ret = screenOrientationIndex - seeThroughCameraOrientationIndex;
         if (ret < 0) {
             ret += 4;
         }
