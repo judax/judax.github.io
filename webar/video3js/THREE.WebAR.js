@@ -269,8 +269,6 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 
 	var mesh = new THREE.Mesh(geometry, material);
 
-	alert(mesh.update);
-
 	mesh.update = function() {
 		var textureCoordIndex = getTextureCoordIndexBasedOnOrientation(vrDisplay);
 		if (textureCoordIndex != this.geometry.WebAR_textureCoordIndex) {
@@ -280,7 +278,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 			this.geometry.WebAR_textureCoordIndex = textureCoordIndex;
 			var uvs = this.geometry.getAttribute("uv");
 			var textureCoords = this.geometry.WebAR_textureCoords[textureCoordIndex];
-			for (var i = 0; i < uvs.length; i++) {
+			for (var i = 0; i < uvs.length * 2; i++) {
 				uvs.array[i] = textureCoords[i];
 			}
 			uvs.needsUpdate = true;
