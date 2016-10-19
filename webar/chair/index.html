@@ -187,6 +187,7 @@
 
 			function onWindowResize() {
 				// TODO: Accordingly update the perspective camera.
+				cameraPersp = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.00001, 1000 );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
 
