@@ -403,8 +403,7 @@
                 var canvas = document.createElement("canvas");
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
-                var gl = getGL(canvas);
-                alert("gl.viewportWidth = " + gl.viewportWidth + ", gl.viewportHeight = " + gl.viewportHeight);
+                window.gl = getGL(canvas);
             });
         }
     </script>
