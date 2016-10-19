@@ -182,6 +182,12 @@
 				stats = new Stats();
 				container.appendChild( stats.dom );
 
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+
+			function onWindowResize() {
+				// TODO: Accordingly update the perspective camera.
+				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
 
 			//
