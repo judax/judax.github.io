@@ -215,7 +215,11 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 
 	geometry.setIndex(new THREE.BufferAttribute( new Uint16Array([0, 1, 2, 2, 1, 3]), 1));
 	geometry.WebAR_textureCoordIndex = getTextureCoordIndexBasedOnOrientation(vrDisplay);
-	geometry.addAttribute("uv", new THREE.BufferAttribute( geometry.WebAR_textureCoords[geometry.WebAR_textureCoordIndex], 2 ));
+	var textureCoords = geometry.WebAR_textureCoords[geometry.WebAR_textureCoordIndex];
+
+	alert("textureCoordIndex = " + geometry.WebAR_textureCoordIndex + ", textureCoords = " + textureCoords);
+	
+	geometry.addAttribute("uv", new THREE.BufferAttribute( textureCoords, 2 ));
 	geometry.computeBoundingSphere();
 
 	var videoTexture = new THREE.VideoTexture(video);
@@ -272,11 +276,11 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	mesh.update = function() {
 		var textureCoordIndex = getTextureCoordIndexBasedOnOrientation(vrDisplay);
 		if (textureCoordIndex != this.geometry.WebAR_textureCoordIndex) {
+			var uvs = this.geometry.getAttribute("uv");
 
-			alert("textureCoordIndex changed from " + this.geometry.WebAR_textureCoordIndex + " to " + textureCoordIndex);
+			alert("textureCoordIndex changed from " + this.geometry.WebAR_textureCoordIndex + " to " + textureCoordIndex +". uvs.length = " + uvs.length + ". textureCoords = " + this.geometry.WebAR_textureCoords[textureCoordIndex]);
 
 			this.geometry.WebAR_textureCoordIndex = textureCoordIndex;
-			var uvs = this.geometry.getAttribute("uv");
 			var textureCoords = this.geometry.WebAR_textureCoords[textureCoordIndex];
 			for (var i = 0; i < uvs.length * 2; i++) {
 				uvs.array[i] = textureCoords[i];
