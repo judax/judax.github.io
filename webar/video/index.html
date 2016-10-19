@@ -401,9 +401,8 @@
 
             window.addEventListener("resize", function(event) {
                 var canvas = document.createElement("canvas");
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                window.gl = getGL(canvas);
+                gl.viewportWidth = canvas.width = window.innerWidth;
+                gl.viewportHeight = canvas.height = window.innerHeight;
             });
         }
     </script>
