@@ -212,7 +212,8 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 		 1.0,  1.0, 0.0, 
 		 1.0, -1.0, 0.0
 	]), 3));
-	geometry.setIndex(new THREE.BufferAttribute( new Uint16Array([0, 1, 2, 0, 2, 3]), 1));
+
+	geometry.setIndex(new THREE.BufferAttribute( new Uint16Array([0, 1, 2, 2, 1, 3]), 1));
 	geometry.WebAR_textureCoordIndex = getTextureCoordIndexBasedOnOrientation(vrDisplay);
 	geometry.addAttribute("uv", new THREE.BufferAttribute( geometry.WebAR_textureCoords[geometry.WebAR_textureCoordIndex], 2 ));
 	geometry.computeBoundingSphere();
