@@ -133,10 +133,6 @@
         this.vertexPositionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
         var vertices = [
-            // -1.0,  1.0,  0.0,
-            //  1.0,  1.0,  0.0,
-            //  1.0, -1.0,  0.0,
-            // -1.0, -1.0,  0.0
           -1.0,  1.0, 0.0, 
           -1.0, -1.0, 0.0,
            1.0,  1.0, 0.0, 
@@ -156,10 +152,36 @@
             // this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
             // 0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight],
 
-            [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
-            [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
-            [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-            [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
+
+            [ 
+                0.0, 0.0,
+                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight
+            ],
+            [ 
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
+                0.0, 0.0,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight
+            ],
+            [
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
+                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                0.0, 0.0
+            ],
+            [
+                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                0.0, 0.0,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0
+            ]
+
+            // [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
+            // [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
+            // [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+            // [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
 
         ];
         this.f32TextureCoords = [];
