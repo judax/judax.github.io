@@ -227,7 +227,7 @@
         var combinedOrientation =   combineOrientations(screen.orientation.angle, this.seeThroughCamera.orientation);
         if (combinedOrientation !== this.combinedOrientation) {
 
-            alert("combinedOrientation changed: from " + this.combinedOrientation + " to " + combinedOrientation + ", screen = " + screen.orientation.angle + ", camera = " + this.seeThroughCamera.orientation);
+            // alert("combinedOrientation changed: from " + this.combinedOrientation + " to " + combinedOrientation + ", screen = " + screen.orientation.angle + ", camera = " + this.seeThroughCamera.orientation);
 
             this.combinedOrientation = combinedOrientation;
             gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
@@ -358,8 +358,8 @@
         
         videoQuad.update(gl);
 
-        console.log("viewportWidth = " + gl.viewportWidth + ", viewportHeight = " + gl.viewportHeight);
-        
+        // console.log("viewportWidth = " + gl.viewportWidth + ", viewportHeight = " + gl.viewportHeight);
+
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -404,6 +404,7 @@
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
                 var gl = getGL(canvas);
+                alert("gl.viewportWidth = " + gl.viewportWidth + ", gl.viewportHeight = " + gl.viewportHeight);
             });
         }
     </script>
