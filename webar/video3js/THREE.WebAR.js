@@ -155,27 +155,27 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
         geometry.WebAR_textureCoords = [
             new Float32Array([ 
                 0.0, 0.0,
-                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight
+                0.0, seeThroughCamera.height / seeThroughCamera.textureHeight,
+                seeThroughCamera.width / seeThroughCamera.textureWidth, 0.0,
+                seeThroughCamera.width / seeThroughCamera.textureWidth, seeThroughCamera.height / seeThroughCamera.textureHeight
             ]),
             new Float32Array([ 
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
+                seeThroughCamera.width / seeThroughCamera.textureWidth, 0.0,
                 0.0, 0.0,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight
+                seeThroughCamera.width / seeThroughCamera.textureWidth, seeThroughCamera.height / seeThroughCamera.textureHeight,
+                0.0, seeThroughCamera.height / seeThroughCamera.textureHeight
             ]),
             new Float32Array([
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
-                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                seeThroughCamera.width / seeThroughCamera.textureWidth, seeThroughCamera.height / seeThroughCamera.textureHeight,
+                seeThroughCamera.width / seeThroughCamera.textureWidth, 0.0,
+                0.0, seeThroughCamera.height / seeThroughCamera.textureHeight,
                 0.0, 0.0
             ]),
             new Float32Array([
-                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                0.0, seeThroughCamera.height / seeThroughCamera.textureHeight,
+                seeThroughCamera.width / seeThroughCamera.textureWidth, seeThroughCamera.height / seeThroughCamera.textureHeight,
                 0.0, 0.0,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0
+                seeThroughCamera.width / seeThroughCamera.textureWidth, 0.0
             ])
         ];
 
