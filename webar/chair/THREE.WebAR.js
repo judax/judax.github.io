@@ -314,8 +314,8 @@ THREE.WebAR.resizeVRSeeThroughCamera = function(camera, vrDisplay) {
 		var cx = swapWidthAndHeight ? seeThroughCamera.pointY : seeThroughCamera.pointX;
 		var cy = swapWidthAndHeight ? seeThroughCamera.pointX : seeThroughCamera.pointY;
 
-        var xscale = near / fx;
-        var yscale = near / fy;
+        var xscale = camera.near / fx;
+        var yscale = camera.near / fy;
 
         var xoffset = (cx - (width / 2.0)) * xscale;
         // Color camera's coordinates has y pointing downwards so we negate this term.
