@@ -190,6 +190,7 @@
 				// TODO: Accordingly update the perspective camera.
 				// cameraPersp.aspect = window.innerWidth / window.innerHeight;
 				// cameraPersp.updateProjectionMatrix();
+				THREE.WebAR.resizeVRSeeThroughCamera(cameraPersp, vrDisplay);
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
 

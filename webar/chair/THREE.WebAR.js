@@ -289,13 +289,30 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	var camera;
 	if (vrDisplay) {
+        camera = new THREE.Camera();
+        camera.near = near;
+        camera.far = far;
+        THREE.WebAR.resizeVRSeeThroughCamera(camera, vrDisplay);
+	}
+	else {
+		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
+	}
+	return camera;
+};
+
+THREE.WebAR.resizeVRSeeThroughCamera = function(camera, vrDisplay) {
+	if (vrDisplay) {
+		var windowWidthBiggerThanHeight = window.innerWidth > window.innerHeight;
 		var seeThroughCamera = vrDisplay.getSeeThroughCamera();
-		var width = seeThroughCamera.width;
-		var height = seeThroughCamera.height;
-		var fx = seeThroughCamera.focalLengthX;
-		var fy = seeThroughCamera.focalLengthY;
-		var cx = seeThroughCamera.pointX;
-		var cy = seeThroughCamera.pointY;
+		var cameraWidthBiggerThanHeight = seeThroughCamera.width > seeThroughCamera.height;
+		var swapWidthAndHeight = !(windowWidthBiggerThanHeight && cameraWidthBiggerThanHeight);
+
+		var width = swapWidthAndHeight ? seeThroughCamera.height : seeThroughCamera.width;
+		var height = swapWidthAndHeight ? seeThroughCamera.width : seeThroughCamera.height;
+		var fx = swapWidthAndHeight ? seeThroughCamera.focalLengthY : seeThroughCamera.focalLengthX;
+		var fy = swapWidthAndHeight ? seeThroughCamera.focalLengthX : seeThroughCamera.focalLengthY;
+		var cx = swapWidthAndHeight ? seeThroughCamera.pointY : seeThroughCamera.pointX;
+		var cy = swapWidthAndHeight ? seeThroughCamera.pointX : seeThroughCamera.pointY;
 
         var xscale = near / fx;
         var yscale = near / fy;
@@ -304,14 +321,13 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
         // Color camera's coordinates has y pointing downwards so we negate this term.
         var yoffset = -(cy - (height / 2.0)) * yscale;
 
-        camera = new THREE.Camera();
-        camera.projectionMatrix.makeFrustum(xscale * -width / 2.0 - xoffset, xscale * width / 2.0 - xoffset,yscale * -height / 2.0 - yoffset, yscale * height / 2.0 - yoffset, near, far);
+        camera.projectionMatrix.makeFrustum(xscale * -width / 2.0 - xoffset, xscale * width / 2.0 - xoffset,yscale * -height / 2.0 - yoffset, yscale * height / 2.0 - yoffset, camera.near, camera.far);
 	}
 	else {
-		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
 	}
-	return camera;
-};
+}
 
 THREE.WebAR._worldUp = new THREE.Vector3(0.0, 1.0, 0.0);
 THREE.WebAR._normalY = new THREE.Vector3();
