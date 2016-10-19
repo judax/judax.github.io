@@ -153,7 +153,8 @@
 				// 
 
 				scene = new THREE.Scene();
-				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
+				cameraPersp = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.00001, 1000 );
+				// cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
 				if (!model) {
 					model = new THREE.Mesh(new THREE.BoxBufferGeometry(0.1, 0.1, 0.1), new THREE.MeshLambertMaterial( {color: 0x888888 } ));
 				}
@@ -187,7 +188,8 @@
 
 			function onWindowResize() {
 				// TODO: Accordingly update the perspective camera.
-				cameraPersp = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.00001, 1000 );
+				cameraPersp.aspect = window.innerWidth / window.innerHeight;
+				cameraPersp.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
 
