@@ -92,7 +92,7 @@
 
 			var container, stats;
 
-			var cameraOrtho, cameraPersp, sceneCamera, scene, renderer;
+			var cameraOrtho, cameraPersp, sceneCamera, scene, renderer, cameraMesh;
 
 			var pointCloud;
 			var vrDisplay;
@@ -147,7 +147,8 @@
 
 				sceneCamera = new THREE.Scene();
 				cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
-				sceneCamera.add(THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay));
+				cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
+				sceneCamera.add(cameraMesh);
 
 				// 
 
@@ -187,6 +188,8 @@
 			function updateAndRender() {
 
 				stats.update();
+
+				cameraMesh.update();
 
 				// Render the see through camera scene
 				renderer.clear();
