@@ -104,7 +104,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 
 	function getTextureCoordIndexBasedOnOrientation(vrDisplay) {
 		var screenOrientation = screen.orientation.angle;
-		var seeThroughCameraOrientation = vrDisplay.getSeeThroughCamera().orientation;
+		var seeThroughCameraOrientation = vrDisplay ? vrDisplay.getSeeThroughCamera().orientation : 0;
 	    seeThroughCameraOrientationIndex = 0;
 	    switch (seeThroughCameraOrientation) {
 	        case 90:
@@ -268,6 +268,22 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	}
 
 	var mesh = new THREE.Mesh(geometry, material);
+
+	alert(mesh.update);
+
+	mesh.update = function() {
+		var textureCoordIndex = getTextureCoordIndexBasedOnOrientation(vrDisplay);
+		if (textureCoordIndex != this.geometry.WebAR_textureCoordIndex) {
+			this.geometry.WebAR_textureCoordIndex = textureCoordIndex;
+			var uvs = this.geometry.getAttribute("uv");
+			var textureCoords = this.geometry.WebAR_textureCoords[textureCoordIndex];
+			for (var i = 0; i < uvs.length; i++) {
+				uvs.array[i] = textureCoords[i];
+			}
+			uvs.needsUpdate = true;
+		}
+	};
+
 	return mesh;
 };
 

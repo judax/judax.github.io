@@ -61,7 +61,7 @@
 
 			var container, stats;
 
-			var cameraOrtho, sceneCamera, renderer;
+			var cameraOrtho, sceneCamera, renderer, cameraMesh;
 
 			var pointCloud;
 			var vrDisplay;
@@ -92,11 +92,8 @@
 
 				sceneCamera = new THREE.Scene();
 				cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
-				sceneCamera.add(THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay));
-
-				// 
-
-				// 
+				cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
+				sceneCamera.add(cameraMesh);
 
 				renderer = new THREE.WebGLRenderer();
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -111,8 +108,6 @@
 			}
 
 			function onWindowResize() {
-				// camera.aspect = window.innerWidth / window.innerHeight;
-				// camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
 
@@ -120,6 +115,9 @@
 			function updateAndRender() {
 
 				stats.update();
+
+				// Required so the correct UVs are used at all times (changes happen when there is an orientation change or window resize)
+				cameraMesh.update();
 
 				// Render the see through camera scene
 				renderer.clear();
