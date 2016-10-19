@@ -145,6 +145,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	var video;
 	var geometry = new THREE.BufferGeometry();
 
+	// The camera or video and the texture coordinates may vary depending if the vrDisplay has the see through camera.
 	if (vrDisplay) {
 		var seeThroughCamera = vrDisplay.getSeeThroughCamera();
 		video = seeThroughCamera;
@@ -152,6 +153,8 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 		video.readyState = 2;
 		video.HAVE_CURRENT_DATA = 2;
 
+		// All the possible texture coordinates for the 4 possible orientations.
+		// The ratio between the texture size and the camera size is used in order to be compatible with the YUV to RGB conversion option (not recommended but still available).
         geometry.WebAR_textureCoords = [
             new Float32Array([ 
                 0.0, 0.0,
@@ -178,32 +181,19 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
                 seeThroughCamera.width / seeThroughCamera.textureWidth, 0.0
             ])
         ];
-
-        // uvs = new Float32Array([
-        //     0.0, 0.0,
-        //     seeThroughCamera.width / seeThroughCamera.textureWidth, 0.0, 
-        //     seeThroughCamera.width / seeThroughCamera.textureWidth, seeThroughCamera.height / seeThroughCamera.textureHeight,
-        //     0.0, seeThroughCamera.height / seeThroughCamera.textureHeight
-        // ]);
 	}
 	else {
 		var video = document.createElement("video");
 		video.src = "sintel.webm";
 		video.play();
 
+		// All the possible texture coordinates for the 4 possible orientations.
         geometry.WebAR_textureCoords = [
             new Float32Array([0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0]),
             new Float32Array([1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
             new Float32Array([1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0]),
             new Float32Array([0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0])
         ];
-
-		// uvs = new Float32Array([
-		// 	0.0, 0.0, 
-		// 	1.0, 0.0,
-		// 	1.0, 1.0,
-		// 	0.0, 1.0
-  //       ]);
 	}
 
 	geometry.addAttribute("position", new THREE.BufferAttribute( new Float32Array([
@@ -217,8 +207,6 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	geometry.WebAR_textureCoordIndex = getTextureCoordIndexBasedOnOrientation(vrDisplay);
 	var textureCoords = geometry.WebAR_textureCoords[geometry.WebAR_textureCoordIndex];
 
-	alert("textureCoordIndex = " + geometry.WebAR_textureCoordIndex + ", textureCoords = " + textureCoords);
-
 	geometry.addAttribute("uv", new THREE.BufferAttribute( new Float32Array(textureCoords), 2 ));
 	geometry.computeBoundingSphere();
 
@@ -228,6 +216,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	videoTexture.format = THREE.RGBFormat;			
 	videoTexture.flipY = false;
 
+	// The material is different if the see through camera is provided inside the vrDisplay or not.
 	var material;
 	if (vrDisplay) {
 	    var vertexShaderSource = [
@@ -273,14 +262,12 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 
 	var mesh = new THREE.Mesh(geometry, material);
 
+	// This function allows to use the correct texture coordinates depending on the device and camera orientation.
 	mesh.update = function() {
 		var textureCoordIndex = getTextureCoordIndexBasedOnOrientation(vrDisplay);
 		if (textureCoordIndex != this.geometry.WebAR_textureCoordIndex) {
 			var uvs = this.geometry.getAttribute("uv");
 			var textureCoords = this.geometry.WebAR_textureCoords[textureCoordIndex];
-
-			alert("textureCoordIndex changed from " + this.geometry.WebAR_textureCoordIndex + " to " + textureCoordIndex +". uvs.length = " + uvs.length + ". textureCoords = " + textureCoords);
-
 			this.geometry.WebAR_textureCoordIndex = textureCoordIndex;
 			for (var i = 0; i < uvs.length; i++) {
 				uvs.array[i] = textureCoords[i];
