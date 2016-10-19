@@ -146,13 +146,6 @@
         this.textureCoordBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
         var textureCoords = [
-
-            // [ 0.0, 0.0,
-            // this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0, 
-            // this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-            // 0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight],
-
-
             [ 
                 0.0, 0.0,
                 0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
@@ -177,12 +170,6 @@
                 0.0, 0.0,
                 this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0
             ]
-
-            // [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
-            // [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
-            // [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-            // [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
-
         ];
         this.f32TextureCoords = [];
         for (var i = 0; i < textureCoords.length; i++) {

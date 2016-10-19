@@ -101,42 +101,120 @@ THREE.WebAR.VRPointCloud.prototype.update = function() {
 * @return {THREE.Mesh} - The THREE.Mesh instance that represents a quad to be able to present the see through camera.
 */
 THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
-	var uvs;
+
+	function getTextureCoordIndexBasedOnOrientation(vrDisplay) {
+		var screenOrientation = screen.orientation.angle;
+		var seeThroughCameraOrientation = vrDisplay.getSeeThroughCamera().orientation;
+	    seeThroughCameraOrientationIndex = 0;
+	    switch (seeThroughCameraOrientation) {
+	        case 90:
+	            seeThroughCameraOrientationIndex = 1;
+	            break;
+	        case 180:
+	            seeThroughCameraOrientationIndex = 2;
+	            break;
+	        case 270:
+	            seeThroughCameraOrientationIndex = 3;
+	            break;
+	        default:
+	            seeThroughCameraOrientationIndex = 0;
+	            break;
+	    }
+	    screenOrientationIndex = 0;
+	    switch (screenOrientation) {
+	        case 90:
+	            screenOrientationIndex = 1;
+	            break;
+	        case 180:
+	            screenOrientationIndex = 2;
+	            break;
+	        case 270:
+	            screenOrientationIndex = 3;
+	            break;
+	        default:
+	            screenOrientationIndex = 0;
+	            break;
+	    }
+	    ret = screenOrientationIndex - seeThroughCameraOrientationIndex;
+	    if (ret < 0) {
+	        ret += 4;
+	    }
+	    return (ret % 4);
+	}
+
 	var video;
+	var geometry = new THREE.BufferGeometry();
+
 	if (vrDisplay) {
 		var seeThroughCamera = vrDisplay.getSeeThroughCamera();
 		video = seeThroughCamera;
 		// HACK: Needed to tell the THEE.VideoTextue that the video is ready and that the texture needs update.
 		video.readyState = 2;
 		video.HAVE_CURRENT_DATA = 2;
-        uvs = new Float32Array([
-            0.0, 0.0,
-            seeThroughCamera.width / seeThroughCamera.textureWidth, 0.0, 
-            seeThroughCamera.width / seeThroughCamera.textureWidth, seeThroughCamera.height / seeThroughCamera.textureHeight,
-            0.0, seeThroughCamera.height / seeThroughCamera.textureHeight
-        ]);
+
+        geometry.WebAR_textureCoords = [
+            new Float32Array([ 
+                0.0, 0.0,
+                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight
+            ]),
+            new Float32Array([ 
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
+                0.0, 0.0,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight
+            ]),
+            new Float32Array([
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
+                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                0.0, 0.0
+            ]),
+            new Float32Array([
+                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                0.0, 0.0,
+                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0
+            ])
+        ];
+
+        // uvs = new Float32Array([
+        //     0.0, 0.0,
+        //     seeThroughCamera.width / seeThroughCamera.textureWidth, 0.0, 
+        //     seeThroughCamera.width / seeThroughCamera.textureWidth, seeThroughCamera.height / seeThroughCamera.textureHeight,
+        //     0.0, seeThroughCamera.height / seeThroughCamera.textureHeight
+        // ]);
 	}
 	else {
 		var video = document.createElement("video");
 		video.src = "sintel.webm";
 		video.play();
-		uvs = new Float32Array([
-			0.0, 0.0, 
-			1.0, 0.0,
-			1.0, 1.0,
-			0.0, 1.0
-        ]);
+
+        geometry.WebAR_textureCoords = [
+            new Float32Array([0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0]),
+            new Float32Array([1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
+            new Float32Array([1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0]),
+            new Float32Array([0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0])
+        ];
+
+		// uvs = new Float32Array([
+		// 	0.0, 0.0, 
+		// 	1.0, 0.0,
+		// 	1.0, 1.0,
+		// 	0.0, 1.0
+  //       ]);
 	}
 
-	var geometry = new THREE.BufferGeometry();
 	geometry.addAttribute("position", new THREE.BufferAttribute( new Float32Array([
-		-1.0,  1.0,  0.0,
-         1.0,  1.0,  0.0,
-         1.0, -1.0,  0.0,
-        -1.0, -1.0,  0.0
+		-1.0,  1.0, 0.0, 
+		-1.0, -1.0, 0.0,
+		 1.0,  1.0, 0.0, 
+		 1.0, -1.0, 0.0
 	]), 3));
 	geometry.setIndex(new THREE.BufferAttribute( new Uint16Array([0, 1, 2, 0, 2, 3]), 1));
-	geometry.addAttribute("uv", new THREE.BufferAttribute( uvs, 2 ));
+	geometry.WebAR_textureCoordIndex = getTextureCoordIndexBasedOnOrientation(vrDisplay);
+	geometry.addAttribute("uv", new THREE.BufferAttribute( geometry.WebAR_textureCoords[geometry.WebAR_textureCoordIndex], 2 ));
 	geometry.computeBoundingSphere();
 
 	var videoTexture = new THREE.VideoTexture(video);
