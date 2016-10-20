@@ -72,11 +72,10 @@
 			}
 
 			function removeLoadSpinner() {
-
-				// $('body').addClass('loaded');
-				// $('h1').css('color','#222222');
 				addClass(document.body, 'loaded');
-				// document.body.removeChild(document.getElementById("loader-wrapper"));
+				setTimeout(function() {
+					document.body.removeChild(document.getElementById("loader-wrapper"));
+				}, 1000);
 			}
 
 			function GUI() {
