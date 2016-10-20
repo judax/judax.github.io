@@ -61,14 +61,22 @@
 		<script src="dat.gui.min.js"></script>
 		<script src="ColladaLoader.js"></script>
 
-<!-- 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-		<script>window.jQuery || document.write('<script src="jquery-1.9.1.min.js"><\/script>')</script>
- -->
 		<script>
+			function addClass(node, className) {
+				if (node.classList) {
+					node.classList.add(className);
+				}
+				else {
+					node.className += ' ' + className;
+				}
+			}
+
 			function removeLoadSpinner() {
+
 				// $('body').addClass('loaded');
 				// $('h1').css('color','#222222');
-				document.body.removeChild(document.getElementById("loader-wrapper"));
+				addClass(document.body, 'loaded');
+				// document.body.removeChild(document.getElementById("loader-wrapper"));
 			}
 
 			function GUI() {
