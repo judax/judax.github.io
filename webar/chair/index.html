@@ -208,15 +208,15 @@
 				if (gui.showSeeThroughCamera)
 					renderer.render( sceneCamera, cameraOrtho );
 
-				// // Update the perspective scene
-				// vrControls.update();
-				// if (showPointCloud) {
-				// 	pointCloud.update();
-				// }
+				// Update the perspective scene
+				vrControls.update();
+				if (showPointCloud) {
+					pointCloud.update();
+				}
 
-				// // Render the perspective scene
-				// renderer.clearDepth();
-				// renderer.render( scene, cameraPersp );
+				// Render the perspective scene
+				renderer.clearDepth();
+				renderer.render( scene, cameraPersp );
 
 				requestAnimationFrame( updateAndRender );
 			}
