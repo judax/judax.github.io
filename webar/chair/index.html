@@ -81,9 +81,11 @@
 			datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
 				if (value) {
 					scene.add(points)
+					showPointCloud = true;
 				}
 				else {
 					scene.remove(points);
+					showPointCloud = false;
 				}
 			});
 			datGUI.add(gui, "showSeeThroughCamera");
@@ -94,7 +96,7 @@
 
 			var cameraOrtho, cameraPersp, sceneCamera, scene, renderer, cameraMesh;
 
-			var pointCloud;
+			var pointCloud, showPointCloud = true;
 			var vrDisplay;
 			var model;
 
@@ -208,7 +210,9 @@
 
 				// Update the perspective scene
 				vrControls.update();
-				pointCloud.update();
+				if (showPointCloud) {
+					pointCloud.update();
+				}
 
 				// Render the perspective scene
 				renderer.clearDepth();
@@ -219,9 +223,15 @@
 
 		    window.addEventListener("click", function(event) {
 		        if (vrDisplay) {
+
+					var windowWidthBiggerThanHeight = window.innerWidth > window.innerHeight;
+					var seeThroughCamera = vrDisplay.getSeeThroughCamera();
+					var cameraWidthBiggerThanHeight = seeThroughCamera.width > seeThroughCamera.height;
+					var swapWidthAndHeight = !(windowWidthBiggerThanHeight && cameraWidthBiggerThanHeight);
+
 		            var x = event.pageX / window.innerWidth;
 		            var y = event.pageY / window.innerHeight;
-		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(x, y);
+		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(swapWidthAndHeight ? y : x, swapWidthAndHeight ? x : y);
 		            console.log("x = " + lastX + ", y = " + lastY + ", window.innerWidth = " + window.innerWidth + ", window.innerHeight = " + window.innerHeight + ", uvx = " + x + ", uvy = " + y + ", point[0] = " + pointAndPlane.point[0] + ", point[1] = " + pointAndPlane.point[1] + ", point[2] = " + pointAndPlane.point[2] + ", plane[0] = " + pointAndPlane.plane[0] + ", plane[1] = " + pointAndPlane.plane[1] + ", plane[2] = " + pointAndPlane.plane[2] + ", plane[3] = " + pointAndPlane.plane[3]);  
 
 		            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
