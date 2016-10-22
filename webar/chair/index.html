@@ -244,7 +244,7 @@
 
 		            v3.set(x, y, 0);
 		            var index = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-		            alert("screen.orientation.angle = " + screen.orientation.angle + ", index = " + index);
+		            alert("screen.orientation.angle = " + screen.orientation.angle + ", index = " + index + ", x = " + x + ", y = " + y + ", v3.x = " + v3.x + ", v3.y = " + v3.y);
 		            v3.applyMatrix4(matrices[index]);
 
 		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(v3.x, v3.y);
