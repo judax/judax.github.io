@@ -229,13 +229,23 @@
 				requestAnimationFrame( updateAndRender );
 			}
 
+			var v3 = new THREE.Vector3();
+			var matrices = [
+				new THREE.Matrix4().makeRotationZ(0),
+				new THREE.Matrix4().makeRotationZ(90),
+				new THREE.Matrix4().makeRotationZ(180),
+				new THREE.Matrix4().makeRotationZ(270)
+			];
+
 		    window.addEventListener("click", function(event) {
 		        if (vrDisplay) {
 		            var x = event.pageX / window.innerWidth;
 		            var y = event.pageY / window.innerHeight;
 
-		            alert(screen.orientation.angle);
-		            
+		            v3.set(x, y, 0);
+		            var index = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
+		            alert("screen.orientation.angle = " + screen.orientation.angle + ", index = " + index);
+
 		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(x, y);
 		            console.log("x = " + lastX + ", y = " + lastY + ", window.innerWidth = " + window.innerWidth + ", window.innerHeight = " + window.innerHeight + ", uvx = " + x + ", uvy = " + y + ", point[0] = " + pointAndPlane.point[0] + ", point[1] = " + pointAndPlane.point[1] + ", point[2] = " + pointAndPlane.point[2] + ", plane[0] = " + pointAndPlane.plane[0] + ", plane[1] = " + pointAndPlane.plane[1] + ", plane[2] = " + pointAndPlane.plane[2] + ", plane[3] = " + pointAndPlane.plane[3]);  
 
