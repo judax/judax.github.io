@@ -231,10 +231,10 @@
 
 			var v3 = new THREE.Vector3();
 			var matrices = [
-				new THREE.Matrix4().makeRotationZ(0),
-				new THREE.Matrix4().makeRotationZ(90),
-				new THREE.Matrix4().makeRotationZ(180),
-				new THREE.Matrix4().makeRotationZ(270)
+				new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(0)),
+				new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(90)),
+				new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(180)),
+				new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(270))
 			];
 
 		    window.addEventListener("click", function(event) {
