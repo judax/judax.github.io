@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>INTRODUCTION</h1><p>This repository includes modifications on Chromium that allows to add Tango/AR capabilities into JavaScript. Chromium is a complex project with gigabytes of source code, resources and third party libraries. This repository does not include all Chromium but just the files necessary to make the changes to it. This documentation is divided in 2 sections: </p>
+<ol>
+<li>How to build your own version of Chromium and </li>
+<li>Using the new VR/AR JavaScript APIs. This way, anyone that wants to build and modify his/her own version of chromium, will be able to do it and those who just want to install a prebuilt version of Chromium and start using it right away.</li>
+</ol>
+<h2>THE FOLDER STRUCTURE</h2><p><code>/android_webview</code>: The modifications to the android webview Chromium project to be able to load the tango handling dynamic library, store the URLs for future executions, etc. This folder, internally, contains the tango handling library and all the build files needed. </p>
+<p><code>/device</code>: The modifications to the vr device files to add both the tango_vr_device class and the modifications to the vr service to be able to expose some specific data related to AR (point cloud, see through camera data, etc.).</p>
+<p><code>/examples</code>: A set of some basic examples based on straight WebGL or (mostly) using the ThreeJS framework.</p>
+<p><code>/third_party</code>: Both the inclusion of the tango third party libraries (and the tango handling library) and the WebKit vr and webgl IDL classes modifications to be able to expose all the functionalities.</p>
+<h2>BUILD YOUR OWN VERSION OF CHROMIUM</h2><p>Building the modified version of Chromium, is a 3 steps process: </p>
+<ol>
+<li>Clone the chromium project and prepare it to be built, </li>
+<li>Copy the chnages in this repository to the Chromium repository, </li>
+<li>Build, install and run.</li>
+</ol>
+<h3>Clone the Chromium project and prepare it to be built</h3><hr>
+<p>Chromium cloning/building instruction are available online. </p>
+<p><a href="https://www.chromium.org/developers/how-tos/android-build-instructions">https://www.chromium.org/developers/how-tos/android-build-instructions</a></p>
+<p>Anyway, in order to help with the process, we recommend you follow these steps. Remember, Tango is an Android platform for the moment so in order to be able to use the modifications present in this project, you need to compile Chromium for Android. The only way to do this is using a Linux machine. Unfortunately, this document does not include instructions on how to setup a linux machine. Let's assume that the machine is installed along with:</p>
+<ul>
+<li>Java JDK 1.8 and JRE 1.8</li>
+<li>Android SDK</li>
+<li>Android NDK 12b</li>
+<li>GIT</li>
+<li>Setup the PATH variable to point to the tools.</li>
+</ul>
+<p>Open a terminal window to be able </p>
+<ol>
+<li>Install depot_tools: <a href="https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up">Tutorial</a><ol>
+<li><code>git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git</code></li>
+<li><code>export PATH=$PATH:/path/to/depot_tools</code></li>
+</ol>
+</li>
+<li><code>$ mkdir ~/chromium &amp;&amp; cd ~/chromium</code></li>
+<li><code>~/chromium$ fetch --nohooks android</code>
+ NOTE: This process may take quite some time (an hour?)</li>
+<li>Verify that the .gclient file has <code>target_os = ['android']</code> in it</li>
+<li><code>~/chromium/src$ gclient sync</code></li>
+<li>Checkout a specific tag to a new branch. The tag is <code>54.0.2796.3</code>. The name of the branch to checkout could be <code>webar_54.0.2796.3</code> for example.
+ <code>~/chromium/src$ git checkout -b webar_54.0.2796.3 54.0.2796.3</code></li>
+<li>Create a folder for the final product compilation:
+ ~/chromium/src$ mkdir -p out/webar_54.0.2796.3</li>
+<li><p>Edit the a new file <code>out/webar_54.0.2796.3/args.gn</code> file
+ ~/chromium/src$ gedit out/webar_54.0.2796.3/args.gn
+ Copy and paste this content:</p>
+<pre class="prettyprint source"><code>target_os = &quot;android&quot;
+target_cpu = &quot;arm&quot;  # (default)
+is_debug = true  # (default)
+
+# Other args you may want to set:
+is_component_build = true
+is_clang = true
+symbol_level = 1  # Faster build with fewer symbols. -g1 rather than -g2
+enable_incremental_javac = true  # Much faster; experimental</code></pre></li>
+<li>Copy and paste all the content from this folder into the chromium/src folder. Override every possible conflict that may arise if you use the file explorer.
+ <code>cp -r PATH_TO_THIS_FOLDER/* ~/chromium/src</code></li>
+<li><code>~/chromium/src$ gn args out/webar_54.0.2796.3</code>
+<strong>NOTE</strong>: just exit &quot;q!&quot; in vi when it opens and shows args.gn (modified in the previous step using a proper editor ;))</li>
+<li><code>~/chromium$ src/build/install-build-deps-android.sh</code> </li>
+<li>Execute the following commands and select the right choice on each. Do not worry if some commands do not have any effect.<pre class="prettyprint source"><code>sudo update-alternatives --config javac
+sudo update-alternatives --config java
+sudo update-alternatives --config javaws
+sudo update-alternatives --config javap
+sudo update-alternatives --config jar
+sudo update-alternatives --config jarsigner</code></pre></li>
+<li><code>~/chromium/src$ gclient sync</code></li>
+<li><code>~/chromium/src$ . build/android/envsetup.sh</code></li>
+</ol>
+<h3>Build the project</h3><p><strong>IMPORTANT:</strong> some changes have been done to the Chromium command buffer. These changes may require to rebuild the command buffer. The Python script to do so does not execute along with the regular building process so if further changes are done to the command buffer, this script needs to be executed with the following command:</p>
+<pre class="prettyprint source"><code>~/chromium/src/python gpu/command_buffer/build_gles2_cmd_buffer.py</code></pre><p>The out folder that has been created has the same name as the branch. This is no coincidence, as the <code>build_install_run.sh</code> shell script provided along with this documentation allows to build the Chromium project depending on the current git branch name that is currently checked out. This script not only compiles Chromium but also the Tango use native library called tango_chromium. This script, apart of building the project it installs it and runs it, so it is convenient that you connect the Tango device via USB. The built project is the Chromium WebView project.</p>
+<pre class="prettyprint source"><code>~/chromium/src/build_install_run.sh</code></pre><h2>USING THE NEW VR/AR JAVASCRIPT APIs</h2><h3>Build the documentation</h3><p>In order to build the documentation you are currently reading, there are some steps that need to be followed:</p>
+<ol>
+<li>Install JSDoc: <code>npm install -g jsdoc</code></li>
+<li><code>$ jsdoc WebARAPI.js THREE.WebAR/THREE.WebAR.js README.md</code></li>
+</ol>
+<h2>DEVELOPING A WEBAR THREEJS APP</h2><p><strong>IMPORTANT</strong>: In order to use the external image OES extension, a modification to the ThreeJS engine is required. In the getSingularSetter function that is able to identify the set functions for the different types of uniforms/attributes in a shader, a new type needs to be added as follows:</p>
+<pre class="prettyprint source"><code>function getSingularSetter( type ) {
+
+    switch ( type ) {
+
+        case 0x1406: return setValue1f; // FLOAT
+        case 0x8b50: return setValue2fv; // _VEC2
+        case 0x8b51: return setValue3fv; // _VEC3
+        case 0x8b52: return setValue4fv; // _VEC4
+
+        case 0x8b5a: return setValue2fm; // _MAT2
+        case 0x8b5b: return setValue3fm; // _MAT3
+        case 0x8b5c: return setValue4fm; // _MAT4
+
+        case 0x8b5e: case 36198: return setValueT1; // SAMPLER_2D  // case 36198: ADDED by WebAR
+        case 0x8b60: return setValueT6; // SAMPLER_CUBE
+
+        case 0x1404: case 0x8b56: return setValue1i; // INT, BOOL
+        case 0x8b53: case 0x8b57: return setValue2iv; // _VEC2
+        case 0x8b54: case 0x8b58: return setValue3iv; // _VEC3
+        case 0x8b55: case 0x8b59: return setValue4iv; // _VEC4
+
+    }
+
+}</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="THREE.WebAR.VRPointCloud.html">VRPointCloud</a></li><li><a href="VRDisplay.html">VRDisplay</a></li><li><a href="VRDisplayCapabilities.html">VRDisplayCapabilities</a></li><li><a href="VRPickingPointAndPlane.html">VRPickingPointAndPlane</a></li><li><a href="VRPointCloud.html">VRPointCloud</a></li><li><a href="VRSeeThroughCamera.html">VRSeeThroughCamera</a></li></ul><h3>Namespaces</h3><ul><li><a href="THREE.html">THREE</a></li><li><a href="THREE.WebAR.html">WebAR</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Wed Oct 26 2016 01:33:21 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
