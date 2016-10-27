@@ -95,53 +95,43 @@ THREE.WebAR.VRPointCloud.prototype.update = function() {
 	}
 };
 
+THREE.WebAR.getIndexFromOrientation = function(orientation) {
+    var index = 0;
+    switch (orientation) {
+        case 90:
+            index = 1;
+            break;
+        case 180:
+            index = 2;
+            break;
+        case 270:
+            index = 3;
+            break;
+        default:
+            index = 0;
+            break;
+    }
+    return index;
+};
+
+THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations = function(vrDisplay) {
+	var screenOrientation = screen.orientation.angle;
+	var seeThroughCameraOrientation = vrDisplay ? vrDisplay.getSeeThroughCamera().orientation : 0;
+    var seeThroughCameraOrientationIndex = THREE.WebAR.getIndexFromOrientation(seeThroughCameraOrientation);
+    var screenOrientationIndex = THREE.WebAR.getIndexFromOrientation(screenOrientation);
+    ret = screenOrientationIndex - seeThroughCameraOrientationIndex;
+    if (ret < 0) {
+        ret += 4;
+    }
+    return (ret % 4);
+}
+
 /**
 * A utility function that helps create a THREE.Mesh instance to be able to show the VRSeeThroughCamera as a background quad with the correct texture coordinates and a THREE.VideoTexture instance.
 * @param {VRDisplay} vrDisplay - The VRDisplay that is capable to provide a correct VRSeeThroughCamera instance.
 * @return {THREE.Mesh} - The THREE.Mesh instance that represents a quad to be able to present the see through camera.
 */
 THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
-
-	function getTextureCoordIndexBasedOnOrientation(vrDisplay) {
-		var screenOrientation = screen.orientation.angle;
-		var seeThroughCameraOrientation = vrDisplay ? vrDisplay.getSeeThroughCamera().orientation : 0;
-	    seeThroughCameraOrientationIndex = 0;
-	    switch (seeThroughCameraOrientation) {
-	        case 90:
-	            seeThroughCameraOrientationIndex = 1;
-	            break;
-	        case 180:
-	            seeThroughCameraOrientationIndex = 2;
-	            break;
-	        case 270:
-	            seeThroughCameraOrientationIndex = 3;
-	            break;
-	        default:
-	            seeThroughCameraOrientationIndex = 0;
-	            break;
-	    }
-	    screenOrientationIndex = 0;
-	    switch (screenOrientation) {
-	        case 90:
-	            screenOrientationIndex = 1;
-	            break;
-	        case 180:
-	            screenOrientationIndex = 2;
-	            break;
-	        case 270:
-	            screenOrientationIndex = 3;
-	            break;
-	        default:
-	            screenOrientationIndex = 0;
-	            break;
-	    }
-	    ret = screenOrientationIndex - seeThroughCameraOrientationIndex;
-	    if (ret < 0) {
-	        ret += 4;
-	    }
-	    return (ret % 4);
-	}
-
 	var video;
 	var geometry = new THREE.BufferGeometry();
 
@@ -204,7 +194,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	]), 3));
 
 	geometry.setIndex(new THREE.BufferAttribute( new Uint16Array([0, 1, 2, 2, 1, 3]), 1));
-	geometry.WebAR_textureCoordIndex = getTextureCoordIndexBasedOnOrientation(vrDisplay);
+	geometry.WebAR_textureCoordIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
 	var textureCoords = geometry.WebAR_textureCoords[geometry.WebAR_textureCoordIndex];
 
 	geometry.addAttribute("uv", new THREE.BufferAttribute( new Float32Array(textureCoords), 2 ));
@@ -264,7 +254,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 
 	// This function allows to use the correct texture coordinates depending on the device and camera orientation.
 	mesh.update = function() {
-		var textureCoordIndex = getTextureCoordIndexBasedOnOrientation(vrDisplay);
+		var textureCoordIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
 		if (textureCoordIndex != this.geometry.WebAR_textureCoordIndex) {
 			var uvs = this.geometry.getAttribute("uv");
 			var textureCoords = this.geometry.WebAR_textureCoords[textureCoordIndex];
@@ -289,29 +279,45 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	var camera;
 	if (vrDisplay) {
-		var seeThroughCamera = vrDisplay.getSeeThroughCamera();
-		var width = seeThroughCamera.width;
-		var height = seeThroughCamera.height;
-		var fx = seeThroughCamera.focalLengthX;
-		var fy = seeThroughCamera.focalLengthY;
-		var cx = seeThroughCamera.pointX;
-		var cy = seeThroughCamera.pointY;
-
-        var xscale = near / fx;
-        var yscale = near / fy;
-
-        var xoffset = (cx - (width / 2.0)) * xscale;
-        // Color camera's coordinates has y pointing downwards so we negate this term.
-        var yoffset = -(cy - (height / 2.0)) * yscale;
-
         camera = new THREE.Camera();
-        camera.projectionMatrix.makeFrustum(xscale * -width / 2.0 - xoffset, xscale * width / 2.0 - xoffset,yscale * -height / 2.0 - yoffset, yscale * height / 2.0 - yoffset, near, far);
+        camera.near = near;
+        camera.far = far;
+        THREE.WebAR.resizeVRSeeThroughCamera(camera, vrDisplay);
 	}
 	else {
 		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
 	}
 	return camera;
 };
+
+THREE.WebAR.resizeVRSeeThroughCamera = function(camera, vrDisplay) {
+	if (vrDisplay) {
+		var windowWidthBiggerThanHeight = window.innerWidth > window.innerHeight;
+		var seeThroughCamera = vrDisplay.getSeeThroughCamera();
+		var cameraWidthBiggerThanHeight = seeThroughCamera.width > seeThroughCamera.height;
+		var swapWidthAndHeight = !(windowWidthBiggerThanHeight && cameraWidthBiggerThanHeight);
+
+		var width = swapWidthAndHeight ? seeThroughCamera.height : seeThroughCamera.width;
+		var height = swapWidthAndHeight ? seeThroughCamera.width : seeThroughCamera.height;
+		var fx = swapWidthAndHeight ? seeThroughCamera.focalLengthY : seeThroughCamera.focalLengthX;
+		var fy = swapWidthAndHeight ? seeThroughCamera.focalLengthX : seeThroughCamera.focalLengthY;
+		var cx = swapWidthAndHeight ? seeThroughCamera.pointY : seeThroughCamera.pointX;
+		var cy = swapWidthAndHeight ? seeThroughCamera.pointX : seeThroughCamera.pointY;
+
+        var xscale = camera.near / fx;
+        var yscale = camera.near / fy;
+
+        var xoffset = (cx - (width / 2.0)) * xscale;
+        // Color camera's coordinates has y pointing downwards so we negate this term.
+        var yoffset = -(cy - (height / 2.0)) * yscale;
+
+        camera.projectionMatrix.makeFrustum(xscale * -width / 2.0 - xoffset, xscale * width / 2.0 - xoffset,yscale * -height / 2.0 - yoffset, yscale * height / 2.0 - yoffset, camera.near, camera.far);
+	}
+	else {
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+	}
+}
 
 THREE.WebAR._worldUp = new THREE.Vector3(0.0, 1.0, 0.0);
 THREE.WebAR._normalY = new THREE.Vector3();
