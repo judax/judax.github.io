@@ -155,15 +155,14 @@
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
+				// Create the see through camera scene and camera
 				sceneCamera = new THREE.Scene();
 				cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
 				cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
 				sceneCamera.add(cameraMesh);
 
-				// 
-
+				// Create the 3D scene and camera
 				scene = new THREE.Scene();
-				// cameraPersp = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.00001, 1000 );
 				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
 				if (!model) {
 					model = new THREE.Mesh(new THREE.BoxBufferGeometry(0.1, 0.1, 0.1), new THREE.MeshLambertMaterial( {color: 0x888888 } ));
@@ -182,17 +181,18 @@
 				directionalLight.position.set( 0, 1, 0);
 				scene.add( directionalLight );
 
-				// 
-
+				// Create the renderer
 				renderer = new THREE.WebGLRenderer();
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				renderer.autoClear = false;
 				document.body.appendChild( renderer.domElement );
 
+				// Create a way to measure performance
 				stats = new Stats();
 				container.appendChild( stats.dom );
 
+				// Control the resizing of the window to correctly display the scene.
 				window.addEventListener( 'resize', onWindowResize, false );
 			}
 
@@ -221,7 +221,7 @@
 				// Update the perspective scene
 				vrControls.update();
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
-				sceneCamera.updateOrientation();
+				cameraPersp.updateOrientation();
 				if (showPointCloud) {
 					pointCloud.update();
 				}
