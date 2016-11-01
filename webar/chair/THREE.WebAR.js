@@ -269,7 +269,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	return mesh;
 };
 
-THREE.WebAR._worldIn = new THREE.Vector3(0.0, 0.0, -1.0);
+THREE.WebAR._worldIn = new THREE.Vector3(0.0, 0.0, 1.0);
 THREE.WebAR._orientationCorrectionQuaternions = [
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, 0),
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(90)),
