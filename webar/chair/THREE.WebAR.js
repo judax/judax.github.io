@@ -296,7 +296,8 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
 	}
 	camera.updateOrientation = function() {
-		var orientationIndex = THREE.WebAR.getIndexFromOrientation(screen.orientation.angle);
+		var orientationIndex = getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
+		// var orientationIndex = THREE.WebAR.getIndexFromOrientation(screen.orientation.angle);
 		var quaternion = THREE.WebAR._orientationCorrectionQuaternions[orientationIndex];
 		this.quaternion.multiply(quaternion);
 	};
