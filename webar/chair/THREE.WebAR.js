@@ -253,7 +253,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	var mesh = new THREE.Mesh(geometry, material);
 
 	// This function allows to use the correct texture coordinates depending on the device and camera orientation.
-	mesh.update = function() {
+	mesh.updateOrientation = function() {
 		var textureCoordIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
 		if (textureCoordIndex != this.geometry.WebAR_textureCoordIndex) {
 			var uvs = this.geometry.getAttribute("uv");
@@ -268,6 +268,13 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 
 	return mesh;
 };
+
+THREE.WebAR._orientationCorrectionQuaternions = [
+	new THREE.Quaternion().setFromEuler(0),
+	new THREE.Quaternion().setFromEuler(Math.PI / 2),
+	new THREE.Quaternion().setFromEuler(Math.PI),
+	new THREE.Quaternion().setFromEuler(2 * Math.PI)
+];
 
 /**
 * A utility function to create a THREE.Camera instance with as frustum that is obtainer from the underlying vrdisplay see through camera information. This camera can be used to correctly render 3D objects on top of the underlying camera image.
@@ -287,6 +294,10 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	else {
 		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
 	}
+	camera.updateOrientation = function() {
+		var orientationIndex = THREE.WebAR.getIndexFromOrientation(screen.orientation.angle);
+		this.quaternion.multiply(THREE.WebAR._orientationCorrectionQuaternions[orientationIndex]);
+	};
 	return camera;
 };
 
