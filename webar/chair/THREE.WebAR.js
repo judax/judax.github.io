@@ -271,9 +271,9 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 
 THREE.WebAR._orientationCorrectionQuaternions = [
 	new THREE.Quaternion().setFromEuler(0),
-	new THREE.Quaternion().setFromEuler(Math.PI / 2),
-	new THREE.Quaternion().setFromEuler(Math.PI),
-	new THREE.Quaternion().setFromEuler(2 * Math.PI)
+	new THREE.Quaternion().setFromEuler(THREE.Math.degToRad(90)),
+	new THREE.Quaternion().setFromEuler(THREE.Math.degToRad(180)),
+	new THREE.Quaternion().setFromEuler(THREE.Math.degToRad(270))
 ];
 
 var lastOrientationIndex = -1;
@@ -298,11 +298,12 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	}
 	camera.updateOrientation = function() {
 		var orientationIndex = THREE.WebAR.getIndexFromOrientation(screen.orientation.angle);
+		var quaternion = THREE.WebAR._orientationCorrectionQuaternions[orientationIndex];
 		if (lastOrientationIndex !== orientationIndex) {
-			alert("orientationIndex = " + orientationIndex + ", quaternion = " + THREE.WebAR._orientationCorrectionQuaternions[orientationIndex] + ", this = " + this);
+			alert("orientationIndex = " + orientationIndex + ", quaternion = (" + quaternion.x + ", " + quaternion.y + ", " + quaternion.z + ", " + quaternion.w + "), this.projectionMatrix = " + this.projectionMatrix);
 			lastOrientationIndex = orientationIndex;
 		}
-		this.quaternion.multiply(THREE.WebAR._orientationCorrectionQuaternions[orientationIndex]);
+		this.quaternion.multiply(quaternion);
 	};
 	return camera;
 };
