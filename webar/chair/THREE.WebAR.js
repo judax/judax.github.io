@@ -276,6 +276,13 @@ THREE.WebAR._orientationCorrectionQuaternions = [
 	new THREE.Quaternion().setFromEuler(THREE.Math.degToRad(270))
 ];
 
+var s = "";
+for (var i = 0; i < THREE.WebAR._orientationCorrectionQuaternions.length; i++) {
+	var q = THREE.WebAR._orientationCorrectionQuaternions[i];
+	s += "(" + q.x + ", " + q.y + ", " + q.z + ", " + q.w + ")";
+}
+alert(s);
+
 var lastOrientationIndex = -1;
 
 /**
