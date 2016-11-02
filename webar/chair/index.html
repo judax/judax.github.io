@@ -221,6 +221,7 @@
 				// Update the perspective scene
 				// vrControls.update();
 				if (vrDisplay) {
+					cameraPersp.matrixWorldNeedsUpdate = false;
 					cameraPersp.matrixAutoUpdate = false;
 					cameraPersp.matrixWorld.elements = cameraPersp.matrix = vrDisplay.getPoseMatrix();
 				}
