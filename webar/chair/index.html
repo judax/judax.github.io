@@ -257,9 +257,9 @@
 		    window.addEventListener("click", function(event) {
 		        if (vrDisplay) {
 		        	d.set(cameraPersp.matrixWorld.elements[8], cameraPersp.matrixWorld.elements[9], cameraPersp.matrixWorld.elements[10]);
-		        	d.multiplyScalar(2);
+		        	d.multiplyScalar(-2);
 		        	if (d.x == 0 && d.y == 0 && d.z == 0) d.set(0, 0, 1);
-		        	model.position.set(model.position.x + d.x, model.position.y + d.y, model.position.z + d.z);
+		        	model.position.set(cameraPersp.matrixWorld.elements[12] + d.x, cameraPersp.matrixWorld.elements[13] + d.y, cameraPersp.matrixWorld.elements[14] + d.z);
 
 		            // var x = event.pageX / window.innerWidth;
 		            // var y = event.pageY / window.innerHeight;
