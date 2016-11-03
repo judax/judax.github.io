@@ -176,7 +176,7 @@
 				points.frustumCulled = false;
 				points.renderDepth = 0;
 				scene.add(points);
-				// vrControls = new THREE.VRControls(cameraPersp);
+				vrControls = new THREE.VRControls(cameraPersp);
 				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
 				directionalLight.position.set( 0, 1, 0);
 				scene.add( directionalLight );
@@ -219,8 +219,8 @@
 					renderer.render( sceneCamera, cameraOrtho );
 
 				// Update the perspective scene
-				// vrControls.update();
-				if (vrDisplay) {
+				vrControls.update();
+				if (vrDisplay && false) {
 					cameraPersp.matrixWorldNeedsUpdate = false;
 					cameraPersp.matrixAutoUpdate = false;
 					var poseMatrix = vrDisplay.getPoseMatrix();
