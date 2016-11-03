@@ -20465,12 +20465,6 @@
 
 			if ( camera.parent === null ) camera.updateMatrixWorld();
 
-			var s = "";
-			for (var i = 0; i < 16; i++) {
-				s += camera.matrixWorld.elements[i] + ", ";
-			}
-			console.log("camera.matrixWorld = " + s);
-
 			camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
 			_projScreenMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
