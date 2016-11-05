@@ -256,7 +256,8 @@
 
 		            if (pointAndPlane.correctValues) {
 		            	alert(pointAndPlane.point);
-			            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
+						model.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
+			            // THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
 		            }
 		            else {
 		            	alert("Could not retrieve the correct point and plane.");
