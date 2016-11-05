@@ -219,8 +219,8 @@
 					renderer.render( sceneCamera, cameraOrtho );
 
 				// Update the perspective scene
-				// vrControls.update();
-				if (vrDisplay) {
+				vrControls.update();
+				if (vrDisplay && false) {
 					cameraPersp.matrixWorldNeedsUpdate = false;
 					cameraPersp.matrixAutoUpdate = false;
 					var poseMatrix = vrDisplay.getPoseMatrix();
