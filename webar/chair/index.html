@@ -246,29 +246,20 @@
 				requestAnimationFrame( updateAndRender );
 			}
 
-			var v3 = new THREE.Vector3();
-			var matrices = [
-				new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(0)),
-				new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(90)),
-				new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(180)),
-				new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(270))
-			];
-
-			var d = new THREE.Vector3();
 		    window.addEventListener("click", function(event) {
 		        if (vrDisplay) {
 		            var x = event.pageX / window.innerWidth;
 		            var y = event.pageY / window.innerHeight;
 
-		            v3.set(x - 0.5, y - 0.5, 0);
-		            var index = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-		            v3.applyMatrix4(matrices[index]);
-		            v3.set(v3.x + 0.5, v3.y + 0.5);
-
-		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(v3.x, v3.y);
+		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(x, y);
 		            // console.log("x = " + lastX + ", y = " + lastY + ", window.innerWidth = " + window.innerWidth + ", window.innerHeight = " + window.innerHeight + ", uvx = " + x + ", uvy = " + y + ", point[0] = " + pointAndPlane.point[0] + ", point[1] = " + pointAndPlane.point[1] + ", point[2] = " + pointAndPlane.point[2] + ", plane[0] = " + pointAndPlane.plane[0] + ", plane[1] = " + pointAndPlane.plane[1] + ", plane[2] = " + pointAndPlane.plane[2] + ", plane[3] = " + pointAndPlane.plane[3]);  
 
-		            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
+		            if (pointAndPlane.correctValues) {
+			            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
+		            }
+		            else {
+		            	alert("Could not retrieve the correct point and plane.");
+		            }
 		        }
 		    });
 
