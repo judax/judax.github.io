@@ -104,7 +104,7 @@
 
 			var cameraOrtho, cameraPersp, sceneCamera, scene, renderer, cameraMesh;
 
-			var pointCloud, showPointCloud = false;
+			var pointCloud, showPointCloud = true;
 			var vrDisplay;
 			var model;
 
@@ -231,7 +231,7 @@
 					}
 					// cameraPersp.matrixWorld.elements = cameraPersp.matrix.elements = vrDisplay.getPoseMatrix();
 					console.log("cameraPersp.matrixWorld = " + s);
-					model.position.set(0, 0, 0.7);
+					model.position.set(0, 0, 2);
 				}
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
 				// cameraPersp.updateOrientation();
