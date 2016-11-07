@@ -345,6 +345,12 @@ THREE.WebAR._normalY = new THREE.Vector3();
 THREE.WebAR._normalZ = new THREE.Vector3();
 THREE.WebAR._rotationMatrix = new THREE.Matrix4();
 
+THREE.WebAR.updateVector3Orientation = function(vrDisplay, v) {
+	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
+	var quaternion = THREE.WebAR._orientationCorrectionQuaternions[orientationIndex];
+	v.applyQuaternion(quaternion);
+};
+
 /**
 * Transform a given THREE.Object3D instance to be correctly positioned and oriented according to a given VRPickingPointAndPlane and a scale (half the size of the object3d).
 * @param {VRPickingPointandPlane} pointAndPlane - The point and plane retrieved using the VRDisplay.getPickingPointAndPlaneInPointCloud function.
