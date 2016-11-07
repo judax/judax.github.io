@@ -306,6 +306,7 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	camera.updateOrientation = function() {
 		// var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
 		var orientationIndex = THREE.WebAR.getIndexFromOrientation(screen.orientation.angle);
+		alert(orientationIndex);
 		if (orientationIndex != lastOrientationIndex) {
 			alert("lastOrientationIndex = " + lastOrientationIndex + ", orientationIndex = " orientationIndex);
 			lastOrientationIndex = orientationIndex;
