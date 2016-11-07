@@ -282,9 +282,6 @@ THREE.WebAR._orientationCorrectionQuaternions = [
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(90))
 ];
 
-
-var lastOrientationIndex = -1;
-
 /**
 * A utility function to create a THREE.Camera instance with as frustum that is obtainer from the underlying vrdisplay see through camera information. This camera can be used to correctly render 3D objects on top of the underlying camera image.
 * @param {VRDisplay} vrDisplay - The VRDisplay that is capable to provide a correct VRSeeThroughCamera instance in order to obtain the camera lens information and create the correct projection matrix/frustum.
@@ -303,13 +300,11 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	else {
 		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
 	}
+	/**
+	* 
+	*/
 	camera.updateOrientation = function() {
 		var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-		// var orientationIndex = THREE.WebAR.getIndexFromOrientation(screen.orientation.angle); 
-		if (orientationIndex != lastOrientationIndex) {
-			alert("lastOrientationIndex = " + lastOrientationIndex + ", orientationIndex = " + orientationIndex);
-			lastOrientationIndex = orientationIndex;
-		}
 		var quaternion = THREE.WebAR._orientationCorrectionQuaternions[orientationIndex];
 		this.quaternion.multiply(quaternion);
 	};
