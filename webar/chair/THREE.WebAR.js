@@ -93,6 +93,7 @@ THREE.WebAR.VRPointCloud.prototype.update = function() {
 	else {
 		this._positions.needsUpdate = true;
 	}
+	console.log("pointCloud.vertexCount = " + pointCloud.vertexCount);
 };
 
 THREE.WebAR.getIndexFromOrientation = function(orientation) {
