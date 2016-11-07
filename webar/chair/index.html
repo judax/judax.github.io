@@ -167,8 +167,7 @@
 				if (!model) {
 					model = new THREE.Mesh(new THREE.BoxBufferGeometry(0.1, 0.1, 0.1), new THREE.MeshLambertMaterial( {color: 0x888888 } ));
 				}
-				// model.position.set(Infinity, Infinity, Infinity);
-				model.position.set(-0.033277, -0.095405, -0.587316);
+				model.position.set(Infinity, Infinity, Infinity);
 				scene.add(model);
 				var material = new THREE.PointsMaterial( { size: 0.01, vertexColors: THREE.VertexColors } );
 				material.depthWrite = false;
