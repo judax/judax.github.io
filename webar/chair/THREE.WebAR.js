@@ -277,8 +277,8 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 THREE.WebAR._worldIn = new THREE.Vector3(0.0, 0.0, 1.0);
 THREE.WebAR._orientationCorrectionQuaternions = [
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, 0),
-	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(270)),
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(180)),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(270)),
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(90))
 ];
 
@@ -305,7 +305,7 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	}
 	camera.updateOrientation = function() {
 		// var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-		var orientationIndex = THREE.WebAR.getIndexFromOrientation(screen.orientation.angle);
+		var orientationIndex = THREE.WebAR.getIndexFromOrientation(screen.orientation.angle); 
 		if (orientationIndex != lastOrientationIndex) {
 			alert("lastOrientationIndex = " + lastOrientationIndex + ", orientationIndex = " + orientationIndex);
 			lastOrientationIndex = orientationIndex;
