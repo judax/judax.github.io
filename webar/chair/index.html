@@ -234,8 +234,7 @@
 				}
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
 				// cameraPersp.updateOrientation();
-				if (showPointCloud)
-					pointCloud.update();
+				pointCloud.update(showPointCloud);
 
 				// Render the perspective scene
 				renderer.clearDepth();

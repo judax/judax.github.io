@@ -72,9 +72,10 @@ THREE.WebAR.VRPointCloud.prototype.getBufferGeometry = function() {
 /**
 * Update the point cloud. The THREE.BufferGeometry that this class provides will automatically be updated with the point cloud retrieved by the underlying hardware.
 */
-THREE.WebAR.VRPointCloud.prototype.update = function() {
+THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry) {
 	if (!this._vrDisplay) return;
 	var pointCloud = this._vrDisplay.getPointCloud();
+	if (!updateBufferGeometry) return;
 	if (!this._usePointCloudVerticesDirectly) {
 		if (pointCloud.vertices != null && pointCloud.vertexCount > 0) {
 			var vertexCount = Math.min(pointCloud.vertexCount, this._positions.length);
@@ -90,10 +91,9 @@ THREE.WebAR.VRPointCloud.prototype.update = function() {
 			this._positions.needsUpdate = true;
 		}
 	}
-	else {
+	else if (pointCloud.vertexCount > 0) {
 		this._positions.needsUpdate = true;
 	}
-	console.log("pointCloud.vertexCount = " + pointCloud.vertexCount);
 };
 
 THREE.WebAR.getIndexFromOrientation = function(orientation) {
