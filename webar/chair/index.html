@@ -167,7 +167,8 @@
 				if (!model) {
 					model = new THREE.Mesh(new THREE.BoxBufferGeometry(0.1, 0.1, 0.1), new THREE.MeshLambertMaterial( {color: 0x888888 } ));
 				}
-				model.position.set(Infinity, Infinity, Infinity);
+				// model.position.set(Infinity, Infinity, Infinity);
+				model.position.set(-0.033277, -0.095405, -0.587316);
 				scene.add(model);
 				var material = new THREE.PointsMaterial( { size: 0.01, vertexColors: THREE.VertexColors } );
 				material.depthWrite = false;
@@ -230,7 +231,7 @@
 						s += cameraPersp.matrixWorld.elements[i] + ", ";
 					}
 					// cameraPersp.matrixWorld.elements = cameraPersp.matrix.elements = vrDisplay.getPoseMatrix();
-					console.log("cameraPersp.matrixWorld = " + s);
+					// console.log("cameraPersp.matrixWorld = " + s);
 				}
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
 				// cameraPersp.updateOrientation();
