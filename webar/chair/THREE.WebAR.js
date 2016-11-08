@@ -275,7 +275,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 };
 
 THREE.WebAR._worldIn = new THREE.Vector3(0.0, 0.0, 1.0);
-THREE.WebAR._orientationCorrectionQuaternions = [
+THREE.WebAR._cameraOrientationCorrectionQuaternions = [
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, 0),
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(270)),
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(180)),
@@ -305,7 +305,7 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	*/
 	camera.updateOrientation = function() {
 		var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-		var quaternion = THREE.WebAR._orientationCorrectionQuaternions[orientationIndex];
+		var quaternion = THREE.WebAR._cameraOrientationCorrectionQuaternions[orientationIndex];
 		this.quaternion.multiply(quaternion);
 	};
 	return camera;
@@ -345,7 +345,7 @@ THREE.WebAR._normalY = new THREE.Vector3();
 THREE.WebAR._normalZ = new THREE.Vector3();
 THREE.WebAR._rotationMatrix = new THREE.Matrix4();
 
-THREE.WebAR._orientationCorrectionQuaternionssss = [
+THREE.WebAR._vector3OrientationCorrectionQuaternions = [
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, 0),
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(90)),
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(180)),
@@ -354,12 +354,10 @@ THREE.WebAR._orientationCorrectionQuaternionssss = [
 
 THREE.WebAR.updateVector3Orientation = function(vrDisplay, v) {
 	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-	var quaternion = THREE.WebAR._orientationCorrectionQuaternionssss[orientationIndex];
+	var quaternion = THREE.WebAR._vector3OrientationCorrectionQuaternions[orientationIndex];
 	v.x -= 0.5; v.y -= 0.5;
 	v.applyQuaternion(quaternion);
 	v.x += 0.5; v.y += 0.5;
-	// v.x = Math.abs(v.x);
-	// v.y = Math.abs(v.y);
 };
 
 /**

@@ -111,7 +111,7 @@
 			var lastX, lastY;
 			var pos = new THREE.Vector3();
 
-			var USE_CUBE_AS_MODEL = true;
+			var USE_CUBE_AS_MODEL = false;
 
 	        if (navigator.getVRDisplays) {
 	            navigator.getVRDisplays().then(function(vrDisplays) {
@@ -247,15 +247,13 @@
 
 		            THREE.WebAR.updateVector3Orientation(vrDisplay, pos);
 
-		            alert(pos.x + ", " + pos.y);
-
 		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
 		            // console.log("x = " + lastX + ", y = " + lastY + ", window.innerWidth = " + window.innerWidth + ", window.innerHeight = " + window.innerHeight + ", uvx = " + x + ", uvy = " + y + ", point[0] = " + pointAndPlane.point[0] + ", point[1] = " + pointAndPlane.point[1] + ", point[2] = " + pointAndPlane.point[2] + ", plane[0] = " + pointAndPlane.plane[0] + ", plane[1] = " + pointAndPlane.plane[1] + ", plane[2] = " + pointAndPlane.plane[2] + ", plane[3] = " + pointAndPlane.plane[3]);  
 
 		            if (pointAndPlane.correctValues) {
 		            	// alert(pointAndPlane.point);
-						model.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
-			            // THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
+						// model.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
+			            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
 		            }
 		            else {
 		            	alert("Could not retrieve the correct point and plane.");
