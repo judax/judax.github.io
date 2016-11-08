@@ -1,3 +1,5 @@
+// NOTE: All the elements marked with an underscore as a prefix are considered to be used internally (from within the code in this file) only.
+
 var THREE = THREE || require("three");
 
 /**
@@ -71,10 +73,12 @@ THREE.WebAR.VRPointCloud.prototype.getBufferGeometry = function() {
 
 /**
 * Update the point cloud. The THREE.BufferGeometry that this class provides will automatically be updated with the point cloud retrieved by the underlying hardware.
+* @param {boolean} updateBufferGeometry - A flag to indicate if the underlying THREE.BufferGeometry should also be updated. Updating the THREE.BufferGeometry is very cost innefficient so it is better to only do it if necessary (if the buffer geometry is going to be rendered for example).
 */
-THREE.WebAR.VRPointCloud.prototype.update = function() {
+THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry) {
 	if (!this._vrDisplay) return;
 	var pointCloud = this._vrDisplay.getPointCloud();
+	if (!updateBufferGeometry) return;
 	if (!this._usePointCloudVerticesDirectly) {
 		if (pointCloud.vertices != null && pointCloud.vertexCount > 0) {
 			var vertexCount = Math.min(pointCloud.vertexCount, this._positions.length);
@@ -90,11 +94,23 @@ THREE.WebAR.VRPointCloud.prototype.update = function() {
 			this._positions.needsUpdate = true;
 		}
 	}
-	else {
+	else if (pointCloud.vertexCount > 0) {
 		this._positions.needsUpdate = true;
 	}
+
+	console.log("this._positions.needsUpdate = " + this._positions.needsUpdate);
+
 };
 
+/**
+* Provides an index based on an orientation angle. The corresponding index to the angle is:
+* orientation =   0 <-> index = 0
+* orientation =  90 <-> index = 1
+* orientation = 180 <-> index = 2
+* orientation = 270 <-> index = 3
+* @param {number} orientation - The orientation angle. Values are: 0, 90, 180, 270.
+* @return {number} - An index from 0 to 3 that corresponds to the give orientation angle.
+*/
 THREE.WebAR.getIndexFromOrientation = function(orientation) {
     var index = 0;
     switch (orientation) {
@@ -114,6 +130,11 @@ THREE.WebAR.getIndexFromOrientation = function(orientation) {
     return index;
 };
 
+/**
+* Returns an index that is based on the combination between the display orientation and the see through camera orientation. This index will always be device natural orientation independent.
+* @param {VRDisplay} vrDisplay - The VRDisplay that is capable to provide a correct VRSeeThroughCamera instance.
+* @return {number} - The index from 0 to 3 that represents the combination of the device and see through camera orientations.
+*/
 THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations = function(vrDisplay) {
 	var screenOrientation = screen.orientation.angle;
 	var seeThroughCameraOrientation = vrDisplay ? vrDisplay.getSeeThroughCamera().orientation : 0;
@@ -252,21 +273,25 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 
 	var mesh = new THREE.Mesh(geometry, material);
 
-	// This function allows to use the correct texture coordinates depending on the device and camera orientation.
-	mesh.update = function() {
-		var textureCoordIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-		if (textureCoordIndex != this.geometry.WebAR_textureCoordIndex) {
-			var uvs = this.geometry.getAttribute("uv");
-			var textureCoords = this.geometry.WebAR_textureCoords[textureCoordIndex];
-			this.geometry.WebAR_textureCoordIndex = textureCoordIndex;
-			for (var i = 0; i < uvs.length; i++) {
-				uvs.array[i] = textureCoords[i];
-			}
-			uvs.needsUpdate = true;
-		}
-	};
-
 	return mesh;
+};
+
+/**
+* Updates the camera mesh texture coordinates depending on the orientation of the current screen and the see through camera.
+* @param {VRDisplay} vrDisplay - The VRDisplay that holds the VRSeeThroughCamera.
+* @param {THREE.Mesh} cameraMesh - The ThreeJS mesh that represents the camera quad that needs to be updated/rotated depending on the device and camera orientations. This instance should have been created by calling THREE.WebAR.createVRSeeThroughCameraMesh.
+*/
+THREE.WebAR.updateCameraMeshOrientation = function(vrDisplay, cameraMesh) {
+	var textureCoordIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
+	if (textureCoordIndex != cameraMesh.geometry.WebAR_textureCoordIndex) {
+		var uvs = cameraMesh.geometry.getAttribute("uv");
+		var textureCoords = cameraMesh.geometry.WebAR_textureCoords[textureCoordIndex];
+		cameraMesh.geometry.WebAR_textureCoordIndex = textureCoordIndex;
+		for (var i = 0; i < uvs.length; i++) {
+			uvs.array[i] = textureCoords[i];
+		}
+		uvs.needsUpdate = true;
+	}
 };
 
 /**
@@ -282,7 +307,7 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
         camera = new THREE.Camera();
         camera.near = near;
         camera.far = far;
-        THREE.WebAR.resizeVRSeeThroughCamera(camera, vrDisplay);
+        THREE.WebAR.resizeVRSeeThroughCamera(vrDisplay, camera);
 	}
 	else {
 		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
@@ -290,7 +315,32 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	return camera;
 };
 
-THREE.WebAR.resizeVRSeeThroughCamera = function(camera, vrDisplay) {
+THREE.WebAR._worldIn = new THREE.Vector3(0.0, 0.0, 1.0);
+
+THREE.WebAR._cameraOrientationCorrectionQuaternions = [
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, 0),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(270)),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(180)),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(90))
+];
+
+/**
+* Updates the camera rotation depending on the orientation of the current screen and the see through camera.
+* @param {VRDisplay} vrDisplay - The VRDisplay that holds the VRSeeThroughCamera.
+* @param {THREE.Camera} camera - The ThreeJS camera that needs to be updated/rotated depending on the device and camera orientations.
+*/
+THREE.WebAR.updateCameraOrientation = function(vrDisplay, camera) {
+	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
+	var quaternion = THREE.WebAR._cameraOrientationCorrectionQuaternions[orientationIndex];
+	camera.quaternion.multiply(quaternion);
+};
+
+/**
+* Recalculate a camera projection matrix depending on the current device and see through camera orientation and specification.
+* @param {VRDisplay} vrDisplay - The VRDisplay that handles the see through camera.
+* @param {THREE.Camera} camera - The ThreeJS camera instance to update its projection matrix depending on the current device orientation and see through camera properties.
+*/
+THREE.WebAR.resizeVRSeeThroughCamera = function(vrDisplay, camera) {
 	if (vrDisplay) {
 		var windowWidthBiggerThanHeight = window.innerWidth > window.innerHeight;
 		var seeThroughCamera = vrDisplay.getSeeThroughCamera();
@@ -323,6 +373,26 @@ THREE.WebAR._worldUp = new THREE.Vector3(0.0, 1.0, 0.0);
 THREE.WebAR._normalY = new THREE.Vector3();
 THREE.WebAR._normalZ = new THREE.Vector3();
 THREE.WebAR._rotationMatrix = new THREE.Matrix4();
+
+THREE.WebAR._vector3OrientationCorrectionQuaternions = [
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, 0),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(90)),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(180)),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(270))
+];
+
+/**
+* Updates a vector 3D by rotating it depending on the orientation of the current screen and the see through camera. This method can be used to correctly rotate the touch X, Y position when picking. This method assumes that the vector only holds a 2D position (X, Y) that is also normalized (values from 0 to 1) as it rotates around the center (0.5).
+* @param {VRDisplay} vrDisplay - The VRDisplay that holds the VRSeeThroughCamera.
+* @param {THREE.Vector3} v - The ThreeJS vector3 that holds a normalized 2D position, supposedly the X, Y normalized position of a touch point for picking purposes.
+*/
+THREE.WebAR.updateVector3Orientation = function(vrDisplay, v) {
+	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
+	var quaternion = THREE.WebAR._vector3OrientationCorrectionQuaternions[orientationIndex];
+	v.x -= 0.5; v.y -= 0.5;
+	v.applyQuaternion(quaternion);
+	v.x += 0.5; v.y += 0.5;
+};
 
 /**
 * Transform a given THREE.Object3D instance to be correctly positioned and oriented according to a given VRPickingPointAndPlane and a scale (half the size of the object3d).
