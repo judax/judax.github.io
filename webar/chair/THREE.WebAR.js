@@ -303,7 +303,7 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
         camera = new THREE.Camera();
         camera.near = near;
         camera.far = far;
-        THREE.WebAR.resizeVRSeeThroughCamera(camera, vrDisplay);
+        THREE.WebAR.resizeVRSeeThroughCamera(vrDisplay, camera);
 	}
 	else {
 		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
