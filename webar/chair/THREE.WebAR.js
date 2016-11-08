@@ -1,3 +1,5 @@
+// NOTE: All the elements marked with an underscore as a prefix are considered to be used internally (from within the code in this file) only.
+
 var THREE = THREE || require("three");
 
 /**
@@ -129,6 +131,9 @@ THREE.WebAR.getIndexFromOrientation = function(orientation) {
 };
 
 /**
+* Returns an index that is based on the combination between the display orientation and the see through camera orientation. This index will always be device natural orientation independent.
+* @param {VRDisplay} vrDisplay - The VRDisplay that is capable to provide a correct VRSeeThroughCamera instance.
+* @return {number} - The index from 0 to 3 that represents the combination of the device and see through camera orientations.
 */
 THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations = function(vrDisplay) {
 	var screenOrientation = screen.orientation.angle;
@@ -316,7 +321,9 @@ THREE.WebAR._cameraOrientationCorrectionQuaternions = [
 ];
 
 /**
-* 
+* Updates the camera rotation depending on the orientation of the current screen and the see through camera.
+* @param {VRDisplay} vrDisplay - The VRDisplay that holds the VRSeeThroughCamera.
+* @param {THREE.Camera} camera - The ThreeJS camera that needs to be updated/rotated depending on the device and camera orientations.
 */
 THREE.WebAR.updateCameraOrientation = function(vrDisplay, camera) {
 	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
@@ -325,9 +332,11 @@ THREE.WebAR.updateCameraOrientation = function(vrDisplay, camera) {
 };
 
 /**
-*
+* Recalculate a camera projection matrix depending on the current device and see through camera orientation and specification.
+* @param {VRDisplay} vrDisplay - The VRDisplay that handles the see through camera.
+* @param {THREE.Camera} camera - The ThreeJS camera instance to update its projection matrix depending on the current device orientation and see through camera properties.
 */
-THREE.WebAR.resizeVRSeeThroughCamera = function(camera, vrDisplay) {
+THREE.WebAR.resizeVRSeeThroughCamera = function(vrDisplay, camera) {
 	if (vrDisplay) {
 		var windowWidthBiggerThanHeight = window.innerWidth > window.innerHeight;
 		var seeThroughCamera = vrDisplay.getSeeThroughCamera();
@@ -369,7 +378,9 @@ THREE.WebAR._vector3OrientationCorrectionQuaternions = [
 ];
 
 /**
-*
+* Updates a vector 3D by rotating it depending on the orientation of the current screen and the see through camera. This method can be used to correctly rotate the touch X, Y position when picking. This method assumes that the vector only holds a 2D position (X, Y) that is also normalized (values from 0 to 1) as it rotates around the center (0.5).
+* @param {VRDisplay} vrDisplay - The VRDisplay that holds the VRSeeThroughCamera.
+* @param {THREE.Vector3} v - The ThreeJS vector3 that holds a normalized 2D position, supposedly the X, Y normalized position of a touch point for picking purposes.
 */
 THREE.WebAR.updateVector3Orientation = function(vrDisplay, v) {
 	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
