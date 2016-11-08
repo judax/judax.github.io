@@ -345,9 +345,16 @@ THREE.WebAR._normalY = new THREE.Vector3();
 THREE.WebAR._normalZ = new THREE.Vector3();
 THREE.WebAR._rotationMatrix = new THREE.Matrix4();
 
+THREE.WebAR._orientationCorrectionQuaternionssss = [
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, 0),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(90)),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(180)),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(270))
+];
+
 THREE.WebAR.updateVector3Orientation = function(vrDisplay, v) {
 	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-	var quaternion = THREE.WebAR._orientationCorrectionQuaternions[orientationIndex];
+	var quaternion = THREE.WebAR._orientationCorrectionQuaternionssss[orientationIndex];
 	v.x -= 0.5; v.y -= 0.5;
 	v.applyQuaternion(quaternion);
 	v.x += 0.5; v.y += 0.5;
