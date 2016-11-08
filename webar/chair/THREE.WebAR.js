@@ -100,6 +100,15 @@ THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry) {
 
 };
 
+/**
+* Provides an index based on an orientation angle. The corresponding index to the angle is:
+* orientation =   0 <-> index = 0
+* orientation =  90 <-> index = 1
+* orientation = 180 <-> index = 2
+* orientation = 270 <-> index = 3
+* @param {number} orientation - The orientation angle. Values are: 0, 90, 180, 270.
+* @return {number} - An index from 0 to 3 that corresponds to the give orientation angle.
+*/
 THREE.WebAR.getIndexFromOrientation = function(orientation) {
     var index = 0;
     switch (orientation) {
@@ -119,6 +128,8 @@ THREE.WebAR.getIndexFromOrientation = function(orientation) {
     return index;
 };
 
+/**
+*/
 THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations = function(vrDisplay) {
 	var screenOrientation = screen.orientation.angle;
 	var seeThroughCameraOrientation = vrDisplay ? vrDisplay.getSeeThroughCamera().orientation : 0;
@@ -274,14 +285,6 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 	return mesh;
 };
 
-THREE.WebAR._worldIn = new THREE.Vector3(0.0, 0.0, 1.0);
-THREE.WebAR._cameraOrientationCorrectionQuaternions = [
-	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, 0),
-	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(270)),
-	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(180)),
-	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(90))
-];
-
 /**
 * A utility function to create a THREE.Camera instance with as frustum that is obtainer from the underlying vrdisplay see through camera information. This camera can be used to correctly render 3D objects on top of the underlying camera image.
 * @param {VRDisplay} vrDisplay - The VRDisplay that is capable to provide a correct VRSeeThroughCamera instance in order to obtain the camera lens information and create the correct projection matrix/frustum.
@@ -300,17 +303,30 @@ THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
 	else {
 		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
 	}
-	/**
-	* 
-	*/
-	camera.updateOrientation = function() {
-		var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-		var quaternion = THREE.WebAR._cameraOrientationCorrectionQuaternions[orientationIndex];
-		this.quaternion.multiply(quaternion);
-	};
 	return camera;
 };
 
+THREE.WebAR._worldIn = new THREE.Vector3(0.0, 0.0, 1.0);
+
+THREE.WebAR._cameraOrientationCorrectionQuaternions = [
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, 0),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(270)),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(180)),
+	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(90))
+];
+
+/**
+* 
+*/
+THREE.WebAR.updateCameraOrientation = function(vrDisplay, camera) {
+	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
+	var quaternion = THREE.WebAR._cameraOrientationCorrectionQuaternions[orientationIndex];
+	camera.quaternion.multiply(quaternion);
+};
+
+/**
+*
+*/
 THREE.WebAR.resizeVRSeeThroughCamera = function(camera, vrDisplay) {
 	if (vrDisplay) {
 		var windowWidthBiggerThanHeight = window.innerWidth > window.innerHeight;
@@ -352,6 +368,9 @@ THREE.WebAR._vector3OrientationCorrectionQuaternions = [
 	new THREE.Quaternion().setFromAxisAngle(THREE.WebAR._worldIn, THREE.Math.degToRad(270))
 ];
 
+/**
+*
+*/
 THREE.WebAR.updateVector3Orientation = function(vrDisplay, v) {
 	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
 	var quaternion = THREE.WebAR._vector3OrientationCorrectionQuaternions[orientationIndex];
