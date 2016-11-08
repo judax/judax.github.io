@@ -273,21 +273,25 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay) {
 
 	var mesh = new THREE.Mesh(geometry, material);
 
-	// This function allows to use the correct texture coordinates depending on the device and camera orientation.
-	mesh.updateOrientation = function() {
-		var textureCoordIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-		if (textureCoordIndex != this.geometry.WebAR_textureCoordIndex) {
-			var uvs = this.geometry.getAttribute("uv");
-			var textureCoords = this.geometry.WebAR_textureCoords[textureCoordIndex];
-			this.geometry.WebAR_textureCoordIndex = textureCoordIndex;
-			for (var i = 0; i < uvs.length; i++) {
-				uvs.array[i] = textureCoords[i];
-			}
-			uvs.needsUpdate = true;
-		}
-	};
-
 	return mesh;
+};
+
+/**
+* Updates the camera mesh texture coordinates depending on the orientation of the current screen and the see through camera.
+* @param {VRDisplay} vrDisplay - The VRDisplay that holds the VRSeeThroughCamera.
+* @param {THREE.Mesh} cameraMesh - The ThreeJS mesh that represents the camera quad that needs to be updated/rotated depending on the device and camera orientations. This instance should have been created by calling THREE.WebAR.createVRSeeThroughCameraMesh.
+*/
+THREE.WebAR.updateCameraMeshOrientation = function(vrDisplay, cameraMesh) {
+	var textureCoordIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
+	if (textureCoordIndex != cameraMesh.geometry.WebAR_textureCoordIndex) {
+		var uvs = cameraMesh.geometry.getAttribute("uv");
+		var textureCoords = cameraMesh.geometry.WebAR_textureCoords[textureCoordIndex];
+		cameraMesh.geometry.WebAR_textureCoordIndex = textureCoordIndex;
+		for (var i = 0; i < uvs.length; i++) {
+			uvs.array[i] = textureCoords[i];
+		}
+		uvs.needsUpdate = true;
+	}
 };
 
 /**

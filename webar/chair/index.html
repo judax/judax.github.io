@@ -211,8 +211,8 @@
 				stats.update();
 
 				// Update the see through camera scene
-				// IMPORTANT: This call makes sure that the camera mesh (quad) uses the correct texture coordinates depending on the camera and devide orientations.
-				cameraMesh.updateOrientation();
+				// IMPORTANT: This call makes sure that the camera mesh (quad) uses the correct texture coordinates depending on the camera and device orientations.
+				THREE.WebAR.updateCameraMeshOrientation(cameraMesh);
 
 				// Render the see through camera scene
 				renderer.clear();
