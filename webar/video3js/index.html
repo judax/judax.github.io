@@ -63,8 +63,9 @@
 
 			var cameraOrtho, sceneCamera, renderer, cameraMesh;
 
-			var pointCloud;
 			var vrDisplay;
+
+			var callGetPose = false;
 
 	        if (navigator.getVRDisplays) {
 	            navigator.getVRDisplays().then(function(vrDisplays) {
@@ -73,7 +74,8 @@
 	                        vrDisplay = vrDisplays[i];
 	                        if (vrDisplay.displayName === "Tango VR Device") {
 								init(vrDisplay);
-								updateAndRender();									
+								updateAndRender();	
+								break;								
 	                        }
 	                    }
 	                }
@@ -105,21 +107,28 @@
 				container.appendChild( stats.dom );
 
 				window.addEventListener( 'resize', onWindowResize, false );
+
+				window.addEventListener( 'click', onClick, false );
 			}
 
 			function onWindowResize() {
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
 
-			//
+			function onClick() {
+				callGetPose = !callGetPose;
+				alert("Calling getPose " + (callGetPose ? "enabled" : "disabled"));
+			}
+
 			function updateAndRender() {
 
 				stats.update();
 
-				// vrDisplay.getPose();
+				if (callGetPose)
+					vrDisplay.getPose();
 
 				// Required so the correct UVs are used at all times (changes happen when there is an orientation change or window resize)
-				// THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
+				THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
 
 				// Render the see through camera scene
 				renderer.clear();
