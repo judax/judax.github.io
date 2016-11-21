@@ -136,9 +136,6 @@ THREE.WebAR.getIndexFromOrientation = function(orientation) {
 * @return {number} - The index from 0 to 3 that represents the combination of the device and see through camera orientations.
 */
 THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations = function(vrDisplay) {
-	
-	alert(vrDisplay);
-
 	var screenOrientation = screen.orientation.angle;
 	var seeThroughCameraOrientation = vrDisplay ? vrDisplay.getSeeThroughCamera().orientation : 0;
     var seeThroughCameraOrientationIndex = THREE.WebAR.getIndexFromOrientation(seeThroughCameraOrientation);
