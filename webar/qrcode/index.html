@@ -188,6 +188,8 @@
 
 				pointCloud.update(false);
 
+				qrcodeMesh.rotation.set(qrcodeMesh.rotation.x + 0.01, 0, 0);
+
 				// Render the perspective scene
 				renderer.clearDepth();
 				renderer.render( scene, cameraPersp );
