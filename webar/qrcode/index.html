@@ -134,7 +134,7 @@
 				alert(qrcodeImage.width);
 				var qrcodeTexture = new THREE.Texture(qrcodeImage);
 				qrcodeTexture.image = qrcodeImage;
-				qrcodeImage.addEventListener(function() {
+				qrcodeImage.addEventListener("load", function() {
 					qrcodeTexture.needsUpdate = true;
 				});
 				var qrcodeMaterial = new THREE.MeshStandardMaterial( {
