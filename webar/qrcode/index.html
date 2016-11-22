@@ -131,7 +131,6 @@
 					height : 512
 				});
 				var qrcodeImage = document.querySelector("div#qrcode img");
-				alert(qrcodeImage.width);
 				var qrcodeTexture = new THREE.Texture(qrcodeImage);
 				qrcodeTexture.image = qrcodeImage;
 				qrcodeImage.addEventListener("load", function() {
