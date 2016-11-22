@@ -123,7 +123,7 @@
 				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
 				pointCloud = new THREE.WebAR.VRPointCloud(vrDisplay, true);
 				vrControls = new THREE.VRControls(cameraPersp);
-				var ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
+				var ambientLight = new THREE.AmbientLight( 0xffffff );
 				scene.add( ambientLight );
 				var qrcode = new QRCode(document.getElementById("qrcode"), {
 					text: location.href,
@@ -131,11 +131,16 @@
 					height : 100
 				});
 				var qrcodeImage = document.querySelector("div#qrcode img");
+				alert(qrcodeImage.width);
 				var qrcodeTexture = new THREE.Texture(qrcodeImage);
+				qrcodeTexture.image = qrcodeImage;
+				qrcodeImage.addEventListener(function() {
+					qrcodeTexture.needsUpdate = true;
+				});
 				var qrcodeMaterial = new THREE.MeshStandardMaterial( {
 					color: 0xffffff, 
-					map: qrcodeTexture,
-					opacity: 0.4
+					map: qrcodeTexture
+					// opacity: 0.4
 				});
 				var qrcodeGeometry = new THREE.PlaneBufferGeometry( 1, 1 );
 				qrcodeMesh = new THREE.Mesh( qrcodeGeometry, qrcodeMaterial );
