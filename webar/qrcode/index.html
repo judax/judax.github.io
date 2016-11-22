@@ -139,7 +139,7 @@
 				var qrcodeMaterial = new THREE.MeshLambertMaterial( {
 					map: qrcodeTexture,
 					color: 0xFFFFFF,
-					alphaMap: qrcodeTexture,
+					transparent: true,
 					opacity: 0.4
 				});
 				var qrcodeGeometry = new THREE.PlaneBufferGeometry( 1, 1 );
