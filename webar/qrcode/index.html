@@ -138,9 +138,7 @@
 					qrcodeTexture.needsUpdate = true;
 				});
 				var qrcodeMaterial = new THREE.MeshStandardMaterial( {
-					color: 0xffffff, 
 					map: qrcodeTexture
-					// opacity: 0.4
 				});
 				var qrcodeGeometry = new THREE.PlaneBufferGeometry( 1, 1 );
 				qrcodeMesh = new THREE.Mesh( qrcodeGeometry, qrcodeMaterial );
