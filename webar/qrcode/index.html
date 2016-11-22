@@ -189,8 +189,12 @@
 				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
 
 				pointCloud.update(false);
-
-				qrcodeMesh.rotation.set(qrcodeMesh.rotation.x + 0.01, 0, 0);
+				if (vrDisplay) {
+		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(0.5, 0.5);
+		            if (pointAndPlane.correctValues) {
+			            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, qrcodeMesh, 0.0);
+		            }
+		        }
 
 				// Render the perspective scene
 				renderer.clearDepth();
@@ -198,27 +202,6 @@
 
 				requestAnimationFrame( updateAndRender );
 			}
-
-		    window.addEventListener("click", function(event) {
-		        if (vrDisplay) {
-		            pos.x = event.pageX / window.innerWidth;
-		            pos.y = event.pageY / window.innerHeight;
-
-		            THREE.WebAR.updateVector3Orientation(vrDisplay, pos);
-
-		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
-		            // console.log("x = " + lastX + ", y = " + lastY + ", window.innerWidth = " + window.innerWidth + ", window.innerHeight = " + window.innerHeight + ", uvx = " + x + ", uvy = " + y + ", point[0] = " + pointAndPlane.point[0] + ", point[1] = " + pointAndPlane.point[1] + ", point[2] = " + pointAndPlane.point[2] + ", plane[0] = " + pointAndPlane.plane[0] + ", plane[1] = " + pointAndPlane.plane[1] + ", plane[2] = " + pointAndPlane.plane[2] + ", plane[3] = " + pointAndPlane.plane[3]);  
-
-		            if (pointAndPlane.correctValues) {
-		            	// alert(pointAndPlane.point);
-						// model.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
-			            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
-		            }
-		            else {
-		            	alert("Could not retrieve the correct point and plane.");
-		            }
-		        }
-		    });
 
 		</script>
 	</body>
