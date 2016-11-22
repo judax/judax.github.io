@@ -101,9 +101,8 @@
 				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
 				pointCloud = new THREE.WebAR.VRPointCloud(vrDisplay, true);
 				vrControls = new THREE.VRControls(cameraPersp);
-				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-				directionalLight.position.set( 0, 1, 0);
-				scene.add( directionalLight );
+				var ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
+				scene.add( ambientLight );
 				var qrcode = new QRCode(document.getElementById("qrcode"), {
 					text: location.href,
 					width : 100,
