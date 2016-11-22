@@ -137,11 +137,12 @@
 					qrcodeTexture.needsUpdate = true;
 				});
 				var qrcodeMaterial = new THREE.MeshStandardMaterial( {
-					map: qrcodeTexture
+					map: qrcodeTexture,
+					color: 0xFFFFFF
 				});
 				var qrcodeGeometry = new THREE.PlaneBufferGeometry( 1, 1 );
 				qrcodeMesh = new THREE.Mesh( qrcodeGeometry, qrcodeMaterial );
-				qrcodeMesh.position.set(0, 0, -3);
+				qrcodeMesh.position.set(0, 0, -1);
 				scene.add( qrcodeMesh );
 
 				// Create the renderer
