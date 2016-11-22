@@ -28,8 +28,7 @@
 
 <header>
     
-        <h2>
-            <span class="ancestors"><a href="THREE.html">THREE</a>.</span>WebAR</h2>
+        <h2>WebAR</h2>
         
     
 </header>
@@ -74,7 +73,7 @@ NOTE: As a coding standard all the variables/functions starting with an undersco
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line7">line 7</a>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -263,7 +262,7 @@ NOTE: As a coding standard all the variables/functions starting with an undersco
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line294">line 294</a>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line304">line 304</a>
     </li></ul></dd>
     
 
@@ -416,7 +415,7 @@ NOTE: As a coding standard all the variables/functions starting with an undersco
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line108">line 108</a>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line155">line 155</a>
     </li></ul></dd>
     
 
@@ -455,6 +454,316 @@ NOTE: As a coding standard all the variables/functions starting with an undersco
     <dd>
         
 <span class="param-type">THREE.Mesh</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getIndexFromOrientation"><span class="type-signature">(static) </span>getIndexFromOrientation<span class="signature">(orientation)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Provides an index based on an orientation angle. The corresponding index to the angle is:
+orientation =   0 <-> index = 0
+orientation =  90 <-> index = 1
+orientation = 180 <-> index = 2
+orientation = 270 <-> index = 3
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The orientation angle. Values are: 0, 90, 180, 270.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line114">line 114</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - An index from 0 to 3 that corresponds to the give orientation angle.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getIndexFromScreenAndSeeThroughCameraOrientations"><span class="type-signature">(static) </span>getIndexFromScreenAndSeeThroughCameraOrientations<span class="signature">(vrDisplay)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Returns an index that is based on the combination between the display orientation and the see through camera orientation. This index will always be device natural orientation independent.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vrDisplay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="VRDisplay.html">VRDisplay</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The VRDisplay that is capable to provide a correct VRSeeThroughCamera instance.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line138">line 138</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - The index from 0 to 3 that represents the combination of the device and see through camera orientations.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
 
 
     </dd>
@@ -615,7 +924,623 @@ NOTE: As a coding standard all the variables/functions starting with an undersco
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line403">line 403</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".resizeVRSeeThroughCamera"><span class="type-signature">(static) </span>resizeVRSeeThroughCamera<span class="signature">(vrDisplay, camera)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Recalculate a camera projection matrix depending on the current device and see through camera orientation and specification.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vrDisplay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="VRDisplay.html">VRDisplay</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The VRDisplay that handles the see through camera.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>camera</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Camera</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The ThreeJS camera instance to update its projection matrix depending on the current device orientation and see through camera properties.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line343">line 343</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".updateCameraMeshOrientation"><span class="type-signature">(static) </span>updateCameraMeshOrientation<span class="signature">(vrDisplay, cameraMesh)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Updates the camera mesh texture coordinates depending on the orientation of the current screen and the see through camera.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vrDisplay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="VRDisplay.html">VRDisplay</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The VRDisplay that holds the VRSeeThroughCamera.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cameraMesh</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Mesh</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The ThreeJS mesh that represents the camera quad that needs to be updated/rotated depending on the device and camera orientations. This instance should have been created by calling THREE.WebAR.createVRSeeThroughCameraMesh.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line284">line 284</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".updateCameraOrientation"><span class="type-signature">(static) </span>updateCameraOrientation<span class="signature">(vrDisplay, camera)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Updates the camera rotation depending on the orientation of the current screen and the see through camera.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vrDisplay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="VRDisplay.html">VRDisplay</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The VRDisplay that holds the VRSeeThroughCamera.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>camera</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Camera</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The ThreeJS camera that needs to be updated/rotated depending on the device and camera orientations.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
         <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line332">line 332</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".updateVector3Orientation"><span class="type-signature">(static) </span>updateVector3Orientation<span class="signature">(vrDisplay, v)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Updates a vector 3D by rotating it depending on the orientation of the current screen and the see through camera. This method can be used to correctly rotate the touch X, Y position when picking. This method assumes that the vector only holds a 2D position (X, Y) that is also normalized (values from 0 to 1) as it rotates around the center (0.5).
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vrDisplay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="VRDisplay.html">VRDisplay</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The VRDisplay that holds the VRSeeThroughCamera.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Vector3</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The ThreeJS vector3 that holds a normalized 2D position, supposedly the X, Y normalized position of a touch point for picking purposes.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line389">line 389</a>
     </li></ul></dd>
     
 
@@ -657,13 +1582,13 @@ NOTE: As a coding standard all the variables/functions starting with an undersco
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="THREE.WebAR.VRPointCloud.html">VRPointCloud</a></li><li><a href="VRDisplay.html">VRDisplay</a></li><li><a href="VRDisplayCapabilities.html">VRDisplayCapabilities</a></li><li><a href="VRPickingPointAndPlane.html">VRPickingPointAndPlane</a></li><li><a href="VRPointCloud.html">VRPointCloud</a></li><li><a href="VRSeeThroughCamera.html">VRSeeThroughCamera</a></li></ul><h3>Namespaces</h3><ul><li><a href="THREE.html">THREE</a></li><li><a href="THREE.WebAR.html">WebAR</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="THREE.WebAR.VRPointCloud.html">VRPointCloud</a></li><li><a href="VRDisplay.html">VRDisplay</a></li><li><a href="VRDisplayCapabilities.html">VRDisplayCapabilities</a></li><li><a href="VRPickingPointAndPlane.html">VRPickingPointAndPlane</a></li><li><a href="VRPointCloud.html">VRPointCloud</a></li><li><a href="VRSeeThroughCamera.html">VRSeeThroughCamera</a></li></ul><h3>Namespaces</h3><ul><li><a href="THREE.WebAR.html">WebAR</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Wed Oct 26 2016 02:00:16 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Mon Nov 21 2016 17:15:27 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>

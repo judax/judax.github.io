@@ -43,23 +43,23 @@
 
 
     <section>
-        <article><h1>INTRODUCTION</h1><p>This repository includes modifications on Chromium that allows to add Tango/AR capabilities into JavaScript. Chromium is a complex project with gigabytes of source code, resources and third party libraries. This repository does not include all Chromium but just the files necessary to make the changes to it. This documentation is divided in 2 sections: </p>
+        <article><h1>Overview</h1><p>This repository includes modifications on Chromium that allows to add Tango/AR capabilities into JavaScript. Chromium is a complex project with gigabytes of source code, resources and third party libraries. This repository does not include all Chromium but just the files necessary to make the changes to it in order to enable WebAR. This documentation is divided in 2 sections: </p>
 <ol>
-<li>How to build your own version of Chromium and </li>
+<li>How to build your own version of Chromium with WebAR and </li>
 <li>Using the new VR/AR JavaScript APIs. This way, anyone that wants to build and modify his/her own version of chromium, will be able to do it and those who just want to install a prebuilt version of Chromium and start using it right away.</li>
 </ol>
-<h2>THE FOLDER STRUCTURE</h2><p><code>/android_webview</code>: The modifications to the android webview Chromium project to be able to load the tango handling dynamic library, store the URLs for future executions, etc. This folder, internally, contains the tango handling library and all the build files needed. </p>
+<h2>The folder structure</h2><p><code>/android_webview</code>: The modifications to the android webview Chromium project to be able to load the tango handling dynamic library, store the URLs for future executions, etc. This folder, internally, contains the tango handling library and all the build files needed. </p>
 <p><code>/device</code>: The modifications to the vr device files to add both the tango_vr_device class and the modifications to the vr service to be able to expose some specific data related to AR (point cloud, see through camera data, etc.).</p>
 <p><code>/examples</code>: A set of some basic examples based on straight WebGL or (mostly) using the ThreeJS framework.</p>
-<p><code>/third_party</code>: Both the inclusion of the tango third party libraries (and the tango handling library) and the WebKit vr and webgl IDL classes modifications to be able to expose all the functionalities.</p>
-<h2>BUILD YOUR OWN VERSION OF CHROMIUM</h2><p>Building the modified version of Chromium, is a 3 steps process: </p>
+<p><code>/gpu</code>: All the modifications in the command buffer to be able to use the external texture extension and make the right call to Tango implementation when the texImage2D is called using the VRSeeThroughCamera instance.</p>
+<p><code>/third_party</code>: Both the inclusion of the tango third party libraries (and the tango handling library) and the WebKit vr and webgl IDL classes modifications to be able to expose all the functionalities. ZXing is also added to be able to add the QRCode reading functionality to the WebView APK.</p>
+<h2>Build your own version of Chromium with WebAR</h2><p>Building the modified version of Chromium, is a 3 steps process: </p>
 <ol>
-<li>Clone the chromium project and prepare it to be built, </li>
-<li>Copy the chnages in this repository to the Chromium repository, </li>
+<li>Clone he chromium project and prepare it to be built, </li>
+<li>Copy the changes in this repository to the Chromium repository, </li>
 <li>Build, install and run.</li>
 </ol>
-<h3>Clone the Chromium project and prepare it to be built</h3><hr>
-<p>Chromium cloning/building instruction are available online. </p>
+<h3>1 and 2: Clone the Chromium project (copying the changes in this repository) and prepare it to be built</h3><p>Chromium cloning/building instruction are available online. </p>
 <p><a href="https://www.chromium.org/developers/how-tos/android-build-instructions">https://www.chromium.org/developers/how-tos/android-build-instructions</a></p>
 <p>Anyway, in order to help with the process, we recommend you follow these steps. Remember, Tango is an Android platform for the moment so in order to be able to use the modifications present in this project, you need to compile Chromium for Android. The only way to do this is using a Linux machine. Unfortunately, this document does not include instructions on how to setup a linux machine. Let's assume that the machine is installed along with:</p>
 <ul>
@@ -86,8 +86,7 @@
 <li>Create a folder for the final product compilation:
  ~/chromium/src$ mkdir -p out/webar_54.0.2796.3</li>
 <li><p>Edit the a new file <code>out/webar_54.0.2796.3/args.gn</code> file
- ~/chromium/src$ gedit out/webar_54.0.2796.3/args.gn
- Copy and paste this content:</p>
+ <code>~/chromium/src$ gedit out/webar_54.0.2796.3/args.gn</code> and copy and paste this content in it:</p>
 <pre class="prettyprint source"><code>target_os = &quot;android&quot;
 target_cpu = &quot;arm&quot;  # (default)
 is_debug = true  # (default)
@@ -97,7 +96,7 @@ is_component_build = true
 is_clang = true
 symbol_level = 1  # Faster build with fewer symbols. -g1 rather than -g2
 enable_incremental_javac = true  # Much faster; experimental</code></pre></li>
-<li>Copy and paste all the content from this folder into the chromium/src folder. Override every possible conflict that may arise if you use the file explorer.
+<li>Copy and paste all the content from the current folder of WebAR into the chromium/src folder. Override every possible conflict that may arise if you use the file explorer. Otherwise, you can use the following command line
  <code>cp -r PATH_TO_THIS_FOLDER/* ~/chromium/src</code></li>
 <li><code>~/chromium/src$ gn args out/webar_54.0.2796.3</code>
 <strong>NOTE</strong>: just exit &quot;q!&quot; in vi when it opens and shows args.gn (modified in the previous step using a proper editor ;))</li>
@@ -111,14 +110,94 @@ sudo update-alternatives --config jarsigner</code></pre></li>
 <li><code>~/chromium/src$ gclient sync</code></li>
 <li><code>~/chromium/src$ . build/android/envsetup.sh</code></li>
 </ol>
-<h3>Build the project</h3><p><strong>IMPORTANT:</strong> some changes have been done to the Chromium command buffer. These changes may require to rebuild the command buffer. The Python script to do so does not execute along with the regular building process so if further changes are done to the command buffer, this script needs to be executed with the following command:</p>
+<h3>3: Build, install and run</h3><p><strong>IMPORTANT:</strong> some changes have been done to the Chromium command buffer. These changes may require to rebuild the command buffer. The Python script to do so does not execute along with the regular building process so if further changes are done to the command buffer, this script needs to be executed with the following command:</p>
 <pre class="prettyprint source"><code>~/chromium/src/python gpu/command_buffer/build_gles2_cmd_buffer.py</code></pre><p>The out folder that has been created has the same name as the branch. This is no coincidence, as the <code>build_install_run.sh</code> shell script provided along with this documentation allows to build the Chromium project depending on the current git branch name that is currently checked out. This script not only compiles Chromium but also the Tango use native library called tango_chromium. This script, apart of building the project it installs it and runs it, so it is convenient that you connect the Tango device via USB. The built project is the Chromium WebView project.</p>
-<pre class="prettyprint source"><code>~/chromium/src/build_install_run.sh</code></pre><h2>USING THE NEW VR/AR JAVASCRIPT APIs</h2><h3>Build the documentation</h3><p>In order to build the documentation you are currently reading, there are some steps that need to be followed:</p>
+<pre class="prettyprint source"><code>~/chromium/src/build_install_run.sh</code></pre><h3>Resolving some possible Chromium WebView crashes on some Android versions</h3><p>Chromium webview seems to crash pretty consistently on some Android versions (5 and 6) on some internal checks/asserts related to both audio and touch handling. This is a list of some possible points in the chromium source code where these crashes may occur. It is recommended that some testing is performed before introducing these changes. The good thing with asserts/checks is that they show the specific line of code where the crash is happening so a simple review of the logcat when the crash happens should poing to the specific line of code and file where the assert is failing.</p>
+<p><strong>NOTE</strong>: It is recommended that the changes are well documented (for example introducing a //WebAR BEGIN..//WebAR END block to correctly mark each change). Remember, these changes should not be needed but for some reason the Chromium WebView is showing these errors.</p>
+<ul>
+<li><p><code>ui/events/android/motion_event_android.cc</code></p>
+<p>  Line 221:</p>
+<pre class="prettyprint source"><code>  // DCHECK_LT(pointer_index, cached_pointer_count_);</code></pre><p>  Line 231:</p>
+<pre class="prettyprint source"><code>  // DCHECK_LT(pointer_index, cached_pointer_count_);</code></pre></li>
+<li><p><code>third_party/WebKit/Source/core/layout/LayoutBlockFlow.cpp</code></p>
+<p>  Line 3351:</p>
+<pre class="prettyprint source"><code>  // ASSERT(!floatBox.hasSelfPaintingLayer());</code></pre></li>
+<li><p><code>third_party/WebKit/Source/modules/webaudio/DeferredTaskHandler.cpp</code></p>
+<p>  Line 313:</p>
+<pre class="prettyprint source"><code>  // ASSERT(!isMainThread());</code></pre><p>  Line 37:</p>
+<pre class="prettyprint source"><code>  // ASSERT(!isAudioThread());</code></pre></li>
+<li><p><code>media/blink/multibuffer_data_source.cc</code></p>
+<p>   Line 442:   </p>
+<pre class="prettyprint source"><code>  // DCHECK(render_task_runner_->BelongsToCurrentThread());
+  // DCHECK(reader_.get());</code></pre></li>
+<li><p><code>third_party/WebKit/Source/modules/webaudio/AudioListener.cpp</code></p>
+<p>  Line 207:</p>
+<pre class="prettyprint source"><code>  // DCHECK(!isMainThread());</code></pre></li>
+<li><p><code>third_party/WebKit/Source/modules/webaudio/BaseAudioContext.cpp</code></p>
+<p>  Line 221:</p>
+<pre class="prettyprint source"><code>  // DCHECK(!isAudioThread());</code></pre></li>
+<li><p><code>content/browser/renderer_host/render_widget_host_impl.cc</code></p>
+<p>  Line 1008:</p>
+<pre class="prettyprint source"><code>  // DCHECK(*is_in_gesture_scroll ||
+  //        (gesture_event.type == blink::WebInputEvent::GestureFlingStart &&
+  //         gesture_event.sourceDevice ==
+  //             blink::WebGestureDevice::WebGestureDeviceTouchpad));</code></pre></li>
+<li><p><code>content/common/input/input_event_stream_validator.cc</code></p>
+<p>  Line 31:</p>
+<pre class="prettyprint source"><code>  // DCHECK(ValidateImpl(event, &error_msg_))
+  //     &lt;&lt; error_msg_
+  //     &lt;&lt; &quot;\nInvalid Event: &quot; &lt;&lt; WebInputEventTraits::ToString(event);</code></pre></li>
+<li><p><code>third_party/WebKit/Source/core/input/EventHandler.cpp</code></p>
+<p>  Line 1406/1968/1993:</p>
+<pre class="prettyprint source"><code>  // ASSERT(result.isRectBasedTest());</code></pre></li>
+<li><p><code>android_webview/browser/browser_view_renderer.cc</code></p>
+<p>  Line 574:</p>
+<pre class="prettyprint source"><code>  // DCHECK_LE(0.f, scroll_offset_dip.x());
+  // DCHECK_LE(0.f, scroll_offset_dip.y());
+  // DCHECK(scroll_offset_dip.x() &lt; max_scroll_offset_dip_.x() ||
+  //        scroll_offset_dip.x() - max_scroll_offset_dip_.x() &lt; kEpsilon)
+  //     &lt;&lt; scroll_offset_dip.x() &lt;&lt; &quot; &quot; &lt;&lt; max_scroll_offset_dip_.x();
+  // DCHECK(scroll_offset_dip.y() &lt; max_scroll_offset_dip_.y() ||
+  //        scroll_offset_dip.y() - max_scroll_offset_dip_.y() &lt; kEpsilon)
+  //     &lt;&lt; scroll_offset_dip.y() &lt;&lt; &quot; &quot; &lt;&lt; max_scroll_offset_dip_.y();</code></pre><p>  Line 40:</p>
+<pre class="prettyprint source"><code>  // const double kEpsilon = 1e-8;</code></pre></li>
+<li><p><code>ui/events/gesture_detection/gesture_detector.cc</code></p>
+<p>  Line 585:</p>
+<pre class="prettyprint source"><code>  // Substituted these lines for the return of the current down event.
+  // NOTREACHED();
+  // return nullptr;
+  return &current_down_event;</code></pre></li>
+<li><p><code>ui/events/gesture_detection/gesture_provider.cc</code></p>
+<p>  Line 360:</p>
+<pre class="prettyprint source"><code>  // DCHECK(scroll_event_sent_);</code></pre><p>  Line 695:</p>
+<pre class="prettyprint source"><code>  // DCHECK_GE(source_index, 0);</code></pre></li>
+<li><p><code>thrid_party/WebKit/Source/core/layout/HitTestResult.cpp</code></p>
+<p>  Line 468:</p>
+<pre class="prettyprint source"><code>  // ASSERT(isRectBasedTest());</code></pre></li>
+<li><p><code>content/browser/renderer_host/input/input_router_impl.cc</code></p>
+<p>  Line 503:</p>
+<pre class="prettyprint source"><code>  // Commented out the CHECK and added the conditional if.
+  // DCHECK_GT(active_renderer_fling_count_, 0);
+  // Note that we're only guaranteed to get a fling end notification from the
+  // renderer, not from any other consumers. Consequently, the GestureEventQueue
+  // cannot use this bookkeeping for logic like tap suppression.
+  if (active_renderer_fling_count_ > 0)
+      --active_renderer_fling_count_;</code></pre></li>
+<li><p><code>content/browser/renderer_host/input/touch_event_queue.cc</code></p>
+<p>  Line 33:</p>
+<pre class="prettyprint source"><code>  // const double kMaxConceivablePlatformSlopRegionLengthDipsSquared = 60. * 60.;</code></pre><p>  Line 315:</p>
+<pre class="prettyprint source"><code>  // DCHECK_LT((gfx::PointF(event.touches[0].position) -
+  //            touch_start_location_).LengthSquared(),
+  //           kMaxConceivablePlatformSlopRegionLengthDipsSquared);</code></pre></li>
+</ul>
+<h2>Using the new VR/AR JavaScript APIs</h2><h3>Build the documentation</h3><p>In order to build the documentation you are currently reading, there are some steps that need to be followed:</p>
 <ol>
 <li>Install JSDoc: <code>npm install -g jsdoc</code></li>
 <li><code>$ jsdoc WebARAPI.js THREE.WebAR/THREE.WebAR.js README.md</code></li>
 </ol>
-<h2>DEVELOPING A WEBAR THREEJS APP</h2><p><strong>IMPORTANT</strong>: In order to use the external image OES extension, a modification to the ThreeJS engine is required. In the getSingularSetter function that is able to identify the set functions for the different types of uniforms/attributes in a shader, a new type needs to be added as follows:</p>
+<h3>A basic overview of the WebAR JS API</h3><p>WebAR is an addition of some features on top of the WebVR API. </p>
+<p>--- Under construction ---</p>
+<h2>Some notes about developing WebAR apps using ThreeJS</h2><p><strong>IMPORTANT</strong>: In order to use the external image OES extension, a modification to the ThreeJS engine is required. In the <code>getSingularSetter</code> function that is able to identify the set functions for the different types of uniforms/attributes in a shader, a new type needs to be added as follows:</p>
 <pre class="prettyprint source"><code>function getSingularSetter( type ) {
 
     switch ( type ) {
@@ -132,7 +211,7 @@ sudo update-alternatives --config jarsigner</code></pre></li>
         case 0x8b5b: return setValue3fm; // _MAT3
         case 0x8b5c: return setValue4fm; // _MAT4
 
-        case 0x8b5e: case 36198: return setValueT1; // SAMPLER_2D  // case 36198: ADDED by WebAR
+        case 0x8b5e: case 36198: return setValueT1; // SAMPLER_2D  // case 36198: Added by WebAR
         case 0x8b60: return setValueT6; // SAMPLER_CUBE
 
         case 0x1404: case 0x8b56: return setValue1i; // INT, BOOL
@@ -153,13 +232,13 @@ sudo update-alternatives --config jarsigner</code></pre></li>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="THREE.WebAR.VRPointCloud.html">VRPointCloud</a></li><li><a href="VRDisplay.html">VRDisplay</a></li><li><a href="VRDisplayCapabilities.html">VRDisplayCapabilities</a></li><li><a href="VRPickingPointAndPlane.html">VRPickingPointAndPlane</a></li><li><a href="VRPointCloud.html">VRPointCloud</a></li><li><a href="VRSeeThroughCamera.html">VRSeeThroughCamera</a></li></ul><h3>Namespaces</h3><ul><li><a href="THREE.html">THREE</a></li><li><a href="THREE.WebAR.html">WebAR</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="THREE.WebAR.VRPointCloud.html">VRPointCloud</a></li><li><a href="VRDisplay.html">VRDisplay</a></li><li><a href="VRDisplayCapabilities.html">VRDisplayCapabilities</a></li><li><a href="VRPickingPointAndPlane.html">VRPickingPointAndPlane</a></li><li><a href="VRPointCloud.html">VRPointCloud</a></li><li><a href="VRSeeThroughCamera.html">VRSeeThroughCamera</a></li></ul><h3>Namespaces</h3><ul><li><a href="THREE.WebAR.html">WebAR</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Wed Oct 26 2016 02:00:16 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Mon Nov 21 2016 17:15:27 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>
