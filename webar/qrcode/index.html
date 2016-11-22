@@ -18,7 +18,7 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	</head>
 	<body>
-		<div id="qrcode" style="display:none;"/>
+		<div id="qrcode" style="display:none;"></div>
 		<div id="info">
 			<a href="http://threejs.org" target="_blank">three.js</a> -
 			WebAR (Tango) QRCode ThreeJS Example <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
@@ -108,7 +108,7 @@
 					width : 100,
 					height : 100
 				});
-				var qrcodeImage = document.getElementById("qrcode").childNodes[1];
+				var qrcodeImage = document.querySelector("div#qrcode img");
 				var qrcodeTexture = new THREE.Texture(qrcodeImage);
 				var qrcodeMaterial = new THREE.MeshStandardMaterial( {
 					map: qrcodeTexture,
