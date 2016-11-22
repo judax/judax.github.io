@@ -2,16 +2,38 @@
 <html lang="en">
 	<head>
 
-    <!-- Error handling -->
-    <script>
-        window.addEventListener('error', function(event) {
-            var errorMessage = event.message;
-            var url = event.filename;
-            var lineNumber = event.lineno;
-            var columnNumber = event.colno;
-            alert("ERROR: " + errorMessage + " at " + url + " : " + lineNumber + " : " + columnNumber);
-        });
-    </script>
+	    <!-- Error handling -->
+	    <script>
+	        window.addEventListener('error', function(event) {
+	            var errorMessage = event.message;
+	            var url = event.filename;
+	            var lineNumber = event.lineno;
+	            var columnNumber = event.colno;
+	            alert("ERROR: " + errorMessage + " at " + url + " : " + lineNumber + " : " + columnNumber);
+	        });
+	    </script>
+
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				color: #fff;
+				position: absolute;
+				bottom: 10px;
+				width: 100%;
+				text-align: center;
+				z-index: 100;
+				display:block;
+
+			}
+
+			a { color: skyblue }
+		</style>
 
 		<title>WebAR (Tango) QRCode ThreeJS Example</title>
 		<meta charset="utf-8">
