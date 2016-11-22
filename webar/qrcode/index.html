@@ -138,7 +138,8 @@
 				});
 				var qrcodeMaterial = new THREE.MeshStandardMaterial( {
 					map: qrcodeTexture,
-					color: 0xFFFFFF
+					color: 0xFFFFFF,
+					side: THREE.DoubleSide
 				});
 				var qrcodeGeometry = new THREE.PlaneBufferGeometry( 1, 1 );
 				qrcodeMesh = new THREE.Mesh( qrcodeGeometry, qrcodeMaterial );
