@@ -136,7 +136,7 @@
 				qrcodeImage.addEventListener("load", function() {
 					qrcodeTexture.needsUpdate = true;
 				});
-				var qrcodeMaterial = new THREE.MeshStandardMaterial( {
+				var qrcodeMaterial = new THREE.MeshLambertMaterial( {
 					map: qrcodeTexture,
 					color: 0xFFFFFF,
 					side: THREE.DoubleSide
