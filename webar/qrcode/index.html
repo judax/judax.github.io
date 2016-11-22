@@ -177,6 +177,8 @@
 				renderer.clear();
 				renderer.render( sceneCamera, cameraOrtho );
 
+				qrcodeMesh.rotation.set(0, qrcodeMesh.rotation.y + 0.1, 0);
+
 				// Update the perspective scene
 				vrControls.update();
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
