@@ -140,7 +140,8 @@
 					map: qrcodeTexture,
 					color: 0xFFFFFF,
 					transparent: true,
-					opacity: 0.4
+					opacity: 0.4,
+					side: THREE.DoubleSide
 				});
 				var qrcodeGeometry = new THREE.PlaneBufferGeometry( 1, 1 );
 				qrcodeMesh = new THREE.Mesh( qrcodeGeometry, qrcodeMaterial );
