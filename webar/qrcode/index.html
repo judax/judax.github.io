@@ -40,7 +40,7 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	</head>
 	<body>
-		<div id="qrcode"></div>
+		<div id="qrcode" style="display:none;"></div>
 		<div id="info">
 			<a href="http://threejs.org" target="_blank">three.js</a> -
 			WebAR (Tango) QRCode ThreeJS Example <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
@@ -144,7 +144,7 @@
 					opacity: 0.4,
 					side: THREE.DoubleSide
 				});
-				var qrcodeGeometry = new THREE.PlaneBufferGeometry( 0.067, 0.067 );
+				var qrcodeGeometry = new THREE.PlaneBufferGeometry( 0.18, 0.18 );
 				qrcodeMesh = new THREE.Mesh( qrcodeGeometry, qrcodeMaterial );
 				qrcodeMesh.position.set(0, 0, -1);
 				scene.add( qrcodeMesh );
