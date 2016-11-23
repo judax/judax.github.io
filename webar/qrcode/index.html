@@ -196,6 +196,10 @@
 		            if (pointAndPlane.correctValues) {
 			            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, qrcodeMesh, 0.0);
 		            }
+		            else {
+		            	qrcodeMesh.position.set(0, 0, -1);
+		            	qrcodeMesh.rotation.set(0, 0, 0);
+		            }
 		        }
 
 				// Render the perspective scene
