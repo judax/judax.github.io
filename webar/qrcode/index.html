@@ -86,6 +86,7 @@
 			var vrDisplay;
 
 			var qrcodeMesh;
+			var qrcodeLocked = false;
 
 	        if (navigator.getVRDisplays) {
 	            navigator.getVRDisplays().then(function(vrDisplays) {
@@ -190,7 +191,7 @@
 				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
 
 				pointCloud.update(false);
-				if (vrDisplay) {
+				if (vrDisplay && !qrcodeLocked) {
 		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(0.5, 0.5);
 		            if (pointAndPlane.correctValues) {
 			            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, qrcodeMesh, 0.0);
@@ -203,6 +204,10 @@
 
 				requestAnimationFrame( updateAndRender );
 			}
+
+			window.addEventListener('click', function() {
+				qrcodeLocked = true;
+			});
 
 		</script>
 	</body>
