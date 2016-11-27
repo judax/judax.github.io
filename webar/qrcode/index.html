@@ -93,6 +93,7 @@
 	                if (vrDisplays && vrDisplays.length > 0) {
 	                    for (var i = 0; i < vrDisplays.length; i++) {
 	                        vrDisplay = vrDisplays[i];
+	                        alert(vrDisplay.displayName);
 	                        if (vrDisplay.displayName === "Tango VR Device") {
 								init(vrDisplay);
 								updateAndRender();									
@@ -162,6 +163,12 @@
 
 				// Control the resizing of the window to correctly display the scene.
 				window.addEventListener( 'resize', onWindowResize, false );
+
+				// Control the qrcode alignment or not using a click event.
+				window.addEventListener('click', function() {
+					qrcodeLocked = !qrcodeLocked;
+				});
+
 			}
 
 			function onWindowResize() {
@@ -208,10 +215,6 @@
 
 				requestAnimationFrame( updateAndRender );
 			}
-
-			window.addEventListener('click', function() {
-				qrcodeLocked = !qrcodeLocked;
-			});
 
 		</script>
 	</body>
