@@ -65,10 +65,20 @@
 
 			var vrDisplay;
 
-			var combinations = [ [true, true], [false, false], [true, false], [false, true]];
+			var combinations = [
+				[true, true, true],
+				[true, false, true],
+				[true, true, false],
+				[true, false, false],
+				[false, true, true],
+				[false, false, true],
+				[false, true, false],
+				[false, false, false]
+			];
 			var combinationsIndex = 0;
 			var callGetPose = combinations[combinationsIndex][0];
 			var callGetPointCloud = combinations[combinationsIndex][1];
+			var justUpdatePointCloud = combinations[combinationIndex][2];
 
 	        if (navigator.getVRDisplays) {
 	            navigator.getVRDisplays().then(function(vrDisplays) {
@@ -121,13 +131,14 @@
 			}
 
 			function showCombination() {
-				alert("Calling getPose " + (callGetPose ? "enabled" : "disabled") + "\nCalling getPointCloud " + (callGetPointCloud ? "enabled" : "disabled"));
+				alert("Calling getPose " + (callGetPose ? "enabled" : "disabled") + "\nCalling getPointCloud " + (callGetPointCloud ? "enabled" : "disabled") + "\nJust update point cloud " + (justUpdatePointCloud ? "enabled" : "disabled"));
 			}
 
 			function onClick() {
 				combinationsIndex = (combinationsIndex + 1) % combinations.length;
 				callGetPose = combinations[combinationsIndex][0];
 				callGetPointCloud = combinations[combinationsIndex][1];
+				justUpdatePointCloud = combinations[combinationsIndex][2];
 				showCombination();
 			}
 
@@ -139,7 +150,7 @@
 					vrDisplay.getPose();
 
 				if (callGetPointCloud)
-					// vrDisplay.getPointCloud();
+					vrDisplay.getPointCloud(justUpdatePointCloud);
 
 				// Required so the correct UVs are used at all times (changes happen when there is an orientation change or window resize)
 				THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
