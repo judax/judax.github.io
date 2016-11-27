@@ -77,7 +77,7 @@ THREE.WebAR.VRPointCloud.prototype.getBufferGeometry = function() {
 */
 THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry) {
 	if (!this._vrDisplay) return;
-	var pointCloud = this._vrDisplay.getPointCloud();
+	var pointCloud = this._vrDisplay.getPointCloud(updateBufferGeometry);
 	if (!updateBufferGeometry) return;
 	if (!this._usePointCloudVerticesDirectly) {
 		if (pointCloud.vertices != null && pointCloud.vertexCount > 0) {
