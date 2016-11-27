@@ -66,6 +66,7 @@
 			var vrDisplay;
 
 			var callGetPose = false;
+			var callGetPointCloud = false;
 
 	        if (navigator.getVRDisplays) {
 	            navigator.getVRDisplays().then(function(vrDisplays) {
@@ -116,8 +117,10 @@
 			}
 
 			function onClick() {
-				callGetPose = !callGetPose;
-				alert("Calling getPose " + (callGetPose ? "enabled" : "disabled"));
+				// callGetPose = !callGetPose;
+				// alert("Calling getPose " + (callGetPose ? "enabled" : "disabled"));
+				callGetPointCloud = !callGetPointCloud;
+				alert("Calling getPointCloud " + (callGetPointCloud ? "enabled" : "disabled"));
 			}
 
 			function updateAndRender() {
@@ -126,6 +129,9 @@
 
 				if (callGetPose)
 					vrDisplay.getPose();
+
+				if (callGetPointCloud)
+					vrDisplay.getPointCloud();
 
 				// Required so the correct UVs are used at all times (changes happen when there is an orientation change or window resize)
 				THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
