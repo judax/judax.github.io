@@ -109,21 +109,14 @@
 	        }
 
 			function init(vrDisplay) {
-
-				alert("init 1");
-
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
-
-				alert("init 2");
 
 				// Create the see through camera scene and camera
 				sceneCamera = new THREE.Scene();
 				cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
 				cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
 				sceneCamera.add(cameraMesh);
-
-				alert("init 3");
 
 				// Create the 3D scene and camera
 				scene = new THREE.Scene();
@@ -132,18 +125,17 @@
 				vrControls = new THREE.VRControls(cameraPersp);
 				var ambientLight = new THREE.AmbientLight( 0xFFFFFF );
 				scene.add( ambientLight );
-				alert("init 4");
-				// var qrcode = new QRCode(document.getElementById("qrcode"), {
-				// 	text: location.href,
-				// 	width : 512,
-				// 	height : 512
-				// });
-				// var qrcodeImage = document.querySelector("div#qrcode img");
-				// var qrcodeTexture = new THREE.Texture(qrcodeImage);
-				// qrcodeTexture.image = qrcodeImage;
-				// qrcodeImage.addEventListener("load", function() {
-				// 	qrcodeTexture.needsUpdate = true;
-				// });
+				var qrcode = new QRCode(document.getElementById("qrcode"), {
+					text: location.href,
+					width : 512,
+					height : 512
+				});
+				var qrcodeImage = document.querySelector("div#qrcode img");
+				var qrcodeTexture = new THREE.Texture(qrcodeImage);
+				qrcodeTexture.image = qrcodeImage;
+				qrcodeImage.addEventListener("load", function() {
+					qrcodeTexture.needsUpdate = true;
+				});
 				var qrcodeMaterial = new THREE.MeshLambertMaterial( {
 					// map: qrcodeTexture,
 					color: 0xFFFFFF,
@@ -151,13 +143,10 @@
 					opacity: 0.4,
 					side: THREE.DoubleSide
 				});
-				alert("init 5");
 				var qrcodeGeometry = new THREE.PlaneBufferGeometry( 0.18, 0.18 );
 				qrcodeMesh = new THREE.Mesh( qrcodeGeometry, qrcodeMaterial );
 				qrcodeMesh.position.set(0, 0, -1);
 				scene.add( qrcodeMesh );
-
-				alert("init 6");
 
 				// Create the renderer
 				renderer = new THREE.WebGLRenderer();
@@ -166,24 +155,17 @@
 				renderer.autoClear = false;
 				document.body.appendChild( renderer.domElement );
 
-				alert("init 7");
 				// Create a way to measure performance
 				stats = new Stats();
 				container.appendChild( stats.dom );
 
-				alert("init 8");
-
 				// Control the resizing of the window to correctly display the scene.
 				window.addEventListener( 'resize', onWindowResize, false );
-
-				alert("init 9");
 
 				// Control the qrcode alignment or not using a click event.
 				window.addEventListener('click', function() {
 					qrcodeLocked = !qrcodeLocked;
 				});
-
-				alert("init 10");
 			}
 
 			function onWindowResize() {
@@ -217,7 +199,7 @@
 				pointCloud.update(false);
 				if (vrDisplay && !qrcodeLocked) {
 		            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(0.5, 0.5);
-		            if (pointAndPlane.correctValues) {
+		            if (pointAndPlane && pointAndPlane.correctValues) {
 			            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, qrcodeMesh, 0.0);
 		            }
 		            else {
