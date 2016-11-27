@@ -93,7 +93,6 @@
 	                if (vrDisplays && vrDisplays.length > 0) {
 	                    for (var i = 0; i < vrDisplays.length; i++) {
 	                        vrDisplay = vrDisplays[i];
-	                        alert(vrDisplay.displayName);
 	                        if (vrDisplay.displayName === "Tango VR Device") {
 								init(vrDisplay);
 								updateAndRender();									
@@ -169,6 +168,7 @@
 					qrcodeLocked = !qrcodeLocked;
 				});
 
+				alert("init end");
 			}
 
 			function onWindowResize() {
@@ -181,6 +181,8 @@
 
 			//
 			function updateAndRender() {
+
+				console.log("updateAndRender");
 
 				stats.update();
 
