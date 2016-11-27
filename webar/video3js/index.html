@@ -67,6 +67,8 @@
 
 			var callGetPose = false;
 			var callGetPointCloud = false;
+			var combinations = [ [true, true], [false, false], [true, false], [false, true]];
+			var combinationsIndex = 0;
 
 	        if (navigator.getVRDisplays) {
 	            navigator.getVRDisplays().then(function(vrDisplays) {
@@ -110,17 +112,24 @@
 				window.addEventListener( 'resize', onWindowResize, false );
 
 				window.addEventListener( 'click', onClick, false );
+
+				showCombination();
 			}
 
 			function onWindowResize() {
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
 
-			function onClick() {
-				// callGetPose = !callGetPose;
-				// alert("Calling getPose " + (callGetPose ? "enabled" : "disabled"));
-				callGetPointCloud = !callGetPointCloud;
+			function showCombination() {
+				alert("Calling getPose " + (callGetPose ? "enabled" : "disabled"));
 				alert("Calling getPointCloud " + (callGetPointCloud ? "enabled" : "disabled"));
+			}
+
+			function onClick() {
+				combinationsIndex = (combinationsIndex + 1) % combinations.length;
+				callGetPose = combinations[combinationsIndex][0];
+				callGetPointCloud = combinations[combinationsIndex][1];
+				showCombination();
 			}
 
 			function updateAndRender() {
