@@ -147,6 +147,16 @@
 				qrcodeMesh = new THREE.Mesh( qrcodeGeometry, qrcodeMaterial );
 				qrcodeMesh.position.set(0, 0, -1);
 				scene.add( qrcodeMesh );
+				var textureLoader = new THREE.TextureLoader();
+				var pictureTexture = textureLoader.load("picture.jpg");
+				var pictureMaterial = new THREE.MeshLambertMaterial( {
+					map: pictureTexture,
+					color: 0xFFFFFF,
+				});
+				var pictureGeometry = new THREE.PlaneBufferGeometry( 0.17, 0.1275 );
+				var pictureMesh = new THREE.Mesh(pictureGeometry, pictureMaterial);
+				pictureMesh.position.set(0.245, 0, 0);
+				qrcodeMesh.add(pictureMesh);
 
 				// Create the renderer
 				renderer = new THREE.WebGLRenderer();
