@@ -121,9 +121,7 @@
 				// Create the 3D scene and camera
 				scene = new THREE.Scene();
 				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
-				alert("1");
 				pointCloud = new THREE.WebAR.VRPointCloud(vrDisplay, true);
-				alert("2");
 				vrControls = new THREE.VRControls(cameraPersp);
 				var ambientLight = new THREE.AmbientLight( 0xFFFFFF );
 				scene.add( ambientLight );
@@ -178,9 +176,6 @@
 				window.addEventListener('click', function() {
 					qrcodeLocked = !qrcodeLocked;
 				});
-
-				alert("3");
-
 			}
 
 			function onWindowResize() {
