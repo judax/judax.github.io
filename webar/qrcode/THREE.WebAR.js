@@ -30,6 +30,10 @@ THREE.WebAR.VRPointCloud = function(vrDisplay, usePointCloudVerticesDirectly) {
 	this._bufferGeometry = new THREE.BufferGeometry();
 	this._bufferGeometry.frustumCulled = false;
 
+	alert("before");
+	alert("vrDisplay.getPointCloud(false).vertices = " + vrDisplay.getPointCloud(false).vertices);
+	alert("end");
+
 	var positions = vrDisplay ? (usePointCloudVerticesDirectly ? vrDisplay.getPointCloud(false).vertices : new Float32Array( vrDisplay.getMaxPointCloudVertexCount() * 3 )) : new Float32Array([-1, 1, -2, 1, 1, -2, 1, -1, -2, -1, -1, -2 ]);
 	var colors = new Float32Array( positions.length );
 
