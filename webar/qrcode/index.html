@@ -187,7 +187,7 @@
 			}
 
 			var q = new THREE.Quaternion();
-			
+
 			//
 			function updateAndRender() {
 
@@ -215,7 +215,7 @@
 		            if (pointAndPlane && pointAndPlane.correctValues) {
 			            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, qrcodeMesh, 0.0);
 
-			            q.set(0, 1, 0, 0.1);
+			            q.set(0, 1, 0, q.w + 0.1);
 			            qrcodeMesh.quaternion.multiply(q);
 		            }
 		            else {
