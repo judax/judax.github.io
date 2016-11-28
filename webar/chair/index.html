@@ -79,7 +79,8 @@
 			}
 
 			function GUI() {
-				this.showPointCloud = true;
+				alert(showPointCloud);
+				this.showPointCloud = showPointCloud;
 				this.showSeeThroughCamera = true;
 				return this;
 			}
@@ -104,7 +105,7 @@
 
 			var cameraOrtho, cameraPersp, sceneCamera, scene, renderer, cameraMesh;
 
-			var pointCloud, showPointCloud = false;
+			var pointCloud, showPointCloud = true;
 			var vrDisplay;
 			var model;
 
