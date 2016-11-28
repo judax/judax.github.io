@@ -79,25 +79,10 @@
 			}
 
 			function GUI() {
-				alert(showPointCloud);
 				this.showPointCloud = showPointCloud;
 				this.showSeeThroughCamera = true;
 				return this;
 			}
-
-			var datGUI = new dat.GUI();
-			var gui = new GUI();
-			datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
-				if (value) {
-					scene.add(points)
-					showPointCloud = true;
-				}
-				else {
-					scene.remove(points);
-					showPointCloud = false;
-				}
-			});
-			datGUI.add(gui, "showSeeThroughCamera");
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
@@ -154,6 +139,22 @@
 
 			function init(vrDisplay) {
 
+				// Initialize the dat.GUI.
+				var datGUI = new dat.GUI();
+				var gui = new GUI();
+				datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
+					if (value) {
+						scene.add(points)
+						showPointCloud = true;
+					}
+					else {
+						scene.remove(points);
+						showPointCloud = false;
+					}
+				});
+				datGUI.add(gui, "showSeeThroughCamera");
+
+				// Initialize everything related to ThreeJS.
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
