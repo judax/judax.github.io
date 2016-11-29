@@ -422,8 +422,6 @@
         gl.enableVertexAttribArray(this.vertexPositionAttribute);
         gl.enableVertexAttribArray(this.vertexColorAttribute);
 
-        gl.uniformMatrix4fv(this.pMatrixUniform, false, this.pMatrix);
-        gl.uniformMatrix4fv(this.mvMatrixUniform, false, this.mvMatrix);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.cubeVertexPositionBuffer);
         gl.vertexAttribPointer(this.vertexPositionAttribute, this.cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -432,7 +430,10 @@
         gl.vertexAttribPointer(this.vertexColorAttribute, this.cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.cubeVertexIndexBuffer);
-        setMatrixUniforms();
+
+        gl.uniformMatrix4fv(this.pMatrixUniform, false, this.pMatrix);
+        gl.uniformMatrix4fv(this.mvMatrixUniform, false, this.mvMatrix);
+        
         gl.drawElements(gl.TRIANGLES, this.cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
         gl.disableVertexAttribArray(this.vertexPositionAttribute);
