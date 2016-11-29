@@ -330,40 +330,40 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, this.cubeVertexPositionBuffer);
         var vertices = [
             // Front face
-            -1.0, -1.0,  1.0,
-             1.0, -1.0,  1.0,
-             1.0,  1.0,  1.0,
-            -1.0,  1.0,  1.0,
+            -0.05, -0.05,  0.005,
+             0.05, -0.05,  0.005,
+             0.05,  0.05,  0.005,
+            -0.05,  0.05,  0.005,
 
             // Back face
-            -1.0, -1.0, -1.0,
-            -1.0,  1.0, -1.0,
-             1.0,  1.0, -1.0,
-             1.0, -1.0, -1.0,
+            -0.05, -0.05, -0.005,
+            -0.05,  0.05, -0.005,
+             0.05,  0.05, -0.005,
+             0.05, -0.05, -0.005,
 
             // Top face
-            -1.0,  1.0, -1.0,
-            -1.0,  1.0,  1.0,
-             1.0,  1.0,  1.0,
-             1.0,  1.0, -1.0,
+            -0.05,  0.05, -0.005,
+            -0.05,  0.05,  0.005,
+             0.05,  0.05,  0.005,
+             0.05,  0.05, -0.005,
 
             // Bottom face
-            -1.0, -1.0, -1.0,
-             1.0, -1.0, -1.0,
-             1.0, -1.0,  1.0,
-            -1.0, -1.0,  1.0,
+            -0.05, -0.05, -0.005,
+             0.05, -0.05, -0.005,
+             0.05, -0.05,  0.005,
+            -0.05, -0.05,  0.005,
 
             // Right face
-             1.0, -1.0, -1.0,
-             1.0,  1.0, -1.0,
-             1.0,  1.0,  1.0,
-             1.0, -1.0,  1.0,
+             0.05, -0.05, -0.005,
+             0.05,  0.05, -0.005,
+             0.05,  0.05,  0.005,
+             0.05, -0.05,  0.005,
 
             // Left face
-            -1.0, -1.0, -1.0,
-            -1.0, -1.0,  1.0,
-            -1.0,  1.0,  1.0,
-            -1.0,  1.0, -1.0
+            -0.05, -0.05, -0.005,
+            -0.05, -0.05,  0.005,
+            -0.05,  0.05,  0.005,
+            -0.05,  0.05, -0.005
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         this.cubeVertexPositionBuffer.itemSize = 3;
@@ -412,11 +412,12 @@
         this.mvMatrix = mat4.create();
         mat4.identity(this.mvMatrix);
         mat4.translate(this.mvMatrix, [0.0, 0.0, -8.0]);
+        this.finalMVMatrix = mat4.create();
 
         return this;        
     }
 
-    Cube.prototype.render = function(gl) {
+    Cube.prototype.render = function(gl, cameraMatrix) {
         gl.useProgram(this.program);
 
         gl.enableVertexAttribArray(this.vertexPositionAttribute);
@@ -431,9 +432,11 @@
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.cubeVertexIndexBuffer);
 
+        mat4.multiply(cameraMatrix, this.mvMatrix, this.finalMVMatrix); 
+
         gl.uniformMatrix4fv(this.pMatrixUniform, false, this.pMatrix);
-        gl.uniformMatrix4fv(this.mvMatrixUniform, false, this.mvMatrix);
-        
+        gl.uniformMatrix4fv(this.mvMatrixUniform, false, this.finalMVMatrix);
+
         gl.drawElements(gl.TRIANGLES, this.cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
         gl.disableVertexAttribArray(this.vertexPositionAttribute);
@@ -550,14 +553,22 @@
 
     var stats;
     var gl;
+    var callGetPose = true;
+    var cameraMatrix = mat4.create();
+    var cameraOrientationQuaternion = quat4.create();
 
     function raf() {
         stats.update();
 
         if (vrDisplay && callGetPose) {
             console.time("getPose");
-            vrDisplay.getPose();
+            var pose = vrDisplay.getPose();
             console.timeEnd("getPose");
+            cameraOrientationQuaternion.set(pose.orientation);
+            quat4.toMat4(cameraOrientationQuaternion, cameraMatrix);
+            cameraMatrix[12] = pose.position[0];
+            cameraMatrix[13] = pose.position[1];
+            cameraMatrix[14] = pose.position[2];
         }
         
         videoQuad.update(gl);
@@ -571,7 +582,7 @@
 
         gl.clear(gl.DEPTH_BUFFER_BIT);
 
-        cube.render(gl);
+        cube.render(gl, cameraMatrix);
 
         requestAnimationFrame(raf);
     }
