@@ -541,12 +541,19 @@
         }
     }
 
+    var cube = null;
+
+    function initCube(gl) {
+        cube = new Cube(gl);
+    }
+
     var stats;
+    var gl;
 
     function raf() {
         stats.update();
 
-        if (vrDisplay) {
+        if (vrDisplay && callGetPose) {
             console.time("getPose");
             vrDisplay.getPose();
             console.timeEnd("getPose");
@@ -560,6 +567,10 @@
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         videoQuad.render(gl);
+
+        gl.clear(gl.DEPTH_BUFFER_BIT);
+
+        cube.render(gl);
 
         requestAnimationFrame(raf);
     }
@@ -583,20 +594,18 @@
             stats = new Stats();
             document.body.appendChild( stats.dom );
 
-            var gl = getGL(canvas);
-            window.gl = gl;
-            initVideoQuad(gl, function() {
-                requestAnimationFrame(raf);
-            });
+            gl = getGL(canvas);
             gl.clearColor(0.2, 0.2, 0.2, 1.0);
 
-            window.addEventListener("orientationchange", function(event) {
-            });
+            initVideoQuad(gl, function() {
+                initCube(gl);
+                window.addEventListener("resize", function(event) {
+                    gl.viewportWidth = canvas.width = window.innerWidth;
+                    gl.viewportHeight = canvas.height = window.innerHeight;
+                });
+                requestAnimationFrame(raf);
+            });            
 
-            window.addEventListener("resize", function(event) {
-                gl.viewportWidth = canvas.width = window.innerWidth;
-                gl.viewportHeight = canvas.height = window.innerHeight;
-            });
         }
     </script>
 </body>
