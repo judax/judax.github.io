@@ -546,11 +546,11 @@
     function raf() {
         stats.update();
 
-        console.time("getPose");
         if (vrDisplay) {
+            console.time("getPose");
             vrDisplay.getPose();
+            console.timeEnd("getPose");
         }
-        console.timeEnd("getPose");
         
         videoQuad.update(gl);
 
