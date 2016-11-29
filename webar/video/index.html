@@ -531,7 +531,7 @@
         else {
             alert("No navigator.getVRDisplays");
             videoQuad = new VideoQuad(gl, null);
-            readyCallback();
+            videoQuad.seeThroughCamera.addEventListener("canplaythrough", readyCallback);
         }
     }
 
