@@ -146,6 +146,7 @@
 
         if (this.vrDisplay) {
             this.seeThroughCamera = vrDisplay.getSeeThroughCamera();
+            this.program = getProgram(gl, "video-shader-vs", "video-shader-fs-oes");
         }
         else {
             this.seeThroughCamera = 
@@ -153,13 +154,9 @@
             this.seeThroughCamera.src = "sintel.webm";
             this.seeThroughCamera.play();
             this.seeThroughCamera.orientation = 0;
-            alert(this.seeThroughCamera.width);
-        }
-
-        this.program = getProgram(gl, "video-shader-vs", "video-shader-fs-oes");
-        if (!this.program) {
             this.program = getProgram(gl, "video-shader-vs", "video-shader-fs");
         }
+
         gl.useProgram(this.program);
 
         this.vertexPositionAttribute = gl.getAttribLocation(this.program, "aVertexPosition");
@@ -184,33 +181,42 @@
         this.textureCoordBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
         var textureCoords = null;
-
-        textureCoords = [
-            [ 
-                0.0, 0.0,
-                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight
-            ],
-            [ 
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
-                0.0, 0.0,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight
-            ],
-            [
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
-                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-                0.0, 0.0
-            ],
-            [
-                0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
-                0.0, 0.0,
-                this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0
-            ]
-        ];
+        if (this.vrDisplay) {
+            textureCoords = [
+                [ 
+                    0.0, 0.0,
+                    0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                    this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
+                    this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight
+                ],
+                [ 
+                    this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
+                    0.0, 0.0,
+                    this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                    0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight
+                ],
+                [
+                    this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                    this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0,
+                    0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                    0.0, 0.0
+                ],
+                [
+                    0.0, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                    this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, this.seeThroughCamera.height / this.seeThroughCamera.textureHeight,
+                    0.0, 0.0,
+                    this.seeThroughCamera.width / this.seeThroughCamera.textureWidth, 0.0
+                ]
+            ];
+        }
+        else {
+            textureCoords = [
+                [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
+                [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
+                [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+                [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
+            ];
+        }
         this.f32TextureCoords = [];
         for (var i = 0; i < textureCoords.length; i++) {
             this.f32TextureCoords.push(new Float32Array(textureCoords[i]));
@@ -523,8 +529,8 @@
             });
         }
         else {
-            videoQuad = new VideoQuad(gl, null);
             alert("No navigator.getVRDisplays");
+            videoQuad = new VideoQuad(gl, null);
             readyCallback();
         }
     }
