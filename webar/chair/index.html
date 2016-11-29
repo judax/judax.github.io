@@ -223,6 +223,8 @@
 				// if (gui.showSeeThroughCamera)
 					renderer.render( sceneCamera, cameraOrtho );
 
+				renderer.getContext().finish();
+
 				// Update the perspective scene
 				vrControls.update();
 				if (vrDisplay && false) {
