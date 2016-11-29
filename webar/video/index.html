@@ -554,7 +554,7 @@
     var stats;
     var gl;
     var callGetPose = true;
-    var cameraMatrix = mat4.create();
+    var cameraMatrix = mat4.identity(mat4.create());
     var cameraOrientationQuaternion = quat4.create();
 
     function raf() {
