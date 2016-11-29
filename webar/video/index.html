@@ -428,7 +428,7 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, this.cubeVertexPositionBuffer);
         gl.vertexAttribPointer(this.vertexPositionAttribute, this.cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.cubeVertexColorBuffer);
         gl.vertexAttribPointer(this.vertexColorAttribute, this.cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.cubeVertexIndexBuffer);
