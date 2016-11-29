@@ -582,6 +582,7 @@
 
         gl.clear(gl.DEPTH_BUFFER_BIT);
 
+        mat4.inverse(cameraMatrix);
         cube.render(gl, cameraMatrix);
 
         requestAnimationFrame(raf);
