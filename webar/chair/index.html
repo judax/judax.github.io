@@ -219,10 +219,17 @@
 				// IMPORTANT: This call makes sure that the camera mesh (quad) uses the correct texture coordinates depending on the camera and device orientations.
 				THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
 
+				console.log("JUDAX: updateAndRender 1");
+
 				// Render the see through camera scene
 				renderer.clear();
+
+				console.log("JUDAX: updateAndRender 2");
+
 				// if (gui.showSeeThroughCamera)
 					renderer.render( sceneCamera, cameraOrtho );
+
+				console.log("JUDAX: updateAndRender 3");
 
 				// renderer.getContext().flush();
 				// renderer.getContext().finish();
@@ -242,8 +249,13 @@
 
 				pointCloud.update(showPointCloud);
 
+				console.log("JUDAX: updateAndRender 4");
+
 				// Render the perspective scene
 				renderer.clearDepth();
+
+				console.log("JUDAX: updateAndRender 5");
+
 				renderer.render( scene, cameraPersp );
 
 				console.log("JUDAX: updateAndRender end");
