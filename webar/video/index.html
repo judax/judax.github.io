@@ -530,7 +530,7 @@
                     for (var i = 0; i < vrDisplays.length; i++) {
                         vrDisplay = vrDisplays[i];
                         if (vrDisplay.displayName === "Tango VR Device") {
-                            videoQuad = new VideoQuad(gl, vrDisplay);
+                            videoQuad = new VideoQuad(gl, null/*vrDisplay*/);
                             readyCallback();
                             break;
                         }
