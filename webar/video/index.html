@@ -558,7 +558,18 @@
     var cameraOrientationQuaternion = quat4.create();
 
     function raf() {
+        console.log("JUDAX: RAF begin");
+
         stats.update();
+
+        videoQuad.update(gl);
+
+        // console.log("viewportWidth = " + gl.viewportWidth + ", viewportHeight = " + gl.viewportHeight);
+
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        videoQuad.render(gl);
 
         if (vrDisplay && callGetPose) {
             console.time("getPose");
@@ -569,22 +580,18 @@
             cameraMatrix[12] = pose.position[0];
             cameraMatrix[13] = pose.position[1];
             cameraMatrix[14] = pose.position[2];
+        } 
+        else {
+            cameraMatrix[14] += 0.01;
         }
         
-        videoQuad.update(gl);
-
-        // console.log("viewportWidth = " + gl.viewportWidth + ", viewportHeight = " + gl.viewportHeight);
-
-        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        videoQuad.render(gl);
-
         gl.clear(gl.DEPTH_BUFFER_BIT);
 
         mat4.inverse(cameraMatrix);
         cube.render(gl, cameraMatrix);
 
+        console.log("JUDAX: RAF end");
+        
         requestAnimationFrame(raf);
     }
 
