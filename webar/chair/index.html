@@ -211,6 +211,7 @@
 
 			//
 			function updateAndRender() {
+				console.log("JUDAX: updateAndRender begin");
 
 				stats.update();
 
@@ -244,6 +245,8 @@
 				// Render the perspective scene
 				renderer.clearDepth();
 				renderer.render( scene, cameraPersp );
+
+				console.log("JUDAX: updateAndRender end");
 
 				requestAnimationFrame( updateAndRender );
 			}
