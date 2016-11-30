@@ -579,11 +579,11 @@
             console.time("getPose");
             var pose = vrDisplay.getPose();
             console.timeEnd("getPose");
-            cameraOrientationQuaternion.set(pose.orientation);
-            quat4.toMat4(cameraOrientationQuaternion, cameraMatrix);
-            cameraMatrix[12] = pose.position[0];
-            cameraMatrix[13] = pose.position[1];
-            cameraMatrix[14] = pose.position[2];
+            // cameraOrientationQuaternion.set(pose.orientation);
+            // quat4.toMat4(cameraOrientationQuaternion, cameraMatrix);
+            // cameraMatrix[12] = pose.position[0];
+            // cameraMatrix[13] = pose.position[1];
+            // cameraMatrix[14] = pose.position[2];
         } 
         else {
             cameraMatrix[14] += 0.01;
