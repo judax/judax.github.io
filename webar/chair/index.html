@@ -223,6 +223,7 @@
 				// if (gui.showSeeThroughCamera)
 					renderer.render( sceneCamera, cameraOrtho );
 
+				renderer.getContext().flush();
 				// renderer.getContext().finish();
 
 				// Update the perspective scene
