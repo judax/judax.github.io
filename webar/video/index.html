@@ -569,8 +569,12 @@
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        console.log("JUDAX: RAF 1");
+
         videoQuad.render(gl);
 
+        console.log("JUDAX: RAF 2");
+        
         if (vrDisplay && callGetPose) {
             console.time("getPose");
             var pose = vrDisplay.getPose();
@@ -584,9 +588,13 @@
         else {
             cameraMatrix[14] += 0.01;
         }
+
+        console.log("JUDAX: RAF 3");        
         
         gl.clear(gl.DEPTH_BUFFER_BIT);
 
+        console.log("JUDAX: RAF 4");
+        
         mat4.inverse(cameraMatrix);
         cube.render(gl, cameraMatrix);
 
