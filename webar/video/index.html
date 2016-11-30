@@ -573,6 +573,7 @@
 
         videoQuad.render(gl);
 
+        gl.flush();
         gl.finish();
 
         console.log("JUDAX: RAF 2");
@@ -634,7 +635,7 @@
                     gl.viewportHeight = canvas.height = window.innerHeight;
                 });
 
-                alert("Calling finish");
+                alert("Calling finish and flush");
 
                 requestAnimationFrame(raf);
             });            
