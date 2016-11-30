@@ -569,34 +569,34 @@
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        console.log("JUDAX: RAF 1");
+        // console.log("JUDAX: RAF 1");
 
         videoQuad.render(gl);
 
         gl.flush();
         gl.finish();
 
-        console.log("JUDAX: RAF 2");
+        // console.log("JUDAX: RAF 2");
         
-        if (vrDisplay && callGetPose) {
-            console.time("getPose");
-            var pose = vrDisplay.getPose();
-            console.timeEnd("getPose");
-            // cameraOrientationQuaternion.set(pose.orientation);
-            // quat4.toMat4(cameraOrientationQuaternion, cameraMatrix);
-            // cameraMatrix[12] = pose.position[0];
-            // cameraMatrix[13] = pose.position[1];
-            // cameraMatrix[14] = pose.position[2];
-        } 
-        else {
-            cameraMatrix[14] += 0.01;
-        }
+        // if (vrDisplay && callGetPose) {
+        //     console.time("getPose");
+        //     var pose = vrDisplay.getPose();
+        //     console.timeEnd("getPose");
+        //     // cameraOrientationQuaternion.set(pose.orientation);
+        //     // quat4.toMat4(cameraOrientationQuaternion, cameraMatrix);
+        //     // cameraMatrix[12] = pose.position[0];
+        //     // cameraMatrix[13] = pose.position[1];
+        //     // cameraMatrix[14] = pose.position[2];
+        // } 
+        // else {
+        //     cameraMatrix[14] += 0.01;
+        // }
 
-        console.log("JUDAX: RAF 3");        
+        // console.log("JUDAX: RAF 3");        
         
         gl.clear(gl.DEPTH_BUFFER_BIT);
 
-        console.log("JUDAX: RAF 4");
+        // console.log("JUDAX: RAF 4");
         
         mat4.inverse(cameraMatrix);
         cube.render(gl, cameraMatrix);
