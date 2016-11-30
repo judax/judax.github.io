@@ -573,6 +573,8 @@
 
         videoQuad.render(gl);
 
+        gl.finish();
+
         console.log("JUDAX: RAF 2");
         
         if (vrDisplay && callGetPose) {
