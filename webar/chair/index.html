@@ -199,6 +199,8 @@
 
 				// Control the resizing of the window to correctly display the scene.
 				window.addEventListener( 'resize', onWindowResize, false );
+
+				alert("Finish only");
 			}
 
 			function onWindowResize() {
@@ -231,7 +233,7 @@
 
 				console.log("JUDAX: updateAndRender 3 before flush & finish");
 
-				renderer.getContext().flush();
+				// renderer.getContext().flush();
 				renderer.getContext().finish();
 
 				console.log("JUDAX: updateAndRender 3 after flush & finish");
