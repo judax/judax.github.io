@@ -79,24 +79,10 @@
 			}
 
 			function GUI() {
-				this.showPointCloud = true;
+				this.showPointCloud = false;
 				this.showSeeThroughCamera = true;
 				return this;
 			}
-
-			// var datGUI = new dat.GUI();
-			// var gui = new GUI();
-			// datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
-			// 	if (value) {
-			// 		scene.add(points)
-			// 		showPointCloud = true;
-			// 	}
-			// 	else {
-			// 		scene.remove(points);
-			// 		showPointCloud = false;
-			// 	}
-			// });
-			// datGUI.add(gui, "showSeeThroughCamera");
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
@@ -104,12 +90,14 @@
 
 			var cameraOrtho, cameraPersp, sceneCamera, scene, renderer, cameraMesh;
 
-			var pointCloud, showPointCloud = false;
+			var pointCloud;
 			var vrDisplay;
 			var model;
 
 			var lastX, lastY;
 			var pos = new THREE.Vector3();
+
+			var gui;
 
 			var USE_CUBE_AS_MODEL = true;
 
@@ -153,6 +141,18 @@
 
 			function init(vrDisplay) {
 
+				var datGUI = new dat.GUI();
+				gui = new GUI();
+				datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
+					if (value) {
+						scene.add(points)
+					}
+					else {
+						scene.remove(points);
+					}
+				});
+				datGUI.add(gui, "showSeeThroughCamera");
+
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
@@ -176,8 +176,7 @@
 				points = new THREE.Points( pointCloud.getBufferGeometry(), material );
 				points.frustumCulled = false;
 				points.renderDepth = 0;
-				if (showPointCloud)
-					scene.add(points);
+				scene.add(points);
 				vrControls = new THREE.VRControls(cameraPersp);
 				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
 				directionalLight.position.set( 0, 1, 0);
@@ -217,7 +216,7 @@
 
 				// Render the see through camera scene
 				renderer.clear();
-				// if (gui.showSeeThroughCamera)
+				if (gui.showSeeThroughCamera)
 					renderer.render( sceneCamera, cameraOrtho );
 
 				// Update the perspective scene
@@ -233,7 +232,7 @@
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
 				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
 
-				pointCloud.update(showPointCloud);
+				pointCloud.update(gui.showPointCloud);
 
 				// Render the perspective scene
 				renderer.clearDepth();
