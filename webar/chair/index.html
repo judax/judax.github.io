@@ -229,10 +229,12 @@
 				// if (gui.showSeeThroughCamera)
 					renderer.render( sceneCamera, cameraOrtho );
 
-				console.log("JUDAX: updateAndRender 3");
+				console.log("JUDAX: updateAndRender 3 before flush & finish");
 
 				renderer.getContext().flush();
 				renderer.getContext().finish();
+
+				console.log("JUDAX: updateAndRender 3 after flush & finish");
 
 				// Update the perspective scene
 				vrControls.update();
