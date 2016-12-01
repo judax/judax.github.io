@@ -30,7 +30,7 @@ THREE.WebAR.VRPointCloud = function(vrDisplay, usePointCloudVerticesDirectly) {
 	this._bufferGeometry = new THREE.BufferGeometry();
 	this._bufferGeometry.frustumCulled = false;
 
-	var positions = vrDisplay ? (usePointCloudVerticesDirectly ? vrDisplay.getPointCloud(false).vertices : new Float32Array( vrDisplay.getMaxPointCloudVertexCount() * 3 )) : new Float32Array([-1, 1, -2, 1, 1, -2, 1, -1, -2, -1, -1, -2 ]);
+	var positions = vrDisplay ? (usePointCloudVerticesDirectly ? vrDisplay.getPointCloud(false, 0).vertices : new Float32Array( vrDisplay.getMaxPointCloudVertexCount() * 3 )) : new Float32Array([-1, 1, -2, 1, 1, -2, 1, -1, -2, -1, -1, -2 ]);
 	var colors = new Float32Array( positions.length );
 
 	var color = new THREE.Color();
@@ -75,9 +75,9 @@ THREE.WebAR.VRPointCloud.prototype.getBufferGeometry = function() {
 * Update the point cloud. The THREE.BufferGeometry that this class provides will automatically be updated with the point cloud retrieved by the underlying hardware.
 * @param {boolean} updateBufferGeometry - A flag to indicate if the underlying THREE.BufferGeometry should also be updated. Updating the THREE.BufferGeometry is very cost innefficient so it is better to only do it if necessary (if the buffer geometry is going to be rendered for example).
 */
-THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry) {
+THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry, pointsToSkip) {
 	if (!this._vrDisplay) return;
-	var pointCloud = this._vrDisplay.getPointCloud(!updateBufferGeometry);
+	var pointCloud = this._vrDisplay.getPointCloud(!updateBufferGeometry, pointsToSkip);
 	if (!updateBufferGeometry) return;
 	if (!this._usePointCloudVerticesDirectly) {
 		if (pointCloud.vertices != null && pointCloud.vertexCount > 0) {
