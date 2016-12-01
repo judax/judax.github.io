@@ -200,7 +200,7 @@
 				// Control the resizing of the window to correctly display the scene.
 				window.addEventListener( 'resize', onWindowResize, false );
 
-				alert("No finish and no flush. Skip 20.");
+				alert("No finish and no flush. Skip 3.");
 			}
 
 			function onWindowResize() {
@@ -251,7 +251,7 @@
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
 				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
 
-				pointCloud.update(showPointCloud, 20);
+				pointCloud.update(showPointCloud, 3);
 
 				console.log("JUDAX: updateAndRender 4");
 
