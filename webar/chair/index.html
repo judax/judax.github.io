@@ -99,6 +99,8 @@
 
 			var USE_CUBE_AS_MODEL = false;
 
+			var gui;
+
 	        if (navigator.getVRDisplays) {
 	            navigator.getVRDisplays().then(function(vrDisplays) {
 	                if (vrDisplays && vrDisplays.length > 0) {
@@ -141,7 +143,7 @@
 
 				// Initialize the dat.GUI.
 				var datGUI = new dat.GUI();
-				var gui = new GUI();
+				gui = new GUI();
 				datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
 					if (value) {
 						scene.add(points)
