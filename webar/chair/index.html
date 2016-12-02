@@ -199,8 +199,6 @@
 
 				// Control the resizing of the window to correctly display the scene.
 				window.addEventListener( 'resize', onWindowResize, false );
-
-				alert("No finish and no flush. Skip 0.");
 			}
 
 			function onWindowResize() {
@@ -213,30 +211,17 @@
 
 			//
 			function updateAndRender() {
-				console.log("JUDAX: updateAndRender begin");
-
 				stats.update();
 
 				// Update the see through camera scene
 				// IMPORTANT: This call makes sure that the camera mesh (quad) uses the correct texture coordinates depending on the camera and device orientations.
 				THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
 
-				console.log("JUDAX: updateAndRender 1");
-
 				// Render the see through camera scene
 				renderer.clear();
 
-				console.log("JUDAX: updateAndRender 2");
-
-				// if (gui.showSeeThroughCamera)
+				if (gui.showSeeThroughCamera)
 					renderer.render( sceneCamera, cameraOrtho );
-
-				console.log("JUDAX: updateAndRender 3 before flush & finish");
-
-				// renderer.getContext().flush();
-				// renderer.getContext().finish();
-
-				console.log("JUDAX: updateAndRender 3 after flush & finish");
 
 				// Update the perspective scene
 				vrControls.update();
@@ -253,16 +238,10 @@
 
 				pointCloud.update(showPointCloud, 0);
 
-				console.log("JUDAX: updateAndRender 4");
-
 				// Render the perspective scene
 				renderer.clearDepth();
 
-				console.log("JUDAX: updateAndRender 5");
-
 				renderer.render( scene, cameraPersp );
-
-				console.log("JUDAX: updateAndRender end");
 
 				requestAnimationFrame( updateAndRender );
 			}
