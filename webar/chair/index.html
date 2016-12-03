@@ -202,6 +202,21 @@
 
 				// Control the resizing of the window to correctly display the scene.
 				window.addEventListener( 'resize', onWindowResize, false );
+
+			    renderer.domElement.addEventListener("touchstart", function(event) {
+			    	if (event.changedTouches.length > 0)
+			    		lastX = event.changedTouches[0].pageX;
+			    });
+
+			    renderer.domElement.addEventListener("touchmove", function(event) {
+			        if (event.changedTouches.length > 0 && vrDisplay) {
+			        	var x = event.changedTouches[0].pageX;
+			        	var diffX = x - lastX;
+			        	lastX = x;
+			        	model.rotateZ(THREE.Math.degToRad(diffX));
+			        }
+			    });
+
 			}
 
 			function onWindowResize() {
@@ -267,20 +282,6 @@
 		            else {
 		            	alert("Could not retrieve the correct point and plane.");
 		            }
-		        }
-		    });
-
-		    window.addEventListener("touchstart", function(event) {
-		    	if (event.changedTouches.length > 0)
-		    		lastX = event.changedTouches[0].pageX;
-		    });
-
-		    window.addEventListener("touchmove", function(event) {
-		        if (event.changedTouches.length > 0 && vrDisplay) {
-		        	var x = event.changedTouches[0].pageX;
-		        	var diffX = x - lastX;
-		        	lastX = x;
-		        	model.rotateZ(THREE.Math.degToRad(diffX));
 		        }
 		    });
 
