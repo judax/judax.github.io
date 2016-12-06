@@ -1,5 +1,8 @@
 // NOTE: All the elements marked with an underscore as a prefix are considered to be used internally (from within the code in this file) only.
 
+/**
+* @namespace
+*/
 var THREE = THREE || require("three");
 
 /**

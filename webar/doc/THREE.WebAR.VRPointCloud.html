@@ -29,7 +29,7 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="THREE.WebAR.html">.WebAR</a>.</span>VRPointCloud</h2>
+            <span class="ancestors"><a href="THREE.html">THREE</a><a href="THREE.WebAR.html">.WebAR</a>.</span>VRPointCloud</h2>
         
     
 </header>
@@ -168,7 +168,7 @@ NOTE: The buffer geometry that can be retrieved from instances of this class can
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line22">line 22</a>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line25">line 25</a>
     </li></ul></dd>
     
 
@@ -268,7 +268,7 @@ NOTE: The buffer geometry that can be retrieved from instances of this class can
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line70">line 70</a>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -327,7 +327,7 @@ NOTE: A possible way to render the point cloud could be to use the THREE.BufferG
 
     
 
-    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(updateBufferGeometry)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(updateBufferGeometry, pointsToSkip)</span><span class="type-signature"></span></h4>
 
     
 
@@ -386,7 +386,30 @@ NOTE: A possible way to render the point cloud could be to use the THREE.BufferG
 
             
 
-            <td class="description last">A flag to indicate if the underlying THREE.BufferGeometry should also be updated. Updating the THREE.BufferGeometry is very cost innefficient so it is better to only do it if necessary (if the buffer geometry is going to be rendered for example).</td>
+            <td class="description last">A flag to indicate if the underlying THREE.BufferGeometry should also be updated. Updating the THREE.BufferGeometry is very cost innefficient so it is better to only do it if necessary (only if the buffer geometry is going to be rendered for example). If this flag is set to false,  then the underlying point cloud is updated but not buffer geometry that represents it. Updating the point cloud is important to be able to call functions that operate with it, like the getPickingPointAndPlaneInPointCloud function.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pointsToSkip</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A positive integer from 0-N that specifies the number of points to skip when returning the point cloud. If the updateBufferGeometry flag is activated (true) then this parameter allows to specify the density of the point cloud. A values of 0 means all the detected points need to be returned. A number of 1 means that 1 every other point needs to be skipped and thus, half of the detected points will be retrieved, and so on. If the parameter is not specified, 0 is considered.</td>
         </tr>
 
     
@@ -427,7 +450,7 @@ NOTE: A possible way to render the point cloud could be to use the THREE.BufferG
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line78">line 78</a>
+        <a href="THREE.WebAR_THREE.WebAR.js.html">THREE.WebAR/THREE.WebAR.js</a>, <a href="THREE.WebAR_THREE.WebAR.js.html#line82">line 82</a>
     </li></ul></dd>
     
 
@@ -469,13 +492,13 @@ NOTE: A possible way to render the point cloud could be to use the THREE.BufferG
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="THREE.WebAR.VRPointCloud.html">VRPointCloud</a></li><li><a href="VRDisplay.html">VRDisplay</a></li><li><a href="VRDisplayCapabilities.html">VRDisplayCapabilities</a></li><li><a href="VRPickingPointAndPlane.html">VRPickingPointAndPlane</a></li><li><a href="VRPointCloud.html">VRPointCloud</a></li><li><a href="VRSeeThroughCamera.html">VRSeeThroughCamera</a></li></ul><h3>Namespaces</h3><ul><li><a href="THREE.WebAR.html">WebAR</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="THREE.WebAR.VRPointCloud.html">VRPointCloud</a></li><li><a href="VRDisplay.html">VRDisplay</a></li><li><a href="VRDisplayCapabilities.html">VRDisplayCapabilities</a></li><li><a href="VRPickingPointAndPlane.html">VRPickingPointAndPlane</a></li><li><a href="VRPointCloud.html">VRPointCloud</a></li><li><a href="VRSeeThroughCamera.html">VRSeeThroughCamera</a></li></ul><h3>Namespaces</h3><ul><li><a href="THREE.html">THREE</a></li><li><a href="THREE.WebAR.html">WebAR</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Mon Nov 21 2016 17:15:27 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Tue Dec 06 2016 07:05:15 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>
