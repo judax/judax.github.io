@@ -44,26 +44,29 @@
 
     <section>
         <article><h1>Overview</h1><p><strong>NOTE:</strong> The repository with the Chromium code to enable WebAR capabilities on top of the WebVR implementation is still not publicly available so much of the references to it in this documentation might not be applicable for those without access.</p>
-<p>This project's goal is to provide an initial implementation of a possible Augmented Reality API for the Web. This documentation (specially this page you are reading) includes a tutorial on how to build your own version of Chromium that has WebAR capabilities. Also, on the side, you may find documentation of both the low level JS API exposed on top of some of the WebVR API elements and the utility library built on top of THREE.JS (THREE.WebAR).</p>
-<p>This WebAR specification and implementation is completely experimental so use it at your own risk. There is no guarantee that any of this code will eveb make it to Chromium and even less to Chrome but it will provide the possibitliy to use the WebVR API on an actual Android application if needed. The whole implementation is based on the Tango device and SDK for the moment.</p>
+<p>This project's goal is to provide an initial implementation of a possible Augmented Reality API for the Web. This documentation (specially this page you are reading) includes a tutorial on how to build your own version of Chromium that has WebAR capabilities. Also, on the side, you may find documentation of both the low level JS API exposed on top of some of the WebVR API already existing classes (and some new ones) and the utility library built on top of THREE.JS (called THREE.WebAR).</p>
+<p>This WebAR specification and implementation is completely experimental so use it at your own risk. There is no guarantee that any of this code will ever make it to Chromium and even less to Chrome but it will provide the possibitliy to use the WebVR API on an actual Android application if needed. The whole implementation is built on the Tango device and SDK for the moment.</p>
 <p>This documentation is divided in 2 sections: </p>
 <ol>
 <li><strong>How to build your own version of Chromium with WebAR</strong> </li>
-<li><strong>Using the new VR/AR JavaScript APIs</strong>: This way, anyone that wants to build and modify his/her own version of chromium, will be able to do it and those who just want to install a prebuilt version of Chromium and start using it right away.</li>
+<li><strong>Using the new VR/AR JavaScript APIs</strong></li>
 </ol>
-<h2>1. How to build your own version of Chromium with WebAR</h2><p>This repository includes only modifications on the Chromium repository that allows to add Tango/AR capabilities into JavaScript. Chromium is a complex project with gigabytes of source code, resources and third party libraries. This repository does not include all Chromium but just the files necessary to make the changes to it in order to enable WebAR, so you will also have to checout the Chromium repository (how to do so will be explained in this tutorial). </p>
+<p>This way, anyone that wants to build and modify his/her own version of chromium, will be able to do so and those who just want to install a prebuilt version of Chromium and start using it right away, will also be able to do it.</p>
+<h2>1. How to build your own version of Chromium with WebAR</h2><p>This repository includes only the modifications on the Chromium repository that allows to add Tango/WebAR capabilities into JavaScript. Chromium is a complex project with gigabytes of source code, resources and third party libraries. This repository does not include all Chromium but just the files necessary to make the changes to it in order to enable WebAR, so you will also have to checout the Chromium repository (how to do so will be explained in this tutorial). </p>
 <h3>The folder structure in this repo</h3><p>Let's review the content on this repository to better understand it:</p>
 <p><code>/android_webview</code>: The modifications to the android webview Chromium project to be able to load the Tango handling dynamic library, store the URLs for future executions, read QRCodes, etc. This folder, internally, contains the Tango handling library and all the build files and resources needed. </p>
 <p><code>/device</code>: The modifications to the vr device files to add both the tango_vr_device class and the modifications to the vr service to be able to expose some specific data related to AR (point cloud, see through camera data, picking, etc.).</p>
 <p><code>/examples</code>: A set of some basic examples based on straight WebGL or (mostly) using the ThreeJS framework.</p>
 <p><code>/gpu</code>: All the modifications in the GL command buffer to be able to use the external texture extension and make the right call to Tango implementation when the texImage2D is called using the VRSeeThroughCamera instance.</p>
 <p><code>/third_party</code>: Both the inclusion of the tango third party libraries (and the tango handling library) and the WebKit vr and webgl IDL classes modifications to be able to expose all the functionalities. ZXing is also added to be able to add the QRCode reading functionality to the WebView APK.</p>
-<p>Building the modified version of Chromium, is a 2 step process: 
-1.1. Clone the Chromium project (copying the changes in this repository) and prepare it to be built
-1.2. Build, install and run.</p>
+<p>Building the modified version of Chromium is a 2 step process: </p>
+<ol>
+<li>Clone the Chromium project (copying the changes in this repository) and prepare it to be built</li>
+<li>Build, install and run.</li>
+</ol>
 <h3>1.1 Clone the Chromium project (copying the changes in this repository) and prepare it to be built</h3><p>Chromium cloning/building instruction are available online. </p>
 <p><a href="https://www.chromium.org/developers/how-tos/android-build-instructions">https://www.chromium.org/developers/how-tos/android-build-instructions</a></p>
-<p>Anyway, in order to help with the process, we recommend you follow these steps. Remember, Tango is an Android platform for the moment so in order to be able to use the modifications present in this project, you need to compile Chromium for Android. The only way to do this is using a Linux machine. Unfortunately, this document does not include instructions on how to setup a linux machine. Let's assume that the machine is installed along with:</p>
+<p>Anyway, in order to help with the process, we recommend you follow the following steps. Remember, Tango is only available on the Android platform for the moment so in order to be able to use the modifications present in this project, you need to compile Chromium for Android that can only be done on Linux. Unfortunately, this document does not include instructions on how to setup a linux machine. Let's assume that the machine is installed along with:</p>
 <ul>
 <li>Java JDK 1.8 and JRE 1.8</li>
 <li>Android SDK</li>
@@ -87,8 +90,7 @@
  <code>~/chromium/src$ git checkout -b webar_54.0.2796.3 54.0.2796.3</code></li>
 <li>Create a folder for the final product compilation:
  ~/chromium/src$ mkdir -p out/webar_54.0.2796.3</li>
-<li><p>Edit the a new file <code>out/webar_54.0.2796.3/args.gn</code> file
- <code>~/chromium/src$ gedit out/webar_54.0.2796.3/args.gn</code> and copy and paste this content in it:</p>
+<li><p>Create and edit a new file <code>out/webar_54.0.2796.3/args.gn</code> with the command <code>~/chromium/src$ gedit out/webar_54.0.2796.3/args.gn</code> and copy and paste the following content in it:</p>
 <pre class="prettyprint source"><code>target_os = &quot;android&quot;
 target_cpu = &quot;arm&quot;  # (default)
 is_debug = false  # (default)
@@ -98,7 +100,7 @@ is_component_build = true
 is_clang = true
 symbol_level = 1  # Faster build with fewer symbols. -g1 rather than -g2
 enable_incremental_javac = true  # Much faster; experimental</code></pre></li>
-<li>Copy and paste all the content from the current folder of WebAR into the chromium/src folder. Override every possible conflict that may arise if you use the file explorer. Otherwise, you can use the following command line
+<li>Copy and paste all the content from the current folder of the WebAR repo into the chromium/src folder. Override every possible conflict that may arise if you use the file explorer. Otherwise, you can use the following command line
  <code>cp -r PATH_TO_THIS_FOLDER/* ~/chromium/src</code></li>
 <li><code>~/chromium/src$ gn args out/webar_54.0.2796.3</code>
 <strong>NOTE</strong>: just exit &quot;q!&quot; in vi when it opens and shows args.gn (modified in the previous step using a proper editor ;))</li>
@@ -112,10 +114,10 @@ sudo update-alternatives --config jarsigner</code></pre></li>
 <li><code>~/chromium/src$ gclient sync</code></li>
 <li><code>~/chromium/src$ . build/android/envsetup.sh</code></li>
 </ol>
-<h3>1.2: Build, install and run</h3><p><strong>IMPORTANT:</strong> some changes have been done to the Chromium command buffer. These changes may require to rebuild the command buffer. The Python script to do so does not execute along with the regular building process so if further changes are done to the command buffer, this script needs to be executed with the following command:</p>
-<pre class="prettyprint source"><code>~/chromium/src/python gpu/command_buffer/build_gles2_cmd_buffer.py</code></pre><p>The out folder that has been created has the same name as the branch. This is no coincidence, as the <code>build_install_run.sh</code> shell script provided along with this documentation allows to build the Chromium project depending on the current git branch name that is currently checked out. This script not only compiles Chromium but also the Tango use native library called tango_chromium. This script, apart of building the project it installs it and runs it, so it is convenient that you connect the Tango device via USB. The built project is the Chromium WebView project.</p>
+<h3>1.2: Build, install and run</h3><p><strong>IMPORTANT:</strong> some changes have been done to the Chromium command buffer. These changes may require to rebuild the command buffer. The Python script to do so does not execute along with the regular building process so the script needs to be executed with the following command at least once (and everytime a new command is created in the command buffer):</p>
+<pre class="prettyprint source"><code>~/chromium/src/python gpu/command_buffer/build_gles2_cmd_buffer.py</code></pre><p>This tutorial specified that the name of the out folder created during the setup process above is the same as the branch (54.0.2796.3). This is no coincidence, as the <code>build_install_run.sh</code> shell script provided along with this documentation allows to build the Chromium project depending on the current git branch name that is currently checked out. This script not only compiles Chromium but also the Tango native library called tango_chromium that handle the Tango SDK calls. Moreover, this script, it also installs the final APK on a connected device and runs it, so it is convenient that you to connect the Tango device via USB before executing it. The project that will be built by default is the Chromium WebView project.</p>
 <pre class="prettyprint source"><code>~/chromium/src/build_install_run.sh</code></pre><h3>Resolving some possible Chromium WebView crashes on some Android versions</h3><p>Chromium webview v54.0.2796.3 seems to crash pretty consistently on some Android versions (5 and 6) on some internal checks/asserts related to both audio and touch handling. This is a list of some possible points in the chromium source code where these crashes may occur. It is recommended that some testing is performed before introducing these changes. The good thing with asserts/checks is that they show the specific line of code where the crash is happening so a simple review of the logcat when the crash happens should poing to the specific line of code and file where the assert is failing.</p>
-<p><strong>NOTE</strong>: It is recommended that the changes are well documented (for example introducing a //WebAR BEGIN..//WebAR END block to correctly mark each change). Remember, these changes should not be needed but for some reason the Chromium WebView is showing these errors.</p>
+<p><strong>NOTE</strong>: It is recommended that if you introduce these changes, they are well documented (for example introducing a //WebAR BEGIN..//WebAR END block to correctly mark each change). Remember, these changes are not completely necessary and should only be included if your chromium product is consistently crashing when using audio and touch and showing check related errors on the logcat before crashing.</p>
 <ul>
 <li><p><code>ui/events/android/motion_event_android.cc</code></p>
 <p>  Line 221:</p>
@@ -197,9 +199,33 @@ sudo update-alternatives --config jarsigner</code></pre></li>
 <li>Install JSDoc: <code>npm install -g jsdoc</code></li>
 <li><code>$ jsdoc WebARAPI.js THREE.WebAR/THREE.WebAR.js README.md</code></li>
 </ol>
-<h3>A basic overview of the WebAR JS API</h3><p>WebAR is an addition of some features on top of the WebVR API. </p>
-<p>--- Under construction ---</p>
-<h2>Some notes about developing WebAR apps using ThreeJS</h2><p><strong>IMPORTANT</strong>: In order to use the external image OES extension, a modification to the ThreeJS engine is required. In the <code>getSingularSetter</code> function that is able to identify the set functions for the different types of uniforms/attributes in a shader, a new type needs to be added as follows:</p>
+<h3>A basic overview of the WebAR JS API</h3><p>This implementation of WebAR is an addition of some features on top of the <a href="https://webvr.info/">WebVR API v1.0 specification</a>. AR and VR share many common concepts like tracking and even a see through camera or a depth sensor can be found in both AR and VR devices. This API is still experimental and it is just a proposal os a possible solution.</p>
+<p>The main point of entry for the WebAR API is still the VRDisplay, similarly as in  WebVR. Actually, if an AR device such as Tango (which this implementation is based on) wants to be used for 6DOF (6 Degrees Of Freedom) VR experiences, the WebVR API as is could be used. The getPose call will correctly return the position and orientation acquired from the underlying hardware implementation. </p>
+<p>But there are some new features that the WebVR v1.0 spec does not include and that provide additional functionality based on the AR underlying platform. These new characteristics can be identified using the VRDisplayCapabilities class that now exposes 2 new flags to specify if the VRDisplay is able to:</p>
+<ul>
+<li><a href="./VRDisplayCapabilities.html">hasPointCloud</a>: Retrieve a cloud of points acquired by a depth sensing device.</li>
+<li><a href="./VRDisplayCapabilities.html">hasSeeThroughCamera</a>: Use an undelying see through camera to show the real world.</li>
+</ul>
+<p>If any of these flags are true, a new set of functionalities and APIs can be used always using the <a href="./VRDisplay.html">VRDisplay</a> as a starting point to retrieve them. The new methods are:</p>
+<ul>
+<li><a href="./VRDisplay.html">getMaxPointCloudVertexCount</a>: Provides the maximum number of points in the point cloud.</li>
+<li><a href="./VRDisplay.html">getPointCloud</a>: Updates and/or retrieves the points in the <a href="./VRPointCloud.html">point cloud</a>.</li>
+<li><a href="./VRDisplay.html">getPickingPointAndPlaneInPointCloud</a>: Allows to calculate a colission <a href="./VRPickingPointAndPlane.html">point and plane</a> between a 2D position and a ray casted on to the point cloud.</li>
+<li><a href="./VRDisplay.html">getSeeThroughCamera</a>: Retrieves a structure that represents the <a href="VRSeeThroughCamera.html">see through camera</a> so it can be used for both correct fustrum calculation and for rendering the video feed.</li>
+</ul>
+<p>At a glance it is obvious that some new data structures/classes have been created to support some new functionalities as the underlying Tango platform allows new types of interactions/features. Most of the calls are pretty straightforward and the documentation might provide some idea of how they could be integrated in any or nex web application. The one that might need a bit more explanation is the VRSeeThroughCamera class as it even provides some useful information (what are called the camera intrinsics), it still does not expose how it could be used to render the camera feed in an application. In the current implementation, the approach that has been selected is to create a new overloaded function in the <a href="https://www.khronos.org/registry/webgl/specs/1.0">WebGL API</a>. The <a href="https://www.khronos.org/registry/webgl/specs/1.0/#5.14">WebGLRenderingContext</a> now exposes the following function:</p>
+<pre class="prettyprint source"><code>void texImage2D(GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, VRSeeThroughCamera? source);</code></pre><p>This approach has some benefits:</p>
+<ol>
+<li>There is no need to retrieve the pixels of the image.</li>
+<li>There is full control over the camera image in WebGL (in a fragment shader for example).</li>
+<li>It uses a common way to handle video content (texImage2D already has a HTMLVideoElement overload).</li>
+</ol>
+<p>But the current implementation has a problem too as the way the camera image is handled inside the texImage2D call requires to use an OpenGL extension that is not available in WebGL at the moment. The Chromium modification that you can find in the repository includes the activation of this extension internally, but you also need to recall that you will need to use the extension in your shader:</p>
+<pre class="prettyprint source"><code>#extension GL_OES_EGL_image_external : require
+...
+
+uniform samplerExternalOES map;
+...</code></pre><h2>Some notes about developing WebAR apps using ThreeJS</h2><p><strong>IMPORTANT</strong>: In order to use the external image OES extension, a modification to the ThreeJS engine is required. In the <code>getSingularSetter</code> function that is able to identify the set functions for the different types of uniforms/attributes in a shader, a new type needs to be added as follows:</p>
 <pre class="prettyprint source"><code>function getSingularSetter( type ) {
 
     switch ( type ) {
@@ -240,7 +266,7 @@ sudo update-alternatives --config jarsigner</code></pre></li>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Tue Dec 06 2016 07:05:15 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a> on Fri Dec 09 2016 15:33:39 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>
