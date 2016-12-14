@@ -136,6 +136,7 @@
 						.then( function ( displays ) {
 							effect.setVRDisplay( displays[ 0 ] );
 							controls.setVRDisplay( displays[ 0 ] );
+							effect.requestPresent();
 						} )
 						.catch( function () {
 							// no displays
