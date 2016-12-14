@@ -93,7 +93,7 @@
 
 				var geometry = new THREE.BoxGeometry( 0.15, 0.15, 0.15 );
 
-				for ( var i = 0; i < 1000; i ++ ) {
+				for ( var i = 0; i < 1500; i ++ ) {
 
 					var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 
@@ -110,9 +110,9 @@
 					object.scale.z = Math.random() + 0.5;
 
 					object.userData.velocity = new THREE.Vector3();
-					object.userData.velocity.x = Math.random() * 0.01 - 0.005;
-					object.userData.velocity.y = Math.random() * 0.01 - 0.005;
-					object.userData.velocity.z = Math.random() * 0.01 - 0.005;
+					object.userData.velocity.x = Math.random() * 0.02 - 0.005;
+					object.userData.velocity.y = Math.random() * 0.02 - 0.005;
+					object.userData.velocity.z = Math.random() * 0.02 - 0.005;
 
 					room.add( object );
 
