@@ -157,6 +157,7 @@ found in the LICENSE file.
           stats.end();
         }
         window.requestAnimationFrame(onAnimationFrame);
+        return webglCanvas;
       }
 
       if (navigator.getVRDisplays) {
@@ -171,6 +172,18 @@ found in the LICENSE file.
             // WebVR produces have a well scaled depth buffer.
             vrDisplay.depthNear = 0.1;
             vrDisplay.depthFar = 1024.0;
+
+            function forceRequestPresent() {
+              if (webGLCanvases.length > 0) {
+                onVRRequestPresent(webGLCanvases[0]);
+              }
+              else {
+                setTimeout(forceRequestPresent, 100)
+              }
+            }
+
+            setTimeout(forceRequestPresent, 100);
+
           } else {
             VRSamplesUtil.addInfo("WebVR supported, but no VRDisplays found.", 3000);
           }
@@ -181,13 +194,14 @@ found in the LICENSE file.
         VRSamplesUtil.addError("Your browser does not support WebVR. See <a href='http://webvr.info'>webvr.info</a> for assistance.");
       }
 
-      appendCanvas("Default", {});
-      appendCanvas("Alpha False", { alpha: false });
-      appendCanvas("Depth False", { depth: false });
-      appendCanvas("Stencil True", { stencil: true });
-      appendCanvas("Antialias False", { antialias: false });
-      appendCanvas("Premultiplied Alpha False", { premultipliedAlpha: false });
-      appendCanvas("Preserve Drawing Buffer False", { preserveDrawingBuffer: true });
+      var webGLCanvases = [];
+      webGLCanvases.push(appendCanvas("Default", {}));
+      webGLCanvases.push(appendCanvas("Alpha False", { alpha: false }));
+      webGLCanvases.push(appendCanvas("Depth False", { depth: false }));
+      webGLCanvases.push(appendCanvas("Stencil True", { stencil: true }));
+      webGLCanvases.push(appendCanvas("Antialias False", { antialias: false }));
+      webGLCanvases.push(appendCanvas("Premultiplied Alpha False", { premultipliedAlpha: false }));
+      webGLCanvases.push(appendCanvas("Preserve Drawing Buffer False", { preserveDrawingBuffer: true }));
 
       })();
     </script>
