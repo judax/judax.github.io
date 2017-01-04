@@ -250,10 +250,6 @@
 
 			//
 			function updateAndRender() {
-				var glContext = renderer.getContext();
-
-				glContext.beginRendering && glContext.beginRendering();
-
 				stats.update();
 
 				// Update the see through camera scene
@@ -287,8 +283,6 @@
 				renderer.render( scene, cameraPersp );
 
 				requestAnimationFrame( updateAndRender );
-
-				glContext.endRendering && glContext.endRendering();
 			}
 
 		</script>
