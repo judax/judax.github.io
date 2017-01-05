@@ -53,13 +53,13 @@
 			WebAR (Tango) Chair ThreeJS Example <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
 		</div>
 
-		<script src="three.js"></script>
-		<script src="Detector.js"></script>
-		<script src="stats.min.js"></script>
-		<script src="VRControls.js"></script>
-		<script src="THREE.WebAR.js"></script>
-		<script src="dat.gui.min.js"></script>
-		<script src="ColladaLoader.js"></script>
+		<script src="../libs/three.js"></script>
+		<script src="../libs/Detector.js"></script>
+		<script src="../libs/stats.min.js"></script>
+		<script src="../libs/VRControls.js"></script>
+		<script src="../libs/THREE.WebAR.js"></script>
+		<script src="../libs/dat.gui.min.js"></script>
+		<script src="../libs/ColladaLoader.js"></script>
 
 		<script>
 			function addClass(node, className) {
@@ -111,7 +111,7 @@
 	                        	if (!USE_CUBE_AS_MODEL) {
 									var loader = new THREE.ColladaLoader();
 									loader.options.convertUpAxis = true;
-									loader.load( 'geometry_5.dae', function ( collada ) {
+									loader.load( '../resources/3dmodels/geometry_5.dae', function ( collada ) {
 										removeLoadSpinner();
 										var colladaScene = collada.scene;
 										colladaScene.rotateX(THREE.Math.degToRad(90));
