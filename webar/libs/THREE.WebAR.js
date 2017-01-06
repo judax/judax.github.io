@@ -37,7 +37,7 @@ THREE.WebAR.VRPointCloud = function(vrDisplay, usePointCloudPointsDirectly) {
 		alert(pointCloud.points + ", " + pointCloud.numberOfPoints);
 	}
 
-	var positions = vrDisplay ? (usePointCloudPointsDirectly ? vrDisplay.getPointCloud(false, 0).points : new Float32Array( vrDisplay.getMaxNumberOfPointsInPointCloud() * 3 )) : new Float32Array([-1, 1, -2, 1, 1, -2, 1, -1, -2, -1, -1, -2 ]);
+	var positions = vrDisplay ? (usePointCloudPointsDirectly ? pointCloud.points : new Float32Array( vrDisplay.getMaxNumberOfPointsInPointCloud() * 3 )) : new Float32Array([-1, 1, -2, 1, 1, -2, 1, -1, -2, -1, -1, -2 ]);
 	var colors = new Float32Array( positions.length );
 
 	var color = new THREE.Color();
