@@ -17,22 +17,22 @@ THREE.WebAR = {};
 * 2.- Using the same reference to a single TypedArray. The advantage is that the performance is as good as it can get with no creation/destruction and copy penalties. The disadvantage is that the size of the array is the biggest possible point cloud provided by the underlying hardware. The non used values are filled with Infinity.
 * @constructor
 * @param {window.VRDisplay} vrDisplay The reference to the VRDisplay instance that is capable of providing the point cloud.
-* @param {boolean} usePointCloudVerticesDirectly A flag to specify if a new TypedArray will be used in each frame with the exact number of points in the cloud or reuse a single reference to a TypedArray with the maximum number of points provided by the underlying hardware (non correct values are filled with Inifinity).
+* @param {boolean} usePointCloudPointsDirectly A flag to specify if a new TypedArray will be used in each frame with the exact number of points in the cloud or reuse a single reference to a TypedArray with the maximum number of points provided by the underlying hardware (non correct values are filled with Inifinity).
 *
 * NOTE: The buffer geometry that can be retrieved from instances of this class can be used along with THREE.Point and THREE.PointMaterial to render the point cloud using points. This class represents the vertices colors with the color white.
 */
-THREE.WebAR.VRPointCloud = function(vrDisplay, usePointCloudVerticesDirectly) {
+THREE.WebAR.VRPointCloud = function(vrDisplay, usePointCloudPointsDirectly) {
 
 	this._vrDisplay = vrDisplay;
 
-	this._lastPointCloudVertexCount = 0;
+	this._numberOfPointsInLastPointCloud = 0;
 
-	this._usePointCloudVerticesDirectly = usePointCloudVerticesDirectly;
+	this._usePointCloudPointsDirectly = usePointCloudPointsDirectly;
 
 	this._bufferGeometry = new THREE.BufferGeometry();
 	this._bufferGeometry.frustumCulled = false;
 
-	var positions = vrDisplay ? (usePointCloudVerticesDirectly ? vrDisplay.getPointCloud(false, 0).vertices : new Float32Array( vrDisplay.getMaxPointCloudVertexCount() * 3 )) : new Float32Array([-1, 1, -2, 1, 1, -2, 1, -1, -2, -1, -1, -2 ]);
+	var positions = vrDisplay ? (usePointCloudPointsDirectly ? vrDisplay.getPointCloud(false, 0).points : new Float32Array( vrDisplay.getMaxNumberOfPointsInPointCloud() * 3 )) : new Float32Array([-1, 1, -2, 1, 1, -2, 1, -1, -2, -1, -1, -2 ]);
 	var colors = new Float32Array( positions.length );
 
 	var color = new THREE.Color();
@@ -82,18 +82,18 @@ THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry, point
 	if (!this._vrDisplay) return;
 	var pointCloud = this._vrDisplay.getPointCloud(!updateBufferGeometry, typeof(pointsToSkip) === "number" ? pointsToSkip : 0);
 	if (!updateBufferGeometry) return;
-	if (!this._usePointCloudVerticesDirectly) {
-		if (pointCloud.vertices != null && pointCloud.vertexCount > 0) {
+	if (!this._usePointCloudPointsDirectly) {
+		if (pointCloud.points != null && pointCloud.vertexCount > 0) {
 			var vertexCount = Math.min(pointCloud.vertexCount, this._positions.length);
 			var pointCloudValueCount = vertexCount * 3;
 			for (var i = 0; i < pointCloudValueCount; i++) {
-				this._positions.array[i] = pointCloud.vertices[i];
+				this._positions.array[i] = pointCloud.points[i];
 			}
-			var lastPointCloudValueCount = this._lastPointCloudVertexCount * 3;
+			var lastPointCloudValueCount = this._numberOfPointsInLastPointCloud * 3;
 			for (var i = pointCloudValueCount; i < lastPointCloudValueCount; i++) {
 				this._positions.array[i] = Infinity;
 			}
-			this._lastPointCloudVertexCount = vertexCount;
+			this._numberOfPointsInLastPointCloud = vertexCount;
 			this._positions.needsUpdate = true;
 		}
 	}
