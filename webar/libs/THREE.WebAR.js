@@ -88,9 +88,9 @@ THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry, point
 	var pointCloud = this._vrDisplay.getPointCloud(!updateBufferGeometry, typeof(pointsToSkip) === "number" ? pointsToSkip : 0);
 	if (!updateBufferGeometry) return;
 	if (!this._usePointCloudPointsDirectly) {
-		if (pointCloud.points != null && pointCloud.vertexCount > 0) {
-			var vertexCount = Math.min(pointCloud.vertexCount, this._positions.length);
-			var pointCloudValueCount = vertexCount * 3;
+		if (pointCloud.numberOfPoints > 0) {
+			var numberOfPoints = Math.min(pointCloud.numberOfPoints, this._positions.length);
+			var pointCloudValueCount = numberOfPoints * 3;
 			for (var i = 0; i < pointCloudValueCount; i++) {
 				this._positions.array[i] = pointCloud.points[i];
 			}
@@ -98,11 +98,11 @@ THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry, point
 			for (var i = pointCloudValueCount; i < lastPointCloudValueCount; i++) {
 				this._positions.array[i] = Infinity;
 			}
-			this._numberOfPointsInLastPointCloud = vertexCount;
+			this._numberOfPointsInLastPointCloud = numberOfPoints;
 			this._positions.needsUpdate = true;
 		}
 	}
-	else if (pointCloud.vertexCount > 0) {
+	else if (pointCloud.numberOfPoints > 0) {
 		this._positions.needsUpdate = true;
 	}
 };
