@@ -112,7 +112,7 @@
 	                        	if (!USE_CUBE_AS_MODEL) {
 									var loader = new THREE.ColladaLoader();
 									loader.options.convertUpAxis = true;
-									loader.load( '../resources/3dmodels/geometry_5.dae', function ( collada ) {
+									loader.load( '../../resources/3dmodels/geometry_5.dae', function ( collada ) {
 										removeLoadSpinner();
 										var colladaScene = collada.scene;
 										colladaScene.rotateX(THREE.Math.degToRad(90));
