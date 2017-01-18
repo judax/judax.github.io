@@ -4,17 +4,20 @@
     if (navigator.getVRDisplays) {
         navigator.getVRDisplays().then(function(vrDisplays) {
             if (vrDisplays && vrDisplays.length > 0) {
+                var names = "";
                 for (var i = 0; i < vrDisplays.length; i++) {
                     vrDisplay = vrDisplays[i];
-                    console.log("VRDisplay #" + i + ": " + vrDisplay.displayName);
-                    if (vrDisplay.displayName === "Tango VR Device") {
-                    	alert("Tango VR Device found!");
-                        break;
-                    }
+                    names += "'" + vrDisplay.displayName + "'" + (i < vrDisplays.length - 1 ? ", " : "");
+                    // console.log("VRDisplay #" + i + ": " + vrDisplay.displayName);
+                    // if (vrDisplay.displayName === "Tango VR Device") {
+                    // 	alert("Tango VR Device found!");
+                    //     break;
+                    // }
                 }
-                if (i >= vrDisplays.length) {
-                    alert("No Tango VR Device could be found!");
-                }
+                // if (i >= vrDisplays.length) {
+                //     alert("No Tango VR Device could be found!");
+                // }
+                alert(names);
             }
         });
     }
