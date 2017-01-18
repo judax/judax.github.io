@@ -1,7 +1,8 @@
 <html>
 <body>
-<div id="names"/>
+<div id="message"/>
 <script>
+    var messageDiv = document.getElementById("message");
     if (navigator.getVRDisplays) {
         navigator.getVRDisplays().then(function(vrDisplays) {
             if (vrDisplays && vrDisplays.length > 0) {
@@ -19,12 +20,13 @@
                 //     alert("No Tango VR Device could be found!");
                 // }
                 alert(names);
-                document.getElementById("names").innerHTML = names;
+                messageDiv.innerHTML = names;
             }
         });
     }
     else 
     {
+        messageDiv.innerHTML = "No navigator.getVRDisplays";
         alert("No navigator.getVRDisplays");
     }
 </script>
