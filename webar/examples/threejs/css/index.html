@@ -54,7 +54,7 @@
 		<script src="../../libs/THREE.WebAR.js"></script>
 
 		<script>
-			var version = isNaN(Number(localStorage.version)) ? 0 : Number(localStorage.version) : 0;
+			var version = isNaN(Number(localStorage.version)) ? 0 : Number(localStorage.version);
 			alert("v" + version);
 			localStorage.version = "" + version++;
 
