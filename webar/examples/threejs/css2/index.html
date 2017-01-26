@@ -51,7 +51,7 @@
 		<script src="../../libs/third_party/dat.gui.min.js"></script>
 
 		<script>
-			alert("v8");
+			alert("v9");
 
 			function GUI() {
 				this.message = "";
@@ -122,7 +122,7 @@
 
 				// Add the renderer's domElements to the page.
 				document.body.appendChild( rendererCSS.domElement );
-				// rendererCSS.domElement.appendChild(rendererWebGL.domElement);
+				rendererCSS.domElement.appendChild(rendererWebGL.domElement);
 
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				cameraPersp = new THREE.PerspectiveCamera();
