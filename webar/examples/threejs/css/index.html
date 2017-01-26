@@ -151,7 +151,7 @@
 				sceneCSS.add(model);
 
 				// Create the rendererWebGL
-				rendererWebGL = new THREE.WebGLRenderer();
+				rendererWebGL = new THREE.WebGLRenderer({alpha:true});
 				rendererWebGL.setPixelRatio( window.devicePixelRatio );
 				rendererWebGL.setSize( window.innerWidth, window.innerHeight );
 				rendererWebGL.autoClear = false;
