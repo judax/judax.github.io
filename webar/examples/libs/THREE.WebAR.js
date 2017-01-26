@@ -374,7 +374,7 @@ THREE.WebAR.resizeVRSeeThroughCamera = function(vrDisplay, camera) {
         var yoffset = -(cy - (height / 2.0)) * yscale;
 
 		var left = xscale * -width / 2.0 - xoffset;
-		var right = xscale * width / 2.0 - xoffset,;
+		var right = xscale * width / 2.0 - xoffset;
 		var bottom = yscale * -height / 2.0 - yoffset;
         var top = yscale * height / 2.0 - yoffset;
 
