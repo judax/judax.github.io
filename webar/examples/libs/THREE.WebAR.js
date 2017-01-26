@@ -212,7 +212,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay, fallbackVideoPath
 	}
 	else {
 		var video = document.createElement("video");
-		video.src = typeof(fallbackVideoPath) === "string" ? fallbackVideoPath : "../resources/videos/sintel.webm";
+		video.src = typeof(fallbackVideoPath) === "string" ? fallbackVideoPath : "../../resources/videos/sintel.webm";
 		video.play();
 
 		// All the possible texture coordinates for the 4 possible orientations.
