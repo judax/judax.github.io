@@ -49,7 +49,7 @@
 		<script src="../../libs/third_party/Detector.js"></script>
 		<script src="../../libs/third_party/stats.min.js"></script>
 		<script src="../../libs/third_party/dat.gui.min.js"></script>
-		
+
 <script src='../../libs/third_party/TrackballControls.js'></script>
 
 		<script>
@@ -170,6 +170,11 @@ var controls;
 init();
 animate();
 
+function onWindowResize() {
+	rendererGl.setSize( window.innerWidth, window.innerHeight );
+	rendererCss.setSize( window.innerWidth, window.innerHeight );
+}
+
 function init() {
 
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
@@ -234,6 +239,8 @@ function init() {
 
     rendererCss.domElement.appendChild(rendererGl.domElement);
     document.body.appendChild(rendererCss.domElement);
+
+	window.addEventListener( 'resize', onWindowResize, false );
 }
 
 function animate() {
