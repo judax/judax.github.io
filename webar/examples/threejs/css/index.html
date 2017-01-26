@@ -54,7 +54,7 @@
 		<script src="../../libs/THREE.WebAR.js"></script>
 
 		<script>
-			alert("v0.1");
+			alert("v2");
 
 			function GUI() {
 				this.showPointCloud = showPointCloud;
@@ -148,7 +148,7 @@
 				cssElement.style.opacity = 1.0;
 				cssElement.style.background = new THREE.Color(Math.random() * 0xff0000).getStyle();
 				model = new THREE.CSS3DObject(cssElement);
-				sceneCSS.add(model);
+				// sceneCSS.add(model);
 
 				// Create the rendererWebGL
 				rendererWebGL = new THREE.WebGLRenderer();
@@ -233,7 +233,7 @@
 				// Update the perspective sceneCSS
 
 				// Render the perspective sceneCSS
-				// rendererCSS.render( sceneCSS, cameraPersp );
+				rendererCSS.render( sceneCSS, cameraPersp );
 
 				requestAnimationFrame( updateAndRender );
 			}
