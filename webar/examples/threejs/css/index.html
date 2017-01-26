@@ -54,7 +54,7 @@
 		<script src="../../libs/THREE.WebAR.js"></script>
 
 		<script>
-			alert("v5");
+			alert("v6");
 
 			function GUI() {
 				this.showPointCloud = showPointCloud;
@@ -146,9 +146,9 @@
 				cssElement.style.width = '100px';
 				cssElement.style.height = '100px';
 				cssElement.style.opacity = 1.0;
-				cssElement.style.background = new THREE.Color(Math.random() * 0xff0000).getStyle();
+				cssElement.style.background = new THREE.Color(Math.random() * 0xFFFFFF).getStyle();
 				model = new THREE.CSS3DObject(cssElement);
-				// sceneCSS.add(model);
+				sceneCSS.add(model);
 
 				// Create the rendererWebGL
 				rendererWebGL = new THREE.WebGLRenderer();
