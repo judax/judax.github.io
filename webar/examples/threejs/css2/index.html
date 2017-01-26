@@ -69,7 +69,6 @@
 
 			var pointCloud, showPointCloud = true;
 			var cube, model;
-			var controls;
 
 			var gui;
 
@@ -92,7 +91,7 @@
 				var geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
 				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
 				cube = new THREE.Mesh( geometry, material );
-				cube.position.set(0, 0, -5);
+				cube.position.set(0, 0, -0.5);
 				sceneWebGL.add( cube );
 				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
 				directionalLight.position.set( 0, 1, 0);
@@ -133,7 +132,6 @@
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 				cameraPersp.position.set(0, 0, 0);
-				controls = new THREE.TrackballControls(cameraPersp);
 
 				// Create a way to measure performance
 				// stats = new Stats();
@@ -151,8 +149,6 @@
 			//
 			function updateAndRender() {
 				// stats.update();
-
-				controls.update();
 
 				// Render the perspective sceneWebGL
 				rendererWebGL.clear();
