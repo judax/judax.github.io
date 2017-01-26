@@ -130,7 +130,7 @@
 
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-			    controls = new THREE.TrackballControls(cameraPersp);
+				controls = new THREE.TrackballControls(cameraPersp);
 
 				// Create a way to measure performance
 				// stats = new Stats();
@@ -149,8 +149,9 @@
 			function updateAndRender() {
 				// stats.update();
 
-				model.rotation.set(model.rotation.x + 0.1, model.rotation.y - 0.2, model.rotation.z);
-				cube.rotation.set(cube.rotation.x + 0.1, cube.rotation.y - 0.2, cube.rotation.z + 0.02);
+				controls.update();
+				// model.rotation.set(model.rotation.x + 0.1, model.rotation.y - 0.2, model.rotation.z);
+				// cube.rotation.set(cube.rotation.x + 0.1, cube.rotation.y - 0.2, cube.rotation.z + 0.02);
 
 				// Render the perspective sceneWebGL
 				rendererWebGL.clear();
