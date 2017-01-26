@@ -373,14 +373,14 @@ THREE.WebAR.resizeVRSeeThroughCamera = function(vrDisplay, camera) {
         // Color camera's coordinates has Y pointing downwards so we negate this term.
         var yoffset = -(cy - (height / 2.0)) * yscale;
 
-left, right, bottom, top, near, far
-
 		var left = xscale * -width / 2.0 - xoffset;
 		var right = xscale * width / 2.0 - xoffset,;
 		var bottom = yscale * -height / 2.0 - yoffset;
         var top = yscale * height / 2.0 - yoffset;
 
         camera.projectionMatrix.makeFrustum(left, right, bottom, top, camera.near, camera.far);
+
+        // Recalculate the fov as threejs is not doing it.
         camera.fov = THREE.Math.deg2Rad(Math.atan(top * camera.zoom / camera.near)) * 2.0;
 	}
 	else {
