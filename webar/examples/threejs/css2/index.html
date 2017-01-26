@@ -149,10 +149,14 @@
 			}
 
 			//
-			function updateAndRender() {
+			var lastTimestamp = null;
+			function updateAndRender(timestamp) {
+				if (lastTimestamp === null) lastTimestamp = timestamp;
+				var elapsedTime = lastTimestamp - timestamp;
+
 				// stats.update();
 
-				controls.update();
+				controls.update(elapsedTime);
 
 				// Render the perspective sceneWebGL
 				rendererWebGL.clear();
