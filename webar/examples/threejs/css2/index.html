@@ -90,9 +90,9 @@
 				// Create the 3D sceneWebGL and camera
 				sceneWebGL = new THREE.Scene();
 				var geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
-				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00, side: THREE.DoubleSide} );
 				cube = new THREE.Mesh( geometry, material );
-				cube.position.set(0, 0, -1);
+				cube.position.set(0, 0, -2);
 				sceneWebGL.add( cube );
 				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
 				directionalLight.position.set( 0, 1, 0);
