@@ -51,7 +51,7 @@
 		<script src="../../libs/third_party/dat.gui.min.js"></script>
 
 		<script>
-			alert("v5");
+			alert("v6");
 
 			function GUI() {
 				this.message = "";
@@ -80,10 +80,6 @@
 				var datGUI = new dat.GUI();
 				gui = new GUI();
 				datGUI.add(gui, "message", "Hello WebAR!");
-
-				// Initialize everything related to ThreeJS.
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
 
 				// Create the 3D sceneWebGL and camera
 				sceneWebGL = new THREE.Scene();
@@ -122,14 +118,12 @@
 
 				// Add the renderer's domElements to the page.
 				document.body.appendChild( rendererCSS.domElement );
-				rendererCSS.domElement.appendChild(rendererWebGL.domElement);
+				// rendererCSS.domElement.appendChild(rendererWebGL.domElement);
 
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				cameraPersp = new THREE.PerspectiveCamera();
 
 				// Create a way to measure performance
-				stats = new Stats();
-				container.appendChild( stats.dom );
 
 				// Control the resizing of the window to correctly display the sceneWebGL.
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -148,8 +142,8 @@
 				cube.rotation.set(cube.rotation.x + 0.1, cube.rotation.y - 0.2, cube.rotation.z + 0.02);
 
 				// Render the perspective sceneWebGL
-				rendererWebGL.clear();
-				rendererWebGL.render( sceneWebGL, cameraPersp );
+				// rendererWebGL.clear();
+				// rendererWebGL.render( sceneWebGL, cameraPersp );
 
 				// Update the perspective sceneCSS
 
