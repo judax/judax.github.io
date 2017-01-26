@@ -51,7 +51,7 @@
 		<script src="../../libs/third_party/dat.gui.min.js"></script>
 
 		<script>
-			alert("v2");
+			alert("v3");
 
 			function GUI() {
 				this.message = "";
@@ -145,6 +145,8 @@
 			//
 			function updateAndRender() {
 				stats.update();
+
+				model.rotation.set(model.rotation.x + 0.1, model.rotation.y - 0.2, model.rotation.z);
 
 				// Render the perspective sceneWebGL
 				rendererWebGL.clear();
