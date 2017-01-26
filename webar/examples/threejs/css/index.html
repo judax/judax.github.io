@@ -153,6 +153,7 @@
 				cssElement.style.background = new THREE.Color(Math.random() * 0xFFFFFF).getStyle();
 				model = new THREE.CSS3DObject(cssElement);
 				model.scale.set(0.01, 0.01, 0.01);
+				model.position.set(0, 0, -2);
 				sceneCSS.add(model);
 
 				// Create the rendererWebGL
