@@ -133,7 +133,7 @@
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 				cameraPersp.position.set(0, 0, 0);
-				controls = new THREE.FlyControls(cameraPersp);
+				// controls = new THREE.FlyControls(cameraPersp);
 
 				// Create a way to measure performance
 				// stats = new Stats();
@@ -156,7 +156,7 @@
 
 				// stats.update();
 
-				controls.update(elapsedTime);
+				// controls.update(elapsedTime);
 
 				// Render the perspective sceneWebGL
 				rendererWebGL.clear();
