@@ -112,7 +112,8 @@
 				rendererWebGL = new THREE.WebGLRenderer();
 				// rendererWebGL.setPixelRatio( window.devicePixelRatio );
 				rendererWebGL.setSize( window.innerWidth, window.innerHeight );
-				rendererWebGL.autoClear = false;
+				// rendererWebGL.autoClear = false;
+				rendererWebGl.setClearColor(0x00ff00, 0.0);
 				rendererWebGL.domElement.style.position = 'absolute';
 				rendererWebGL.domElement.style.zIndex = 1;
 				rendererWebGL.domElement.style.top = 0;
@@ -125,7 +126,7 @@
 				rendererCSS.domElement.style.top = 0;
 
 				// Add the renderer's domElements to the page.
-				// rendererCSS.domElement.appendChild(rendererWebGL.domElement);
+				rendererCSS.domElement.appendChild(rendererWebGL.domElement);
 				document.body.appendChild( rendererCSS.domElement );
 
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
