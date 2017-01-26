@@ -89,10 +89,10 @@
 
 				// Create the 3D sceneWebGL and camera
 				sceneWebGL = new THREE.Scene();
-				var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+				var geometry = new THREE.BoxGeometry( 0.01, 0.01, 0.01 );
 				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
 				cube = new THREE.Mesh( geometry, material );
-				cube.position.set(0, 0, -10);
+				cube.position.set(0, 0, -1);
 				sceneWebGL.add( cube );
 				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
 				directionalLight.position.set( 0, 1, 0);
@@ -105,7 +105,8 @@
 				cssElement.style.height = 100 + 'px';
 				cssElement.src = "../../resources/images/picture.jpg";
 				model = new THREE.CSS3DObject(cssElement);
-				model.position.set(0, 0, -10);
+				model.scale.set(0.001, 0.001, 0.001);
+				model.position.set(0, 0, -1);
 				sceneCSS.add(model);
 
 				// Create the rendererWebGL
@@ -131,7 +132,7 @@
 
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-				cameraPersp.position.set(0, 0, 50);
+				cameraPersp.position.set(0, 0, 0);
 				controls = new THREE.TrackballControls(cameraPersp);
 
 				// Create a way to measure performance
