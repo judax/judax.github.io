@@ -54,205 +54,206 @@
 
 		<script>
 		
-			// alert("v10");
+			alert("v10");
 
-			// function GUI() {
-			// 	this.message = "";
-			// 	return this;
-			// }
+			function GUI() {
+				this.message = "";
+				return this;
+			}
 
-			// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-			// var container, stats;
+			var container, stats;
 
-			// var cameraPersp, sceneWebGL, sceneCSS, rendererWebGL, rendererCSS;
+			var cameraPersp, sceneWebGL, sceneCSS, rendererWebGL, rendererCSS;
 
-			// var pointCloud, showPointCloud = true;
-			// var cube, model;
-			// var controls;
+			var pointCloud, showPointCloud = true;
+			var cube, model;
+			var controls;
 
-			// var gui;
+			var gui;
 
-   //          init();
-   //          updateAndRender();
+            init();
+            updateAndRender();
 
-			// function init() {
+			function init() {
 
-			// 	// Initialize the dat.GUI.
-			// 	// var datGUI = new dat.GUI();
-			// 	// gui = new GUI();
-			// 	// datGUI.add(gui, "message", "Hello WebAR!");
+				// Initialize the dat.GUI.
+				// var datGUI = new dat.GUI();
+				// gui = new GUI();
+				// datGUI.add(gui, "message", "Hello WebAR!");
 
-			// 	// Initialize everything related to ThreeJS.
-			// 	// container = document.createElement( 'div' );
-			// 	// document.body.appendChild( container );
+				// Initialize everything related to ThreeJS.
+				// container = document.createElement( 'div' );
+				// document.body.appendChild( container );
 
-			// 	// Create the 3D sceneWebGL and camera
-			// 	sceneWebGL = new THREE.Scene();
-			// 	var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-			// 	var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-			// 	cube = new THREE.Mesh( geometry, material );
-			// 	cube.position.set(0, 0, -10);
-			// 	sceneWebGL.add( cube );
-			// 	var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-			// 	directionalLight.position.set( 0, 1, 0);
-			// 	sceneWebGL.add( directionalLight );
+				// Create the 3D sceneWebGL and camera
+				sceneWebGL = new THREE.Scene();
+				var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+				cube = new THREE.Mesh( geometry, material );
+				cube.position.set(0, 0, -10);
+				sceneWebGL.add( cube );
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+				directionalLight.position.set( 0, 1, 0);
+				sceneWebGL.add( directionalLight );
 
-			// 	// Create the 3D sceneCSS
-			// 	sceneCSS = new THREE.Scene();
-			// 	var cssElement = document.createElement('img');
-			// 	cssElement.src = "../../resources/images/picture.jpg";
-			// 	model = new THREE.CSS3DObject(cssElement);
-			// 	model.position.set(0, 0, -50);
-			// 	sceneCSS.add(model);
+				// Create the 3D sceneCSS
+				sceneCSS = new THREE.Scene();
+				var cssElement = document.createElement('img');
+				cssElement.src = "../../resources/images/picture.jpg";
+				model = new THREE.CSS3DObject(cssElement);
+				model.position.set(0, 0, -50);
+				sceneCSS.add(model);
 
-			// 	// Create the rendererWebGL
-			// 	rendererWebGL = new THREE.WebGLRenderer();
-			// 	rendererWebGL.setPixelRatio( window.devicePixelRatio );
-			// 	rendererWebGL.setSize( window.innerWidth, window.innerHeight );
-			// 	rendererWebGL.autoClear = false;
-			// 	rendererWebGL.domElement.style.position = 'absolute';
-			// 	rendererWebGL.domElement.style.zIndex = 1;
-			// 	rendererWebGL.domElement.style.top = 0;
+				// Create the rendererWebGL
+				rendererWebGL = new THREE.WebGLRenderer();
+				rendererWebGL.setPixelRatio( window.devicePixelRatio );
+				rendererWebGL.setSize( window.innerWidth, window.innerHeight );
+				rendererWebGL.autoClear = false;
+				rendererWebGL.domElement.style.position = 'absolute';
+				rendererWebGL.domElement.style.zIndex = 1;
+				rendererWebGL.domElement.style.top = 0;
 
-			// 	// Create the rendererCSS
-			// 	rendererCSS = new THREE.CSS3DRenderer();
-			// 	rendererCSS.setSize( window.innerWidth, window.innerHeight );
-			// 	rendererCSS.domElement.style.position = 'absolute';
-			// 	// rendererCSS.domElement.style.zIndex = 0;
-			// 	rendererCSS.domElement.style.top = 0;
+				// Create the rendererCSS
+				rendererCSS = new THREE.CSS3DRenderer();
+				rendererCSS.setSize( window.innerWidth, window.innerHeight );
+				rendererCSS.domElement.style.position = 'absolute';
+				// rendererCSS.domElement.style.zIndex = 0;
+				rendererCSS.domElement.style.top = 0;
 
-			// 	// Add the renderer's domElements to the page.
-			// 	rendererCSS.domElement.appendChild(rendererWebGL.domElement);
-			// 	document.body.appendChild( rendererCSS.domElement );
+				// Add the renderer's domElements to the page.
+				rendererCSS.domElement.appendChild(rendererWebGL.domElement);
+				document.body.appendChild( rendererCSS.domElement );
 
-			// 	// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
-			// 	cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-			// 	controls = new THREE.TrackballControls(cameraPersp);
+				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
+				cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+				cameraPersp.position.set(60, 50, 100);
+				controls = new THREE.TrackballControls(cameraPersp);
 
-			// 	// Create a way to measure performance
-			// 	// stats = new Stats();
-			// 	// container.appendChild( stats.dom );
+				// Create a way to measure performance
+				// stats = new Stats();
+				// container.appendChild( stats.dom );
 
-			// 	// Control the resizing of the window to correctly display the sceneWebGL.
-			// 	window.addEventListener( 'resize', onWindowResize, false );
-			// }
+				// Control the resizing of the window to correctly display the sceneWebGL.
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
 
-			// function onWindowResize() {
-			// 	rendererWebGL.setSize( window.innerWidth, window.innerHeight );
-			// 	rendererCSS.setSize( window.innerWidth, window.innerHeight );
-			// }
+			function onWindowResize() {
+				rendererWebGL.setSize( window.innerWidth, window.innerHeight );
+				rendererCSS.setSize( window.innerWidth, window.innerHeight );
+			}
 
-			// //
-			// function updateAndRender() {
-			// 	// stats.update();
+			//
+			function updateAndRender() {
+				// stats.update();
 
-			// 	controls.update();
-			// 	// model.rotation.set(model.rotation.x + 0.1, model.rotation.y - 0.2, model.rotation.z);
-			// 	// cube.rotation.set(cube.rotation.x + 0.1, cube.rotation.y - 0.2, cube.rotation.z + 0.02);
+				controls.update();
+				// model.rotation.set(model.rotation.x + 0.1, model.rotation.y - 0.2, model.rotation.z);
+				// cube.rotation.set(cube.rotation.x + 0.1, cube.rotation.y - 0.2, cube.rotation.z + 0.02);
 
-			// 	// Render the perspective sceneWebGL
-			// 	rendererWebGL.clear();
-			// 	rendererWebGL.render( sceneWebGL, cameraPersp );
+				// Render the perspective sceneWebGL
+				rendererWebGL.clear();
+				rendererWebGL.render( sceneWebGL, cameraPersp );
 
-			// 	// Update the perspective sceneCSS
+				// Update the perspective sceneCSS
 
-			// 	// Render the perspective sceneCSS
-			// 	rendererCSS.render( sceneCSS, cameraPersp );
+				// Render the perspective sceneCSS
+				rendererCSS.render( sceneCSS, cameraPersp );
 
-			// 	requestAnimationFrame( updateAndRender );
-			// }
-
-
-var camera, sceneGl, rendererGl;
-var sceneCss, rendererCss;
-var controls;
-
-init();
-animate();
-
-function onWindowResize() {
-	rendererGl.setSize( window.innerWidth, window.innerHeight );
-	rendererCss.setSize( window.innerWidth, window.innerHeight );
-}
-
-function init() {
-
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(0, 0, 10);
-
-    controls = new THREE.TrackballControls(camera);
-
-    sceneGl = new THREE.Scene();
-    sceneCss = new THREE.Scene();
-
-    var material = new THREE.MeshBasicMaterial({
-        color: 0x000000,
-        opacity: 0.0,
-        side: THREE.DoubleSide
-    });
-
-    var size_x = 400;
-    var size_y = 490;
+				requestAnimationFrame( updateAndRender );
+			}
 
 
-    var element = document.createElement('img')
-    element.src = '../../resources/images/picture.jpg'
-    element.style.width = size_x + 'px';
-    element.style.height = size_y + 'px';
+// var camera, sceneGl, rendererGl;
+// var sceneCss, rendererCss;
+// var controls;
 
-    var object = new THREE.CSS3DObject(element);
-    object.position.set(0,0,-50);
-    object.scale.x = 0.1;
-    object.scale.y = 0.1;
-    sceneCss.add(object);
+// init();
+// animate();
 
-    // var geometry = new THREE.PlaneGeometry(size_x, size_y);
-    // var mesh = new THREE.Mesh(geometry, material);
-    // mesh.position.copy(object.position);
-    // mesh.rotation.copy(object.rotation);
-    // mesh.scale.copy(object.scale);
-    // sceneGl.add(mesh);
+// function onWindowResize() {
+// 	rendererGl.setSize( window.innerWidth, window.innerHeight );
+// 	rendererCss.setSize( window.innerWidth, window.innerHeight );
+// }
 
-    var geometry = new THREE.BoxGeometry( 10, 10, 10 );
-    var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    var cube1 = new THREE.Mesh( geometry, material );
-    cube1.position.copy(  new THREE.Vector3(0, 0, 50) );
-    sceneGl.add( cube1 );
+// function init() {
 
-    var geometry = new THREE.BoxGeometry( 10, 10, 10 );
-    var material = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
-    var cube2 = new THREE.Mesh( geometry, material );
-    cube2.position.copy(  new THREE.Vector3(0, 0, -50) );
-    sceneGl.add( cube2 );
+//     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+//     camera.position.set(60, 50, 100);
 
-    rendererCss = new THREE.CSS3DRenderer();
-    rendererCss.setSize(window.innerWidth, window.innerHeight);
-    rendererCss.domElement.style.position = 'absolute';
-    rendererCss.domElement.style.top = 0;
+//     controls = new THREE.TrackballControls(camera);
 
-    rendererGl = new THREE.WebGLRenderer({alpha:true});
-    rendererGl.autoClear = false;
-    rendererGl.setClearColor(0x00ff00, 0.0);
-    rendererGl.setSize(window.innerWidth, window.innerHeight);
-    rendererGl.domElement.style.position = 'absolute';
-    rendererGl.domElement.style.zIndex = 1;
-    rendererGl.domElement.style.top = 0;
+//     sceneGl = new THREE.Scene();
+//     sceneCss = new THREE.Scene();
 
-    rendererCss.domElement.appendChild(rendererGl.domElement);
-    document.body.appendChild(rendererCss.domElement);
+//     var material = new THREE.MeshBasicMaterial({
+//         color: 0x000000,
+//         opacity: 0.0,
+//         side: THREE.DoubleSide
+//     });
 
-    window.addEventListener( 'resize', onWindowResize, false );
-}
+//     var size_x = 400;
+//     var size_y = 490;
 
-function animate() {
-    requestAnimationFrame(animate);
 
-    controls.update();
+//     var element = document.createElement('img')
+//     element.src = '../../resources/images/picture.jpg'
+//     element.style.width = size_x + 'px';
+//     element.style.height = size_y + 'px';
 
-    rendererGl.render(sceneGl, camera);
-    rendererCss.render(sceneCss, camera);
-}
+//     var object = new THREE.CSS3DObject(element);
+//     object.position.set(0,0,-50);
+//     object.scale.x = 0.1;
+//     object.scale.y = 0.1;
+//     sceneCss.add(object);
+
+//     // var geometry = new THREE.PlaneGeometry(size_x, size_y);
+//     // var mesh = new THREE.Mesh(geometry, material);
+//     // mesh.position.copy(object.position);
+//     // mesh.rotation.copy(object.rotation);
+//     // mesh.scale.copy(object.scale);
+//     // sceneGl.add(mesh);
+
+//     var geometry = new THREE.BoxGeometry( 10, 10, 10 );
+//     var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+//     var cube1 = new THREE.Mesh( geometry, material );
+//     cube1.position.copy(  new THREE.Vector3(0, 0, 50) );
+//     sceneGl.add( cube1 );
+
+//     var geometry = new THREE.BoxGeometry( 10, 10, 10 );
+//     var material = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
+//     var cube2 = new THREE.Mesh( geometry, material );
+//     cube2.position.copy(  new THREE.Vector3(0, 0, -50) );
+//     sceneGl.add( cube2 );
+
+//     rendererCss = new THREE.CSS3DRenderer();
+//     rendererCss.setSize(window.innerWidth, window.innerHeight);
+//     rendererCss.domElement.style.position = 'absolute';
+//     rendererCss.domElement.style.top = 0;
+
+//     rendererGl = new THREE.WebGLRenderer({alpha:true});
+//     rendererGl.autoClear = false;
+//     rendererGl.setClearColor(0x00ff00, 0.0);
+//     rendererGl.setSize(window.innerWidth, window.innerHeight);
+//     rendererGl.domElement.style.position = 'absolute';
+//     rendererGl.domElement.style.zIndex = 1;
+//     rendererGl.domElement.style.top = 0;
+
+//     rendererCss.domElement.appendChild(rendererGl.domElement);
+//     document.body.appendChild(rendererCss.domElement);
+
+//     window.addEventListener( 'resize', onWindowResize, false );
+// }
+
+// function animate() {
+//     requestAnimationFrame(animate);
+
+//     controls.update();
+
+//     rendererGl.render(sceneGl, camera);
+//     rendererCss.render(sceneCss, camera);
+// }
 
 		</script>
 	</body>
