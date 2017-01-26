@@ -90,9 +90,9 @@
 				// Create the 3D sceneWebGL and camera
 				sceneWebGL = new THREE.Scene();
 				var geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
-				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00, side: THREE.DoubleSide} );
+				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
 				cube = new THREE.Mesh( geometry, material );
-				cube.position.set(0, 0, -2);
+				cube.position.set(0, 0, -0.3);
 				sceneWebGL.add( cube );
 				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
 				directionalLight.position.set( 0, 1, 0);
@@ -131,7 +131,7 @@
 				document.body.appendChild( rendererCSS.domElement );
 
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
-				cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+				cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.00001, 1000);
 				cameraPersp.position.set(0, 0, 0);
 				// controls = new THREE.FlyControls(cameraPersp);
 
