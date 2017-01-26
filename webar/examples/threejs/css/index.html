@@ -54,7 +54,9 @@
 		<script src="../../libs/THREE.WebAR.js"></script>
 
 		<script>
-			alert("v2");
+			var version = Number(localStorage.version) !== NaN ? Number(localStorage.version) : 0;
+			alert("v" + version);
+			localStorage.version = "" + version++;
 
 			function GUI() {
 				this.showPointCloud = showPointCloud;
