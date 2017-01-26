@@ -319,15 +319,9 @@ THREE.WebAR.updateCameraMeshOrientation = function(vrDisplay, cameraMesh) {
 * @return {THREE.Camera} A camera instance to be used to correctly render a scene on top of the camera video feed.
 */
 THREE.WebAR.createVRSeeThroughCamera = function(vrDisplay, near, far) {
-	var camera;
+	var camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
 	if (vrDisplay) {
-        camera = new THREE.Camera();
-        camera.near = near;
-        camera.far = far;
         THREE.WebAR.resizeVRSeeThroughCamera(vrDisplay, camera);
-	}
-	else {
-		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, near, far );
 	}
 	return camera;
 };
@@ -358,6 +352,7 @@ THREE.WebAR.updateCameraOrientation = function(vrDisplay, camera) {
 * @param {THREE.Camera} camera The ThreeJS camera instance to update its projection matrix depending on the current device orientation and see through camera properties.
 */
 THREE.WebAR.resizeVRSeeThroughCamera = function(vrDisplay, camera) {
+	camera.aspect = window.innerWidth / window.innerHeight;
 	if (vrDisplay) {
 		var windowWidthBiggerThanHeight = window.innerWidth > window.innerHeight;
 		var seeThroughCamera = vrDisplay.getSeeThroughCamera();
@@ -378,10 +373,17 @@ THREE.WebAR.resizeVRSeeThroughCamera = function(vrDisplay, camera) {
         // Color camera's coordinates has Y pointing downwards so we negate this term.
         var yoffset = -(cy - (height / 2.0)) * yscale;
 
-        camera.projectionMatrix.makeFrustum(xscale * -width / 2.0 - xoffset, xscale * width / 2.0 - xoffset,yscale * -height / 2.0 - yoffset, yscale * height / 2.0 - yoffset, camera.near, camera.far);
+left, right, bottom, top, near, far
+
+		var left = xscale * -width / 2.0 - xoffset;
+		var right = xscale * width / 2.0 - xoffset,;
+		var bottom = yscale * -height / 2.0 - yoffset;
+        var top = yscale * height / 2.0 - yoffset;
+
+        camera.projectionMatrix.makeFrustum(left, right, bottom, top, camera.near, camera.far);
+        camera.fov = THREE.Math.deg2Rad(Math.atan(top * camera.zoom / camera.near)) * 2.0;
 	}
 	else {
-		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
 	}
 }
