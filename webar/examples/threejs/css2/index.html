@@ -92,7 +92,7 @@
 				var geometry = new THREE.BoxGeometry( 0.01, 0.01, 0.01 );
 				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
 				cube = new THREE.Mesh( geometry, material );
-				cube.position.set(0, 0, -1);
+				cube.position.set(0, 0, -0.3);
 				sceneWebGL.add( cube );
 				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
 				directionalLight.position.set( 0, 1, 0);
@@ -106,7 +106,7 @@
 				cssElement.src = "../../resources/images/picture.jpg";
 				model = new THREE.CSS3DObject(cssElement);
 				model.scale.set(0.001, 0.001, 0.001);
-				model.position.set(0, 0, -1);
+				model.position.set(0, 0, -0.3);
 				sceneCSS.add(model);
 
 				// Create the rendererWebGL
