@@ -142,12 +142,19 @@
 
 				// Create the 3D sceneCSS
 				sceneCSS = new THREE.Scene();
-				var cssElement = document.createElement('div');
-				cssElement.style.width = '100px';
-				cssElement.style.height = '100px';
+
+				// var cssElement = document.createElement('div');
+				// cssElement.style.width = '100px';
+				// cssElement.style.height = '100px';
+				var cssElement = document.createElement('img');
+				cssElement.style.width = 100 + 'px';
+				cssElement.style.height = 100 + 'px';
+				cssElement.src = "../../resources/images/picture.jpg";
+
 				cssElement.style.opacity = 1.0;
 				cssElement.style.background = new THREE.Color(Math.random() * 0xFFFFFF).getStyle();
 				model = new THREE.CSS3DObject(cssElement);
+				mode.scale.set(0.1, 0.1, 0.1);
 				sceneCSS.add(model);
 
 				// Create the rendererWebGL
