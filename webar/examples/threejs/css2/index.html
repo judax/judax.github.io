@@ -101,9 +101,9 @@
 				var cssElement = document.createElement('div');
 				cssElement.style.width = '100px';
 				cssElement.style.height = '100px';
-				cssElement.style.opacity = 1.0;
 				cssElement.style.background = new THREE.Color(Math.random() * 0xFFFFFF).getStyle();
 				model = new THREE.CSS3DObject(cssElement);
+				model.position.set(0, 0, -5);
 				sceneCSS.add(model);
 
 				// Create the rendererWebGL
@@ -138,10 +138,6 @@
 			}
 
 			function onWindowResize() {
-				// TODO: Accordingly update the perspective camera.
-				// cameraPersp.aspect = window.innerWidth / window.innerHeight;
-				// cameraPersp.updateProjectionMatrix();
-				THREE.WebAR.resizeVRSeeThroughCamera(vrDisplay, cameraPersp);
 				rendererWebGL.setSize( window.innerWidth, window.innerHeight );
 				rendererCSS.setSize( window.innerWidth, window.innerHeight );
 			}
@@ -157,7 +153,7 @@
 				// Update the perspective sceneCSS
 
 				// Render the perspective sceneCSS
-				// rendererCSS.render( sceneCSS, cameraPersp );
+				rendererCSS.render( sceneCSS, cameraPersp );
 
 				requestAnimationFrame( updateAndRender );
 			}
