@@ -65,7 +65,7 @@
 			var cameraPersp, sceneWebGL, sceneCSS, rendererWebGL, rendererCSS;
 
 			var pointCloud, showPointCloud = true;
-			var model;
+			var cube, model;
 
 			var pos = new THREE.Vector3();
 
@@ -89,7 +89,7 @@
 				sceneWebGL = new THREE.Scene();
 				var geometry = new THREE.BoxGeometry( 1, 1, 1 );
 				var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-				var cube = new THREE.Mesh( geometry, material );
+				cube = new THREE.Mesh( geometry, material );
 				cube.position.set(0, 0, -10);
 				sceneWebGL.add( cube );
 				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
@@ -147,6 +147,7 @@
 				stats.update();
 
 				model.rotation.set(model.rotation.x + 0.1, model.rotation.y - 0.2, model.rotation.z);
+				cube.rotation.set(cube.rotation.x + 0.1, cube.rotation.y - 0.2, cube.rotation.z + 0.02);
 
 				// Render the perspective sceneWebGL
 				rendererWebGL.clear();
