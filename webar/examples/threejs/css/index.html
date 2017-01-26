@@ -57,6 +57,7 @@
 				this.showPointCloud = showPointCloud;
 				this.showSeeThroughCamera = true;
 				this.pointsToSkip = 0;
+				this.message = "";
 				return this;
 			}
 
@@ -110,7 +111,7 @@
 				});
 				datGUI.add(gui, "showSeeThroughCamera");
 				datGUI.add(gui, "pointsToSkip", 0, 10);
-				datGUI.add(gui, "label", "Hello WebAR!");
+				datGUI.add(gui, "message", "Hello WebAR!");
 
 				// Initialize everything related to ThreeJS.
 				container = document.createElement( 'div' );
