@@ -51,7 +51,7 @@
 		<script src="../../libs/third_party/dat.gui.min.js"></script>
 
 		<script>
-			alert("v6");
+			alert("v7");
 
 			function GUI() {
 				this.message = "";
@@ -80,6 +80,10 @@
 				var datGUI = new dat.GUI();
 				gui = new GUI();
 				datGUI.add(gui, "message", "Hello WebAR!");
+
+				// Initialize everything related to ThreeJS.
+				// container = document.createElement( 'div' );
+				// document.body.appendChild( container );
 
 				// Create the 3D sceneWebGL and camera
 				sceneWebGL = new THREE.Scene();
@@ -124,6 +128,8 @@
 				cameraPersp = new THREE.PerspectiveCamera();
 
 				// Create a way to measure performance
+				// stats = new Stats();
+				// container.appendChild( stats.dom );
 
 				// Control the resizing of the window to correctly display the sceneWebGL.
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -136,7 +142,7 @@
 
 			//
 			function updateAndRender() {
-				stats.update();
+				// stats.update();
 
 				model.rotation.set(model.rotation.x + 0.1, model.rotation.y - 0.2, model.rotation.z);
 				cube.rotation.set(cube.rotation.x + 0.1, cube.rotation.y - 0.2, cube.rotation.z + 0.02);
