@@ -66,7 +66,7 @@
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-			var container, stats;
+			var stats;
 
 			var cameraOrtho, cameraPersp, sceneCamera, sceneWebGL, sceneCSS, rendererWebGL, rendererCSS, cameraMesh;
 
@@ -99,26 +99,7 @@
 
 			function init(vrDisplay) {
 
-				// Initialize the dat.GUI.
-				var datGUI = new dat.GUI();
-				gui = new GUI();
-				datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
-					if (value) {
-						sceneWebGL.add(points)
-						showPointCloud = true;
-					}
-					else {
-						sceneWebGL.remove(points);
-						showPointCloud = false;
-					}
-				});
-				datGUI.add(gui, "showSeeThroughCamera");
-				datGUI.add(gui, "pointsToSkip", 0, 10);
-				datGUI.add(gui, "message", "Hello WebAR!");
-
 				// Initialize everything related to ThreeJS.
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
 
 				// Create the see through camera sceneWebGL and camera
 				sceneCamera = new THREE.Scene();
@@ -180,7 +161,7 @@
 
 				// Create a way to measure performance
 				stats = new Stats();
-				container.appendChild( stats.dom );
+				rendererCSS.domElement.appendChild( stats.dom );
 
 				// Control the resizing of the window to correctly display the sceneWebGL.
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -205,6 +186,23 @@
 			            }
 			        }
 			    });
+
+				// Initialize the dat.GUI.
+				var datGUI = new dat.GUI();
+				gui = new GUI();
+				datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
+					if (value) {
+						sceneWebGL.add(points)
+						showPointCloud = true;
+					}
+					else {
+						sceneWebGL.remove(points);
+						showPointCloud = false;
+					}
+				});
+				datGUI.add(gui, "showSeeThroughCamera");
+				datGUI.add(gui, "pointsToSkip", 0, 10);
+				datGUI.add(gui, "message", "Hello WebAR!");
 
 			}
 
