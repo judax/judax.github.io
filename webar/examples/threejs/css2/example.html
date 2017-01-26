@@ -64,12 +64,12 @@ function init() {
     object.scale.y = 0.1;
     sceneCss.add(object);
 
-    var geometry = new THREE.PlaneGeometry(size_x, size_y);
-    var mesh = new THREE.Mesh(geometry, material);
-    mesh.position.copy(object.position);
-    mesh.rotation.copy(object.rotation);
-    mesh.scale.copy(object.scale);
-    sceneGl.add(mesh);
+    // var geometry = new THREE.PlaneGeometry(size_x, size_y);
+    // var mesh = new THREE.Mesh(geometry, material);
+    // mesh.position.copy(object.position);
+    // mesh.rotation.copy(object.rotation);
+    // mesh.scale.copy(object.scale);
+    // sceneGl.add(mesh);
 
     var geometry = new THREE.BoxGeometry( 10, 10, 10 );
     var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
