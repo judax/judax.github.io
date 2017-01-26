@@ -98,10 +98,8 @@
 
 				// Create the 3D sceneCSS
 				sceneCSS = new THREE.Scene();
-				var cssElement = document.createElement('div');
-				cssElement.style.width = '100px';
-				cssElement.style.height = '100px';
-				cssElement.style.background = new THREE.Color(Math.random() * 0xFFFFFF).getStyle();
+				var cssElement = document.createElement('img');
+				cssElement.src = "../../resources/images/picture.jpg";
 				model = new THREE.CSS3DObject(cssElement);
 				model.position.set(0, 0, -5);
 				sceneCSS.add(model);
