@@ -42,6 +42,24 @@
 				text-shadow: 2px 3px 3px #292929;
 				letter-spacing: -7px;
 				-webkit-text-stroke: 1px white;
+			
+			}
+
+			#message_internal {
+				text-decoration: none;
+				color: #ffffff;
+				position: absolute;
+
+				-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), color-stop(50%, rgba(0,0,0,0)), to(rgba(0,0,0,1)));
+				text-shadow: 0 2px 0 #e9e9e9;
+				-webkit-transition: all .3s;
+				-moz-transition: all .3s;
+				transition: all .3s;
+			}
+			
+			#message:after {
+				color: #dbdbdb;
+				content : attr(message);
 			}
 
 			a { color: skyblue }
@@ -133,11 +151,16 @@
 				// Create the 3D sceneCSS
 				sceneCSS = new THREE.Scene();
 
-				var cssElement = document.createElement('div');
-				cssElement.id = "message";
-				cssElement.innerHTML = "Hello!";
-				cssElement.style.opacity = 1.0;
-				model = new THREE.CSS3DObject(cssElement);
+				var message = "Hello!";
+				var messageDiv = document.createElement('div');
+				messageDiv.id = "message";
+				messageDiv.setAttribute("message", message);
+				var messageInternalDiv = document.createElement('div');
+				messageInternalDiv.id = "message_internal";
+				messageDiv.appendChild(messageInternalDiv);
+				messageInternalDiv.innerHTML = message;
+				messageDiv.style.opacity = 1.0;
+				model = new THREE.CSS3DObject(messageDiv);
 				// model.scale.set(0.001, 0.001, 0.001);
 				model.position.set(Infinity, Infinity, Infinity);
 				sceneCSS.add(model);
