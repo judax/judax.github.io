@@ -78,7 +78,7 @@
 
 			var gui;
 
-	        if (false && navigator.getVRDisplays) {
+	        if (navigator.getVRDisplays) {
 	            navigator.getVRDisplays().then(function(vrDisplays) {
 	                if (vrDisplays && vrDisplays.length > 0) {
 	                    for (var i = 0; i < vrDisplays.length; i++) {
@@ -104,8 +104,8 @@
 				// Create the see through camera sceneWebGL and camera
 				sceneCamera = new THREE.Scene();
 				cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
-				// cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
-				// sceneCamera.add(cameraMesh);
+				cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
+				sceneCamera.add(cameraMesh);
 
 				// Create the 3D sceneWebGL and camera
 				sceneWebGL = new THREE.Scene();
@@ -158,7 +158,8 @@
 				document.body.appendChild(rendererCSS.domElement);
 
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
-				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
+				cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.00001, 1000);
+				// cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
 				vrControls = new THREE.VRControls(cameraPersp);
 
 				// =============================================
@@ -228,7 +229,7 @@
 
 				// Update the see through sceneCamera
 				// IMPORTANT: This call makes sure that the camera mesh (quad) uses the correct texture coordinates depending on the camera and device orientations.
-				// THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
+				THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
 
 				// Render the see through camera sceneWebGL
 				rendererWebGL.clear();
