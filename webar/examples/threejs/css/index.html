@@ -217,7 +217,7 @@
 				            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
 
 				            pos.subVectors(model.position, cameraPersp.position);
-				            var distance = pos.length();
+				            var distance = pos.length().toFixed(2);
 				            var message = "This CSS text is " + distance + " meters away from your current position.";
 				            model.element.setAttribute("message", message);
 				            model.element.children[0].innerHTML = message;
