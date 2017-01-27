@@ -160,8 +160,10 @@
 				rendererCSS.domElement.style.top = 0;
 
 				// Add the renderer's domElements to the page.
-				document.body.appendChild( rendererCSS.domElement );
-				rendererCSS.domElement.appendChild(rendererWebGL.domElement);
+				// document.body.appendChild( rendererCSS.domElement );
+				// rendererCSS.domElement.appendChild(rendererWebGL.domElement);
+				document.body.appendChild( rendererWebGL.domElement );
+				rendererWebGL.domElement.appendChild(rendererCSS.domElement);
 
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
