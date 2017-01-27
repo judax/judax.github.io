@@ -133,7 +133,7 @@
 				model = new THREE.CSS3DObject(cssElement);
 				model.scale.set(0.001, 0.001, 0.001);
 				model.position.set(0, 0, -0.3);
-				// sceneCSS.add(model);
+				sceneCSS.add(model);
 
 				// Create the rendererWebGL
 				rendererWebGL = new THREE.WebGLRenderer({alpha:true});
@@ -161,11 +161,6 @@
 				// cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.00001, 1000);
 				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
 				vrControls = new THREE.VRControls(cameraPersp);
-
-				// =============================================
-				sceneCSS.add(cameraPersp);
-				cameraPersp.add(model);
-				// =============================================
 
 				// Create a way to measure performance
 				stats = new Stats();
