@@ -169,8 +169,9 @@
 				messageDiv.style.background = "lightblue";
 
 				model = new THREE.CSS3DObject(messageDiv);
-				// model.scale.set(0.001, 0.001, 0.001);
-				model.position.set(Infinity, Infinity, Infinity);
+				model.scale.set(0.001, 0.001, 0.001);
+				model.position.set(0, 0, -0.3);
+				// model.position.set(Infinity, Infinity, Infinity);
 				sceneCSS.add(model);
 
 				// Create the rendererWebGL
