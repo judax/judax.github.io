@@ -160,6 +160,7 @@
 				messageDiv.appendChild(messageInternalDiv);
 				messageInternalDiv.innerHTML = message;
 				messageDiv.style.opacity = 1.0;
+				messageDiv.style.display = "inline-block";
 				model = new THREE.CSS3DObject(messageDiv);
 				// model.scale.set(0.001, 0.001, 0.001);
 				model.position.set(Infinity, Infinity, Infinity);
