@@ -151,22 +151,20 @@
 				// Create the 3D sceneCSS
 				sceneCSS = new THREE.Scene();
 
-				// var message = "Hello!";
-				// var messageDiv = document.createElement('div');
-				// messageDiv.id = "message";
-				// messageDiv.setAttribute("message", message);
-				// var messageInternalDiv = document.createElement('div');
-				// messageInternalDiv.id = "message_internal";
-				// messageDiv.appendChild(messageInternalDiv);
-				// messageInternalDiv.innerHTML = message;
-				// messageDiv.style.opacity = 1.0;
+				var message = "Hello!";
+				var messageDiv = document.createElement('div');
+				messageDiv.id = "message";
+				messageDiv.setAttribute("message", message);
+				var messageInternalDiv = document.createElement('div');
+				messageInternalDiv.id = "message_internal";
+				messageDiv.appendChild(messageInternalDiv);
+				messageInternalDiv.innerHTML = message;
+				messageDiv.style.opacity = 1.0;
+
+				// var messageDiv = document.createElement("div");
 				// messageDiv.style.width = "100px";
 				// messageDiv.style.height = "100px";
-
-				var messageDiv = document.createElement("div");
-				messageDiv.style.width = "100px";
-				messageDiv.style.height = "100px";
-				messageDiv.style.background = "lightblue";
+				// messageDiv.style.background = "lightblue";
 
 				model = new THREE.CSS3DObject(messageDiv);
 				model.scale.set(0.001, 0.001, 0.001);
