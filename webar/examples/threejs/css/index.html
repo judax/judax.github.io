@@ -32,7 +32,16 @@
 				text-align: center;
 				z-index: 100;
 				display:block;
+			}
 
+			#message {
+				position: relative;
+				font-size: 200px;
+				margin-top: 0;
+				font-family: 'Myriad Pro', 'Myriad', helvetica, arial, sans-serif;
+				text-shadow: 2px 3px 3px #292929;
+				letter-spacing: -7px;
+				-webkit-text-stroke: 1px white;
 			}
 
 			a { color: skyblue }
@@ -125,9 +134,9 @@
 				sceneCSS = new THREE.Scene();
 
 				var cssElement = document.createElement('div');
-				cssElement.innerHTML = "<b>Hello!</b>";
+				cssElement.id = "message";
+				cssElement.innerHTML = "Hello!";
 				cssElement.style.opacity = 1.0;
-				cssElement.style.background = new THREE.Color(Math.random() * 0xFFFFFF).getStyle();
 				model = new THREE.CSS3DObject(cssElement);
 				// model.scale.set(0.001, 0.001, 0.001);
 				model.position.set(Infinity, Infinity, Infinity);
