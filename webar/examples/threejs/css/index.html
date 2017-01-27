@@ -104,7 +104,7 @@
 				// Create the see through camera sceneWebGL and camera
 				sceneCamera = new THREE.Scene();
 				cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
-				cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
+				// cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
 				// sceneCamera.add(cameraMesh);
 
 				// Create the 3D sceneWebGL and camera
@@ -228,7 +228,7 @@
 
 				// Update the see through sceneCamera
 				// IMPORTANT: This call makes sure that the camera mesh (quad) uses the correct texture coordinates depending on the camera and device orientations.
-				THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
+				// THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
 
 				// Render the see through camera sceneWebGL
 				rendererWebGL.clear();
