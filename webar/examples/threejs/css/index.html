@@ -124,14 +124,12 @@
 				// Create the 3D sceneCSS
 				sceneCSS = new THREE.Scene();
 
-				var cssElement = document.createElement('img');
-				cssElement.style.width = 100 + 'px';
-				cssElement.style.height = 100 + 'px';
-				cssElement.src = "../../resources/images/picture.jpg";
+				var cssElement = document.createElement('div');
+				cssElement.innerHTML = "<b>Hello!</b>";
 				cssElement.style.opacity = 1.0;
 				cssElement.style.background = new THREE.Color(Math.random() * 0xFFFFFF).getStyle();
 				model = new THREE.CSS3DObject(cssElement);
-				model.scale.set(0.001, 0.001, 0.001);
+				// model.scale.set(0.001, 0.001, 0.001);
 				model.position.set(Infinity, Infinity, Infinity);
 				sceneCSS.add(model);
 
@@ -173,7 +171,7 @@
 			        if (vrDisplay) {
 			            pos.x = event.pageX / window.innerWidth;
 			            pos.y = event.pageY / window.innerHeight;
-			            
+
 			            THREE.WebAR.updateVector3Orientation(vrDisplay, pos);
 
 			            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
