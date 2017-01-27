@@ -381,7 +381,7 @@ THREE.WebAR.resizeVRSeeThroughCamera = function(vrDisplay, camera) {
         camera.projectionMatrix.makeFrustum(left, right, bottom, top, camera.near, camera.far);
 
         // Recalculate the fov as threejs is not doing it.
-        camera.fov = THREE.Math.degToRad(Math.atan(top * camera.zoom / camera.near)) * 2.0;
+        camera.fov = THREE.Math.radToDeg(Math.atan((top * camera.zoom) / camera.near)) * 2.0;
         alert("fov = " + camera.fov);
 	}
 	else {
