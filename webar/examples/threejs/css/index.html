@@ -160,7 +160,6 @@
 				messageDiv.appendChild(messageInternalDiv);
 				messageInternalDiv.innerHTML = message;
 				messageDiv.style.opacity = 1.0;
-
 				model = new THREE.CSS3DObject(messageDiv);
 				model.scale.set(0.001, 0.001, 0.001);
 				model.position.set(0, 0, -0.3);
@@ -205,6 +204,7 @@
 			        if (vrDisplay) {
 			            pos.x = event.pageX / window.innerWidth;
 			            pos.y = event.pageY / window.innerHeight;
+			            pos.z = 0;
 
 			            THREE.WebAR.updateVector3Orientation(vrDisplay, pos);
 
@@ -215,6 +215,12 @@
 			            	// alert(pointAndPlane.point);
 							// model.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
 				            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
+
+				            pos.subVectors(model.position, cameraPersp.position);
+				            var distance = pos.length();
+				            var message = "This CSS text is " + distance + " meters away from your current position.";
+				            model.element.setAttribute("message", message);
+				            model.element.children[0].innerHTML = message;
 			            }
 			            else {
 			            	alert("Could not retrieve the correct point and plane.");
