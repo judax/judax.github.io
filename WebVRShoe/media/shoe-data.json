@@ -1,0 +1,124 @@
+{
+  "shoes": [
+    {
+      "name": "Alba",
+      "price": 60,
+      "color": {
+        "x": 0.2,
+        "y": 0.2
+      }
+    },
+    {
+      "name": "Sarah",
+      "price": 75,
+      "color": {
+        "x": 0.3,
+        "y": 0.3
+      }
+    },
+    {
+      "name": "Dora",
+      "price": 54,
+      "color": {
+        "x": 0.4,
+        "y": 0.4
+      }
+    },
+    {
+      "name": "Don",
+      "price": 75,
+      "color": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "name": "Chris",
+      "price": 80,
+      "color": {
+        "x": 0.6,
+        "y": 0.6
+      }
+    },
+    {
+      "name": "Linda",
+      "price": 35,
+      "color": {
+        "x": 0.7,
+        "y": 0.7
+      }
+    },
+    {
+      "name": "Florence",
+      "price": 63,
+      "color": {
+        "x": 0.8,
+        "y": 0.8
+      }
+    },
+    {
+      "name": "Heather",
+      "price": 84,
+      "color": {
+        "x": 0.9,
+        "y": 0.9
+      }
+    },
+    {
+      "name": "Jason",
+      "price": 50,
+      "color": {
+        "x": 0.2,
+        "y": 0.7
+      }
+    },
+    {
+      "name": "Hanna",
+      "price": 54,
+      "color": {
+        "x": 0.7,
+        "y": 0.2
+      }
+    },
+    {
+      "name": "Ingrid",
+      "price": 60,
+      "color": {
+        "x": 0.9,
+        "y": 0.2
+      }
+    },
+    {
+      "name": "Rachel",
+      "price": 40,
+      "color": {
+        "x": 0.2,
+        "y": 0.9
+      }
+    },
+    {
+      "name": "Russel",
+      "price": 50,
+      "color": {
+        "x": 0.1,
+        "y": 0.5
+      }
+    },
+    {
+      "name": "Solace",
+      "price": 63,
+      "color": {
+        "x": 0.5,
+        "y": 0.1
+      }
+    },
+    {
+      "name": "Lisa",
+      "price": 80,
+      "color": {
+        "x": 0.8,
+        "y": 0.2
+      }
+    }
+  ]
+}
