@@ -73,9 +73,8 @@
 		<script>
 			function GUI() {
 				this.showPointCloud = showPointCloud;
-				this.showSeeThroughCamera = false;
+				this.showSeeThroughCamera = true;
 				this.pointsToSkip = 0;
-				this.message = "";
 				return this;
 			}
 
@@ -85,7 +84,7 @@
 
 			var cameraOrtho, cameraPersp, sceneCamera, sceneWebGL, sceneCSS, rendererWebGL, rendererCSS, cameraMesh;
 
-			var pointCloud, showPointCloud = true;
+			var pointCloud, showPointCloud = false;
 			var vrDisplay;
 			var model;
 
@@ -213,7 +212,6 @@
 				});
 				datGUI.add(gui, "showSeeThroughCamera");
 				datGUI.add(gui, "pointsToSkip", 0, 10);
-				datGUI.add(gui, "message", "Hello WebAR!");
 
 			}
 
