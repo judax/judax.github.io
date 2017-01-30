@@ -90,6 +90,7 @@
 
 			var pos = new THREE.Vector3();
 
+			var lastX;
 			var gui;
 
 	        if (navigator.getVRDisplays) {
@@ -175,6 +176,20 @@
 
 				// Control the resizing of the window to correctly display the sceneWebGL.
 				window.addEventListener( 'resize', onWindowResize, false );
+
+			    rendererCSS.domElement.addEventListener("touchstart", function(event) {
+			    	if (event.changedTouches.length > 0)
+			    		lastX = event.changedTouches[0].pageX;
+			    });
+
+			    rendererCSS.domElement.addEventListener("touchmove", function(event) {
+			        if (event.changedTouches.length > 0 && vrDisplay) {
+			        	var x = event.changedTouches[0].pageX;
+			        	var diffX = x - lastX;
+			        	lastX = x;
+			        	model.rotateZ(THREE.Math.degToRad(diffX));
+			        }
+			    });
 
 			    rendererCSS.domElement.addEventListener("click", function(event) {
 			        if (vrDisplay) {
