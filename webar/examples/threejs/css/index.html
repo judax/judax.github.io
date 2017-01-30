@@ -44,38 +44,13 @@
 				color: white;			
 			}
 
-/*			#message {
-				position: relative;
-				font-size: 200px;
-				margin-top: 0;
-				font-family: 'Myriad Pro', 'Myriad', helvetica, arial, sans-serif;
-				text-shadow: 2px 3px 3px #292929;
-				letter-spacing: -7px;
-				-webkit-text-stroke: 1px white;
-			
-			}
-
-			#message_internal {
-				text-decoration: none;
-				color: #ffffff;
-				position: absolute;
-
-				-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), color-stop(50%, rgba(0,0,0,0)), to(rgba(0,0,0,1)));
-				text-shadow: 0 2px 0 #e9e9e9;
-				-webkit-transition: all .3s;
-				-moz-transition: all .3s;
-				transition: all .3s;
-			}
-			
-			#message:after {
-				color: #dbdbdb;
-				content : attr(message);
-			}
-*/
 			a { color: skyblue }
 		</style>
 	</head>
 	<body>
+
+		<div id="message">Hello</div>
+
 		<div id="info">
 			<a href="http://threejs.org" target="_blank">three.js</a> -
 			WebAR (Tango) CSS ThreeJS Example <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
@@ -154,22 +129,20 @@
 				points.renderDepth = 0;
 				if (showPointCloud)
 					sceneWebGL.add(points);
-				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-				directionalLight.position.set( 0, 1, 0);
-				sceneWebGL.add( directionalLight );
 
 				// Create the 3D sceneCSS
 				sceneCSS = new THREE.Scene();
 
-				var message = "This is a CSS message!";
-				var messageDiv = document.createElement('div');
-				messageDiv.id = "message";
-				messageDiv.setAttribute("message", message);
-				var messageInternalDiv = document.createElement('div');
-				messageInternalDiv.id = "message_internal";
-				messageDiv.appendChild(messageInternalDiv);
-				messageInternalDiv.innerHTML = message;
-				messageDiv.style.opacity = 1.0;
+				// var message = "";
+				// var messageDiv = document.createElement('div');
+				// messageDiv.id = "message";
+				// messageDiv.setAttribute("message", message);
+				// var messageInternalDiv = document.createElement('div');
+				// messageInternalDiv.id = "message_internal";
+				// messageDiv.appendChild(messageInternalDiv);
+				// messageInternalDiv.innerHTML = message;
+				// messageDiv.style.opacity = 1.0;
+				var messageDiv = document.getElementById("message");
 				model = new THREE.CSS3DObject(messageDiv);
 				model.scale.set(0.001, 0.001, 0.001);
 				model.position.set(0, 0, -0.3);
@@ -193,8 +166,6 @@
 				rendererCSS.domElement.style.top = 0;
 
 				// Add the renderer's domElements to the page.
-				// document.body.appendChild( rendererCSS.domElement );
-				// rendererCSS.domElement.appendChild(rendererWebGL.domElement);
 				document.body.appendChild(rendererWebGL.domElement);
 				document.body.appendChild(rendererCSS.domElement);
 
@@ -228,9 +199,9 @@
 
 				            pos.subVectors(model.position, cameraPersp.position);
 				            var distance = pos.length().toFixed(2);
-				            var message = "This CSS text is " + distance + " meters away from your current position.";
-				            model.element.setAttribute("message", message);
-				            model.element.children[0].innerHTML = message;
+				            var message = "" + distance + " meters";
+				            var messageDiv = document.getElementById("message");
+				            messageDiv.innerHTML = message;
 			            }
 			            else {
 			            	alert("Could not retrieve the correct point and plane.");
