@@ -20,10 +20,12 @@
 			}
 			var eventClone = new event.constructor(event.type, event);
 			node.dispatchEvent(eventClone);
+			eventClone.stopPropagation();
 		}
 		div.addEventListener("click", function(event) {
 			dispatchEventToChildren(event.target, event);
 			alert(1);
+			event.stopPropagation();
 		});
 	</script>
 
