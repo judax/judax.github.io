@@ -191,27 +191,29 @@
 			        }
 			    });
 
-			    // rendererCSS.domElement.addEventListener("click", function(event) {
-			    //     if (vrDisplay) {
-			    //         pos.x = event.pageX / window.innerWidth;
-			    //         pos.y = event.pageY / window.innerHeight;
-			    //         pos.z = 0;
+			    rendererCSS.domElement.style["pointer-event"] = "none";
 
-			    //         THREE.WebAR.updateVector3Orientation(vrDisplay, pos);
+			    rendererCSS.domElement.addEventListener("click", function(event) {
+			        if (vrDisplay) {
+			            pos.x = event.pageX / window.innerWidth;
+			            pos.y = event.pageY / window.innerHeight;
+			            pos.z = 0;
 
-			    //         var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
-			    //         // console.log("x = " + lastX + ", y = " + lastY + ", window.innerWidth = " + window.innerWidth + ", window.innerHeight = " + window.innerHeight + ", uvx = " + x + ", uvy = " + y + ", point[0] = " + pointAndPlane.point[0] + ", point[1] = " + pointAndPlane.point[1] + ", point[2] = " + pointAndPlane.point[2] + ", plane[0] = " + pointAndPlane.plane[0] + ", plane[1] = " + pointAndPlane.plane[1] + ", plane[2] = " + pointAndPlane.plane[2] + ", plane[3] = " + pointAndPlane.plane[3]);  
+			            THREE.WebAR.updateVector3Orientation(vrDisplay, pos);
 
-			    //         if (pointAndPlane) {
-			    //         	// alert(pointAndPlane.point);
-							// // model.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
-				   //          THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
-			    //         }
-			    //         else {
-			    //         	alert("Could not retrieve the correct point and plane.");
-			    //         }
-			    //     }
-			    // });
+			            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
+			            // console.log("x = " + lastX + ", y = " + lastY + ", window.innerWidth = " + window.innerWidth + ", window.innerHeight = " + window.innerHeight + ", uvx = " + x + ", uvy = " + y + ", point[0] = " + pointAndPlane.point[0] + ", point[1] = " + pointAndPlane.point[1] + ", point[2] = " + pointAndPlane.point[2] + ", plane[0] = " + pointAndPlane.plane[0] + ", plane[1] = " + pointAndPlane.plane[1] + ", plane[2] = " + pointAndPlane.plane[2] + ", plane[3] = " + pointAndPlane.plane[3]);  
+
+			            if (pointAndPlane) {
+			            	// alert(pointAndPlane.point);
+							// model.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
+				            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
+			            }
+			            else {
+			            	alert("Could not retrieve the correct point and plane.");
+			            }
+			        }
+			    });
 
 				// Initialize the dat.GUI.
 				var datGUI = new dat.GUI();
