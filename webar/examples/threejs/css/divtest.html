@@ -20,8 +20,8 @@
 			}
 			node.dispatchEvent(event);
 		}
-		div.addEventListener("click", function(ev) {
-			dispatchEventToChildren(ev.target);
+		div.addEventListener("click", function(event) {
+			dispatchEventToChildren(event.target, event);
 			alert(1);
 		});
 	</script>
