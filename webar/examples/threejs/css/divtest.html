@@ -12,20 +12,21 @@
 		</div>
 	</div>
 
-</body>
+	<script>
+		var div = document.getElementById("mainDiv");
+		function dispatchEventToChildren(node, event) {
+			for (var i = 0; i < node.children.length; i++) {
+				dispatchEventToChildren(node.children[i], event);
+			}
+			node.dispatchEvent(event);
+		}
+		div.addEventListener("click", function(ev) {
+			dispatchEventToChildren(ev.target);
+			alert(1);
+		});
+	</script>
 
-<script>
-var div = document.getElementById("mainDiv");
-function dispatchEventToChildren(node, event) {
-	for (var i = 0; i < node.children.length; i++) {
-		dispatchEventToChildren(node.children[i], event);
-	}
-	node.dispatchEvent(event);
-}
-div.addEventListener("click", function(ev) {
-	dispatchEventToChildren(ev.target);
-	alert(1);
-});
-</script>
+
+</body>
 
 </html>
