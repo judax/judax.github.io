@@ -35,9 +35,9 @@
 			}
 
 
-			#message {
+			#distanceText {
 				position: relative;
-				font-size: 100px;
+				font-size: 20px;
 				margin-top: 0;
 				font-family: 'Myriad Pro', 'Myriad', helvetica, arial, sans-serif;
 				letter-spacing: -7px;
@@ -49,7 +49,10 @@
 	</head>
 	<body>
 
-		<div id="message">Hello</div>
+	<div id="search" style="width:100px; height:100px;">
+		<iframe width="100" height="100" src="http://www.google.com"></iframe>
+		<div id="distanceText"></div>
+	</div>
 
 		<div id="info">
 			<a href="http://threejs.org" target="_blank">three.js</a> -
@@ -142,7 +145,7 @@
 				// messageDiv.appendChild(messageInternalDiv);
 				// messageInternalDiv.innerHTML = message;
 				// messageDiv.style.opacity = 1.0;
-				var messageDiv = document.getElementById("message");
+				var messageDiv = document.getElementById("search");
 				model = new THREE.CSS3DObject(messageDiv);
 				model.scale.set(0.001, 0.001, 0.001);
 				model.position.set(0, 0, -0.3);
@@ -200,7 +203,7 @@
 				            pos.subVectors(model.position, cameraPersp.position);
 				            var distance = pos.length().toFixed(2);
 				            var message = "" + distance + " meters";
-				            var messageDiv = document.getElementById("message");
+				            var messageDiv = document.getElementById("distanceText");
 				            messageDiv.innerHTML = message;
 			            }
 			            else {
