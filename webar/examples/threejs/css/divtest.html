@@ -18,7 +18,8 @@
 			for (var i = 0; i < node.children.length; i++) {
 				dispatchEventToChildren(node.children[i], event);
 			}
-			node.dispatchEvent(event);
+			var eventClone = new event.constructor(event.type, event);
+			node.dispatchEvent(eventClone);
 		}
 		div.addEventListener("click", function(event) {
 			dispatchEventToChildren(event.target, event);
