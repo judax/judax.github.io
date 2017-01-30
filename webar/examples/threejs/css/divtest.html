@@ -5,20 +5,27 @@
 </head>
 <body>
 
-<!--
-<div style="overflow: hidden;transform-style: preserve-3d;width: 100%;height: 100%;position: absolute;top: 0px;perspective: 408.764px;/* pointer-events: none; */" onclick="alert(1)">
--->
+<div id="mainDiv" style="overflow: hidden;transform-style: preserve-3d;width: 100%;height: 100%;position: absolute;top: 0px;perspective: 408.764px;">
 
-<!--
-	<div style="position:absolute;width:100%;height:100%;" onclick="alert(2)"></div>
--->
-
-	<div style="position: absolute;left: 50%;top: 50%; width:100%;height:100%;/*transform-style: preserve-3d;transform: translateZ(408.764px) matrix3d(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);*/" onclick="alert(2)">
+	<div style="position: absolute;left: 50%;top: 50%;transform-style: preserve-3d;transform: translateZ(408.764px) matrix3d(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);" onclick="alert(2)">
+		<div style="width:100%;height:100%;" onclick="alert(3)">
+		</div>
 	</div>
 
-<!--
-</div>
--->
-
 </body>
+
+<script>
+var div = document.getElementById("mainDiv");
+function dispatchEventToChildren(node, event) {
+	for (var i = 0; i < node.children.length; i++) {
+		dispatchEventToChildren(node.children[i], event);
+	}
+	node.dispatchEvent(event);
+}
+div.addEventListener("click", function(ev) {
+	dispatchEventToChildren(ev.target);
+	alert(1);
+});
+</script>
+
 </html>
