@@ -8,7 +8,7 @@
                     vrDisplay = vrDisplays[i];
                     if (vrDisplay.capabilities.hasADFSupport) {
                     	var adfs = vrDisplay.getADFs();
-                    	alert("adfs = " + adfs);
+                    	alert("adfs = " + typeof(adfs) + " (" + adfs.length + ")");
                     }
                 }
             }
