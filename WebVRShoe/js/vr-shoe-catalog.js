@@ -68,6 +68,8 @@ window.VRShoeCatalog = (function () {
     this.gl = gl;
 
     this.labelMat = mat4.create();
+    this.labelOffset = vec3.create();
+    vec3.set(this.labelOffset, -0.07, -0.05, 0);
     this.normalMat = mat3.create();
     this.heroRotationMat = mat4.create();
     mat4.identity(this.heroRotationMat);
@@ -97,87 +99,114 @@ window.VRShoeCatalog = (function () {
   };
 
   /**
-   * Render the shoe catalog.
+   * Draw a label for the given shoe at the given coord.
    *
-   * @param projectionMat The projection matrix.
-   * @param modelViewMat The model view matrix.
-   * @param timestamp The current timestamp.
+   * @param {mat4} projectionMat The projection matrix.
+   * @param {mat4} modelViewMat The model view matrix.
+   * @param {Object} shoe The shoe data.
+   * @param {vec3} coord The coordinates of the shoe.
    */
-  ShoeCatalog.prototype.render = function(
-      projectionMat, modelViewMat, timestamp) {
+  ShoeCatalog.prototype.drawLabel = function(
+      projectionMat, modelViewMat, shoe) {
+    this.textRenderer.render(
+        projectionMat, modelViewMat, shoe.name + " - " + shoe.price,
+        1, 1, 1, 1);
+  };
+
+  /**
+   * Draw a shoe at the given coord.
+   *
+   * @param {mat4} projectionMat The projection matrix.
+   * @param {mat4} modelViewMat The model view matrix.
+   * @param {vec2} texCoord The coordinates of the shoe.
+   */
+  ShoeCatalog.prototype.drawShoe = function(
+      projectionMat, modelViewMat, texCoord) {
     var gl = this.gl;
     var program = this.program;
 
-    timestamp = timestamp || 0;
+    this.program.use();
+
+    this.gl.uniformMatrix4fv(
+        this.program.uniform.projectionMat, false, projectionMat);
+
+    mat3.identity(this.normalMat);
+    gl.uniformMatrix3fv(program.uniform.normalMat, false, this.normalMat);
+
+    gl.enableVertexAttribArray(program.attrib.position);
+    gl.enableVertexAttribArray(program.attrib.normal);
+    gl.disableVertexAttribArray(program.attrib.texCoord);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.shoe.vertexBuffer);
+    gl.vertexAttribPointer(program.attrib.position,
+        this.shoe.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.shoe.normalBuffer);
+    gl.vertexAttribPointer(program.attrib.normal,
+        this.shoe.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.shoe.indexBuffer);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.uniform1i(this.program.uniform.diffuse, 0);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+
+    gl.uniformMatrix4fv(
+        program.uniform.modelViewMat, false, modelViewMat);
+
+    // We know that the additional model matrix is a pure rotation,
+    // so we can just use the non-position parts of the matrix
+    // directly, this is cheaper than the transpose+inverse that
+    // normalFromMat4 would do.
+    mat3.fromMat4(this.normalMat, this.heroModelViewMat);
+    gl.uniformMatrix3fv(program.uniform.normalMat, false, this.normalMat);
+
+    // Use the texture coordinates from the shoe catalog entry.
+    gl.uniform2f(this.program.uniform.texCoord, texCoord.x, texCoord.y);
+    gl.drawElements(
+        gl.TRIANGLES, this.shoe.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+  };
+
+  /**
+   * Render the shoe catalog.
+   *
+   * @param {mat4} projectionMat The projection matrix.
+   * @param {mat4} modelViewMat The model view matrix.
+   * @param {int} timestamp The current timestamp.
+   */
+  ShoeCatalog.prototype.render = function(
+      projectionMat, modelViewMat, timestamp) {
+
+    var timestamp = timestamp || 0;
 
     // Compute the shoe coordinates
     var shoeCoords = generateRing(this.shoeData.length, 0.9);
-
-    var translationText = vec3.create();
-    vec3.set(translationText, -0.07, -0.05, 0);
 
     for (var i = 0; i < this.shoeData.length; i++) {
       var shoe = this.shoeData[i];
       var coord = shoeCoords[i];
 
-      // Render the shoe.
-      program.use();
-
-      gl.uniformMatrix4fv(program.uniform.projectionMat, false, projectionMat);
-      gl.uniformMatrix4fv(program.uniform.modelViewMat, false, modelViewMat);
-      mat3.identity(this.normalMat);
-      gl.uniformMatrix3fv(program.uniform.normalMat, false, this.normalMat);
-
-      gl.enableVertexAttribArray(program.attrib.position);
-      gl.enableVertexAttribArray(program.attrib.normal);
-      gl.disableVertexAttribArray(program.attrib.texCoord);
-
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.shoe.vertexBuffer);
-      gl.vertexAttribPointer(program.attrib.position,
-          this.shoe.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.shoe.normalBuffer);
-      gl.vertexAttribPointer(program.attrib.normal,
-          this.shoe.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.shoe.indexBuffer);
-
-      gl.activeTexture(gl.TEXTURE0);
-      gl.uniform1i(this.program.uniform.diffuse, 0);
-      gl.bindTexture(gl.TEXTURE_2D, this.texture);
-
+      // Determine the model view matrix to put the shoe around a ring.
       mat4.fromRotation(this.heroRotationMat, timestamp / 10000, [0, 1, 0]);
       mat4.translate(this.heroModelViewMat, modelViewMat, coord);
       mat4.multiply(
           this.heroModelViewMat, this.heroModelViewMat, this.heroRotationMat);
-      gl.uniformMatrix4fv(
-          program.uniform.modelViewMat, false, this.heroModelViewMat);
+      // Render the shoe
+      this.drawShoe(projectionMat, this.heroModelViewMat, shoe.color);
 
-      // We know that the additional model matrix is a pure rotation,
-      // so we can just use the non-position parts of the matrix
-      // directly, this is cheaper than the transpose+inverse that
-      // normalFromMat4 would do.
-      mat3.fromMat4(this.normalMat, this.heroModelViewMat);
-      gl.uniformMatrix3fv(program.uniform.normalMat, false, this.normalMat);
-
-      // Use the texture coordinates from the shoe catalog entry.
-      gl.uniform2f(this.program.uniform.texCoord, shoe.color.x, shoe.color.y);
-      gl.drawElements(
-          gl.TRIANGLES, this.shoe.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-
-      // Render the shoe label.
+      // Determine the model view matrix to put the label under the shoe.
       mat4.identity(this.labelMat);
+      // Move the label to the shoe.
       mat4.translate(this.labelMat, this.labelMat, coord);
+      // Make the label face towards the center of the ring.
       var angle = Math.atan2(0, -1) - Math.atan2(coord[0], coord[2]);
       if (angle < 0) {
         angle += 2 * Math.PI;
       }
       mat4.rotateY(this.labelMat, this.labelMat, -angle);
-      mat4.translate(this.labelMat, this.labelMat, translationText);
+      mat4.translate(this.labelMat, this.labelMat, this.labelOffset);
       mat4.scale(this.labelMat, this.labelMat, [0.01, 0.01, 0.01]);
       mat4.multiply(this.labelMat, modelViewMat, this.labelMat);
-      this.textRenderer.render(
-          projectionMat, this.labelMat, shoe.name + " - " + shoe.price,
-          1, 1, 1, 1);
+      this.drawLabel(projectionMat, this.labelMat, shoe);
     }
   };
 
