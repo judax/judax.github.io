@@ -1,5 +1,17 @@
 <html>
 <body>
+
+<!-- Error handling -->
+<script>
+    window.addEventListener('error', function(event) {
+        var errorMessage = event.message;
+        var url = event.filename;
+        var lineNumber = event.lineno;
+        var columnNumber = event.colno;
+        alert("ERROR: " + errorMessage + " at " + url + " : " + lineNumber + " : " + columnNumber);
+    });
+</script>
+
 <script>
     if (navigator.getVRDisplays) {
         navigator.getVRDisplays().then(function(vrDisplays) {
