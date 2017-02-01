@@ -1,0 +1,24 @@
+<html>
+<body>
+<script>
+    if (navigator.getVRDisplays) {
+        navigator.getVRDisplays().then(function(vrDisplays) {
+            if (vrDisplays && vrDisplays.length > 0) {
+                for (var i = 0; i < vrDisplays.length; i++) {
+                    vrDisplay = vrDisplays[i];
+                    if (vrDisplay.capabilities.hasADFSupport) {
+                    	var adfs = vrDisplay.getADFs();
+                    	alert("adfs = " + adfs);
+                    }
+                }
+            }
+        });
+    }
+    else 
+    {
+        alert("No navigator.getVRDisplays");
+    }
+
+</script>
+</body>
+</html>
