@@ -20,7 +20,11 @@
                     vrDisplay = vrDisplays[i];
                     if (vrDisplay.capabilities.hasADFSupport) {
                     	var adfs = vrDisplay.getADFs();
-                    	alert("adfs = " + typeof(adfs) + " (" + adfs.length + ")");
+                    	var s = "";
+                    	for (var j = 0; j < adfs.length; j++) {
+                    		s = "{ uuid = " + adfs[j].uuid + ", name = " + adfs[j].name + ", creationTime = " + adfs[j].creationTime + "}" + (j < adfs.length() - 1 ? ", " : "");
+                    	}
+                    	alert("adfs(" + adfs.length + ") = " + s);
                     }
                 }
             }
