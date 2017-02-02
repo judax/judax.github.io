@@ -16,17 +16,45 @@
     if (navigator.getVRDisplays) {
         navigator.getVRDisplays().then(function(vrDisplays) {
             if (vrDisplays && vrDisplays.length > 0) {
+                // Only get the last VRDisplay that has support for ADFs and the list of ADFs from it
+                var vrDisplay = null;
+                var adfs = null;
                 for (var i = 0; i < vrDisplays.length; i++) {
-                    vrDisplay = vrDisplays[i];
                     if (vrDisplay.capabilities.hasADFSupport) {
-                    	var adfs = vrDisplay.getADFs();
+                        vrDisplay = vrDisplays[i];
+                    	adfs = vrDisplay.getADFs();
                     	var s = "";
                     	for (var j = 0; j < adfs.length; j++) {
                     		s = "{ uuid = " + adfs[j].uuid + ", name = " + adfs[j].name + ", creationTime = " + adfs[j].creationTime + "}" + (j < adfs.length - 1 ? ", " : "");
                     	}
-                    	alert("adfs(" + adfs.length + ") = " + s);
+                    	alert("adfs(" + adfs.length + ")" + (s !== "" ? " = " + s : ""));
                     }
                 }
+                if (vrDisplay !== null) {
+                    var active = false;
+                    // Only try to activate/deactivate the first ADF from the list.
+                    window.addEventListener("click", function() {
+                        if (adfs.length > 0) {
+                            if (!active) {
+                                vrDisplay.enableADF(vdDisplay.getADFs()[0]);
+                            }
+                            else {
+                                vrDisplay.disableADF();
+                            }
+                            active = !active;
+                        }
+                        else {
+                            alert("Cannot activate or deactivate ADFs because there were none on the VRDisplay.");
+                        }
+                    });
+                }
+                else {
+                    alert("There are no VRDisplays that have ADF support.");
+                }
+
+            }
+            else {
+                alert("There are no VRDisplays.");
             }
         });
     }
