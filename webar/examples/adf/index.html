@@ -20,7 +20,7 @@
                 var vrDisplay = null;
                 var adfs = null;
                 for (var i = 0; i < vrDisplays.length; i++) {
-                    if (vrDisplay.capabilities.hasADFSupport) {
+                    if (vrDisplays[i].capabilities.hasADFSupport) {
                         vrDisplay = vrDisplays[i];
                     	adfs = vrDisplay.getADFs();
                     	var s = "";
