@@ -36,7 +36,7 @@
                     window.addEventListener("click", function() {
                         if (adfs.length > 0) {
                             if (!active) {
-                                vrDisplay.enableADF(adfs[0]);
+                                vrDisplay.enableADF(adfs[0].uuid);
                             }
                             else {
                                 vrDisplay.disableADF();
