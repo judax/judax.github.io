@@ -48,12 +48,14 @@
                         }
                     });
 
+                    // Constantly request for the pose to see the internal results using ADFs or not.
                     var frameData = new VRFrameData();
-                    requestAnimationFrame(function() {
+                    function raf() {
                         if (vrDisplay.getFrameData(frameData)) {
                         }
-                        requestAnimationFrame(this);
-                    });
+                        requestAnimationFrame(raf);
+                    }
+                    requestAnimationFrame(raf);
                 }
                 else {
                     alert("There are no VRDisplays that have ADF support.");
