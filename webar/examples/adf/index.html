@@ -47,6 +47,13 @@
                             alert("Cannot activate or deactivate ADFs because there were none on the VRDisplay.");
                         }
                     });
+
+                    var frameData = new VRFrameData();
+                    requestAnimationFrame(function() {
+                        if (vrDisplay.getFrameData(frameData)) {
+                        }
+                        requestAnimationFrame(this);
+                    });
                 }
                 else {
                     alert("There are no VRDisplays that have ADF support.");
