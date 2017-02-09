@@ -49,7 +49,7 @@
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-			var container, stats;
+			var stats;
 
 			var cameraOrtho, sceneCamera, renderer, cameraMesh;
 
@@ -77,9 +77,6 @@
 
 			function init(vrDisplay) {
 
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
-
 				sceneCamera = new THREE.Scene();
 				cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
 				cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
@@ -92,7 +89,7 @@
 				document.body.appendChild( renderer.domElement );
 
 				stats = new Stats();
-				container.appendChild( stats.dom );
+				document.body.appendChild( stats.dom );
 
 				window.addEventListener( 'resize', onWindowResize, false );
 			}
