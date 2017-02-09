@@ -415,12 +415,12 @@
     function raf() {
         stats.update();
 
-        // videoQuad.update(gl);
+        videoQuad.update(gl);
 
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        // videoQuad.render(gl);
+        videoQuad.render(gl);
 
         requestAnimationFrame(raf);
     }
