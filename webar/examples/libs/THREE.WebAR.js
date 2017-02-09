@@ -29,7 +29,7 @@ THREE.WebAR = {};
 /**
 * A class that allows to manage the point cloud acquisition and representation in ThreeJS. A buffer geometry is generated to represent the point cloud. The point cloud is provided using a VRDisplay instance that shows the capability to do so. The point cloud is actually exposed using a TypedArray. The array includes 3 values per point in the cloud. There are 2 ways of exposing this array:
 * 1.- Using a new TypedArray for every frame/update. The advantage is that the TypedArray is always of the correct size depending on the number of points detected. The disadvantage is that there is a performance hit from the creation and copying of the array (and future garbage collection).
-* 2.- Using the same reference to a single TypedArray. The advantage is that the performance is as good as it can get with no creation/destruction and copy penalties. The disadvantage is that the size of the array is the biggest possible point cloud provided by the underlying hardware. The non used values are filled with Infinity.
+* 2.- Using the same reference to a single TypedArray. The advantage is that the performance is as good as it can get with no creation/destruction and copy penalties. The disadvantage is that the size of the array is the biggest possible point cloud provided by the underlying hardware. The non used values are filled with Number.MAX_VALUE.
 * @constructor
 * @param {window.VRDisplay} vrDisplay The reference to the VRDisplay instance that is capable of providing the point cloud.
 * @param {boolean} usePointCloudPointsDirectly A flag to specify if a new TypedArray will be used in each frame with the exact number of points in the cloud or reuse a single reference to a TypedArray with the maximum number of points provided by the underlying hardware (non correct values are filled with Inifinity).
@@ -55,9 +55,9 @@ THREE.WebAR.VRPointCloud = function(vrDisplay, usePointCloudPointsDirectly) {
 
 	for ( var i = 0; i < colors.length; i += 3 ) {
 		if (vrDisplay) {
-			positions[ i ]     = Infinity;
-			positions[ i + 1 ] = Infinity;
-			positions[ i + 2 ] = Infinity;
+			positions[ i ]     = Number.MAX_VALUE;
+			positions[ i + 1 ] = Number.MAX_VALUE;
+			positions[ i + 2 ] = Number.MAX_VALUE;
 		}
 		color.setRGB( 1, 1, 1 );
 		colors[ i ]     = color.r;
@@ -107,7 +107,7 @@ THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry, point
 			}
 			var lastPointCloudValueCount = this._numberOfPointsInLastPointCloud * 3;
 			for (var i = pointCloudValueCount; i < lastPointCloudValueCount; i++) {
-				this._positions.array[i] = Infinity;
+				this._positions.array[i] = Number.MAX_VALUE;
 			}
 			this._numberOfPointsInLastPointCloud = numberOfPoints;
 			this._positions.needsUpdate = true;
