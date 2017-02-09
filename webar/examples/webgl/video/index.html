@@ -23,6 +23,19 @@
         margin: 0px;
         overflow: hidden;
     }
+
+    #info {
+        color: #fff;
+        position: absolute;
+        bottom: 10px;
+        width: 100%;
+        text-align: center;
+        z-index: 100;
+        display:block;
+
+    }
+
+    a { color: skyblue }
 </style>
 
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
@@ -432,6 +445,12 @@
 
 
 <body onload="webGLStart();">
+
+    <div id="info">
+        <a href="http://threejs.org" target="_blank">three.js</a> -
+        WebAR (Tango) Video Camera WebGL Example <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
+    </div>
+
     <script>
         function webGLStart() {
             var canvas = document.createElement("canvas");
