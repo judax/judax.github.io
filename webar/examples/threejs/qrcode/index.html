@@ -152,7 +152,7 @@
 				qrcodeMesh.position.set(0, 0, -1);
 				scene.add( qrcodeMesh );
 				var textureLoader = new THREE.TextureLoader();
-				var pictureTexture = textureLoader.load("../resources/images/picture.jpg");
+				var pictureTexture = textureLoader.load("../../resources/images/picture.jpg");
 				var pictureMaterial = new THREE.MeshLambertMaterial( {
 					map: pictureTexture,
 					color: 0xFFFFFF,
@@ -161,6 +161,7 @@
 				var pictureGeometry = new THREE.PlaneBufferGeometry( 0.12, 0.0875 );
 				var pictureMesh = new THREE.Mesh(pictureGeometry, pictureMaterial);
 				pictureMesh.position.set(0.245, 0, 0);
+				pictureMessh.visible = false;
 				qrcodeMesh.add(pictureMesh);
 
 				// Create the renderer
@@ -180,6 +181,7 @@
 				// Control the qrcode alignment or not using a click event.
 				window.addEventListener('click', function() {
 					qrcodeLocked = !qrcodeLocked;
+					pictureMesh.visible = qrcodeLocked;
 				});
 
 				var lastX;
