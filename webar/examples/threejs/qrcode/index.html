@@ -232,7 +232,7 @@
 				// If the vrDisplay is correct and the qrcode is not locked, update its position with a raycast on the point cloud to check the point and plane of collision.
 				if (vrDisplay && !qrcodeLocked) {
 					var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(0.5, 0.5);
-					if (pointAndPlane && pointAndPlane.correctValues) {
+					if (pointAndPlane) {
 						THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, qrcodeMesh, 0.0);
 					}
 					else {
