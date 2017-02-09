@@ -92,25 +92,25 @@
 
 			var qrcodeNormal = new THREE.Vector3();
 
-	        if (navigator.getVRDisplays) {
-	            navigator.getVRDisplays().then(function(vrDisplays) {
-	                if (vrDisplays && vrDisplays.length > 0) {
-	                    for (var i = 0; i < vrDisplays.length; i++) {
-	                        vrDisplay = vrDisplays[i];
-	                        if (vrDisplay.displayName === "Tango VR Device") {
+			if (navigator.getVRDisplays) {
+				navigator.getVRDisplays().then(function(vrDisplays) {
+					if (vrDisplays && vrDisplays.length > 0) {
+						for (var i = 0; i < vrDisplays.length; i++) {
+							vrDisplay = vrDisplays[i];
+							if (vrDisplay.displayName === "Tango VR Device") {
 								init(vrDisplay);
 								updateAndRender();									
-	                            break;
-	                        }
-	                    }
-	                }
-	            });
-	        }
-	        else {
-	            alert("No navigator.getVRDisplays");
-	            init();
-	            updateAndRender();
-	        }
+								break;
+							}
+						}
+					}
+				});
+			}
+			else {
+				alert("No navigator.getVRDisplays");
+				init();
+				updateAndRender();
+			}
 
 			function init(vrDisplay) {
 				container = document.createElement( 'div' );
@@ -230,16 +230,16 @@
 				pointCloud.update(false);
 
 				// If the vrDisplay is correct and the qrcode is not locked, update its position with a raycast on the point cloud to check the point and plane of collision.
-				// if (vrDisplay && !qrcodeLocked) {
-		  //           var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(0.5, 0.5);
-		  //           if (pointAndPlane && pointAndPlane.correctValues) {
-			 //            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, qrcodeMesh, 0.0);
-		  //           }
-		  //           else {
-		  //           	qrcodeMesh.position.set(0, 0, -1);
-		  //           	qrcodeMesh.rotation.set(0, 0, 0);
-		  //           }
-		  //       }
+				if (vrDisplay && !qrcodeLocked) {
+					var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(0.5, 0.5);
+					if (pointAndPlane && pointAndPlane.correctValues) {
+						THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, qrcodeMesh, 0.0);
+					}
+					else {
+						qrcodeMesh.position.set(0, 0, -1);
+						qrcodeMesh.rotation.set(0, 0, 0);
+					}
+				}
 
 				// Render the perspective scene
 				renderer.clearDepth();
