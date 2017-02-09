@@ -55,9 +55,9 @@ THREE.WebAR.VRPointCloud = function(vrDisplay, usePointCloudPointsDirectly) {
 
 	for ( var i = 0; i < colors.length; i += 3 ) {
 		if (vrDisplay) {
-			positions[ i ]     = Number.MAX_VALUE;
-			positions[ i + 1 ] = Number.MAX_VALUE;
-			positions[ i + 2 ] = Number.MAX_VALUE;
+			positions[ i ]     = 0;
+			positions[ i + 1 ] = 0;
+			positions[ i + 2 ] = 0;
 		}
 		color.setRGB( 1, 1, 1 );
 		colors[ i ]     = color.r;
