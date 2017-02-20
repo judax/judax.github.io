@@ -1,0 +1,19 @@
+{
+  "name": "flow-interactive-timeline",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/InteractiveTimeline.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82",
+    "flow-oop-utils": "file:../../flow-framework/flow-oop-utils",
+    "flow-math-utils":"file:../../flow-framework/flow-math-utils",
+    "flow-color-utils": "file:../../flow-framework/flow-color-utils",
+    "flow-text":"file:../../flow-framework/flow-text",
+    "flow-lines":"file:../../flow-framework/flow-lines",
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Marsh",
+  "license": "UNLICENSED"
+}

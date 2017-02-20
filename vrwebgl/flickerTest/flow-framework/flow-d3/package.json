@@ -1,0 +1,20 @@
+{
+  "name": "flow-d3",
+  "version": "1.0.0",
+  "description": "Port of d3 rendering to THREEhs.",
+  "main": "flow-d3.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82",
+    "d3": "file:../../third-parties/d3",
+    "topojson": "file:../../third-parties/topojson",
+    "flow-oop-utils": "file:../../flow-framework/flow-oop-utils",
+    "flow-math-utils":"file:../../flow-framework/flow-math-utils",
+    "flow-color-utils": "file:../../flow-framework/flow-color-utils",
+    "flow-lod":"file:../../flow-framework/flow-lod"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Steve Hall,Jason Marsh",
+  "license": "UNLICENSED"
+}

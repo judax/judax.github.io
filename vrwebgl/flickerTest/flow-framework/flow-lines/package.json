@@ -1,0 +1,14 @@
+{
+  "name": "flow-lines",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/Lines.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82"
+  },
+   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

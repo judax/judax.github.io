@@ -1,0 +1,17 @@
+{
+  "name": "flow-loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/Loader.js",
+  "dependencies": {
+    "flow-oop-utils": "file:../flow-oop-utils",
+    "flow-event-utils": "file:../flow-event-utils",
+    "flow-animation": "file:../flow-animation",
+    "flow-perspective": "file:../flow-perspective"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Marsh",
+  "license": "All rights reserved"
+}

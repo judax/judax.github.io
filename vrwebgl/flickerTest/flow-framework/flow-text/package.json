@@ -1,0 +1,19 @@
+{
+  "name": "flow-text",
+  "version": "1.0.0",
+  "description": "A text management module.",
+  "main": "src/Text.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82",
+    "flow-three": "file:../flow-three",
+    "flow-math-utils": "file:../flow-math-utils",
+    "flow-event-utils": "file:../flow-event-utils",
+    "flow-oop-utils": "file:../flow-oop-utils",
+    "flow-text": "file:../flow-text"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Mash, Iker Jamardo (aka JudaX)",
+  "license": "UNLICENSED"
+}

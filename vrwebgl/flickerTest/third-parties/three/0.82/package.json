@@ -1,0 +1,11 @@
+{
+  "name": "three",
+  "version": "0.82.0",
+  "description": "ThreeJS",
+  "main": "three.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

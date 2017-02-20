@@ -1,0 +1,16 @@
+{
+  "name": "flow-fly-controls",
+  "version": "1.0.2",
+  "description": "",
+  "main": "src/FlyControls.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82",
+    "flow-oop-utils": "file:../../flow-framework/flow-oop-utils",
+    "flow-event-utils": "file:../../flow-framework/flow-event-utils"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}

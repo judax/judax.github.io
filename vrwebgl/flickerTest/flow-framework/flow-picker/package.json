@@ -1,0 +1,14 @@
+{
+  "name": "flow-picker",
+  "version": "1.0.0",
+  "description": "Picker",
+  "main": "src/Picker.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Iker Jamardo (aka JudaX) Jason Marsh",
+  "license": ""
+}

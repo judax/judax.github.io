@@ -1,0 +1,11 @@
+{
+  "name": "flow-event-utils",
+  "version": "1.0.0",
+  "description": "Flow event related utilities module",
+  "main": "src/EventUtils.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Iker Jamardo (aka JudaX)",
+  "license": "MIT"
+}

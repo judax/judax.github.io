@@ -1,0 +1,18 @@
+{
+  "name": "flow-perspective",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/Perspective.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82",
+    "flow-three": "file:../flow-three",
+    "flow-oop-utils": "file:../../flow-framework/flow-oop-utils",
+    "flow-math-utils": "file:../flow-math-utils",
+    "flow-animation": "file:../flow-animation"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Iker Jamardo (aka JudaX)/ JMarsh",
+  "license": "MIT"
+}

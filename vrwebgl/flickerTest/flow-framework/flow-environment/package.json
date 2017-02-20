@@ -1,0 +1,16 @@
+{
+  "name": "flow-environment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/Environment.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82",
+    "flow-math-utils": "file:../flow-math-utils",
+    "flow-lines": "file:../flow-lines"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Marsh",
+  "license": "All rights reserved"
+}

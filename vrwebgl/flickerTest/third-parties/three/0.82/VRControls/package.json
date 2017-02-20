@@ -1,0 +1,14 @@
+{
+  "name": "vrcontrols",
+  "version": "1.0.0",
+  "description": "VRControls for ThreeJS",
+  "main": "VRControls.js",
+  "dependencies": {
+    "three": "file:../"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

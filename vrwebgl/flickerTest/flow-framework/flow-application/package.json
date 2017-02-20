@@ -1,0 +1,36 @@
+{
+  "name": "flow-application",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/Application.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82",
+    "datgui": "file:../../third-parties/datgui",
+    "stats": "file:../../third-parties/stats",
+    "vrcontrols": "file:../../third-parties/three/0.82/VRControls",
+    "vreffect": "file:../../third-parties/three/0.82/VREffect",
+    "objloader": "file:../../third-parties/three/0.82/ObjLoader",
+    "webvr-polyfill": "file:../../third-parties/three/0.82/webvr-polyfill",
+    "flow-fly-controls": "file:../../flow-framework/flow-fly-controls",
+    "flow-error-utils": "file:../../flow-framework/flow-error-utils",
+    "flow-oop-utils" : "file:../../flow-framework/flow-oop-utils",
+    "flow-event-utils" : "file:../../flow-framework/flow-event-utils",
+    "flow-vrwebgl-utils": "file:../../flow-framework/flow-vrwebgl-utils",
+    "flow-text": "file:../../flow-framework/flow-text",
+    "flow-lines": "file:../../flow-framework/flow-lines",
+    "flow-color-utils": "file:../../flow-framework/flow-color-utils",
+    "flow-audio": "file:../../flow-framework/flow-audio",
+     "flow-environment": "file:../../flow-framework/flow-environment",
+    "flow-three": "file:../../flow-framework/flow-three",
+    "flow-platform": "file:../../flow-framework/flow-platform",
+    "flow-loader": "file:../../flow-framework/flow-loader",
+    "flow-loader-viewer": "file:../../flow-framework/flow-loader-viewer",
+    "flow-multiuser": "file:../../flow-framework/flow-multiuser",
+    "flow-multiuser-client": "file:../../flow-framework/flow-multiuser-client"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Marsh",
+  "license": "All rights reserved"
+}

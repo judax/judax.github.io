@@ -1,0 +1,16 @@
+{
+  "name": "flow-multiuser-server",
+  "version": "1.0.0",
+  "description": "Flow multiuser server module",
+  "main": "src/MultiuserServer.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82",
+    "flow-net": "file:../flow-net"  ,
+    "flow-multiuser": "file:../flow-multiuser"  
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Iker Jamardo (aka JudaX)",
+  "license": "MIT"
+}

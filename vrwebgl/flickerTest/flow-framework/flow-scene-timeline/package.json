@@ -1,0 +1,16 @@
+{
+  "name": "flow-scene-timeline",
+  "version": "1.0.0",
+  "description": "",
+  "main": "SceneTimeline.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82",
+    "flow-animation": "file:../../flow-framework/flow-animation",
+    "flow-perspective": "file:../../flow-framework/flow-perspective"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Marsh",
+  "license": "All rights reserved"
+}

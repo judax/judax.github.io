@@ -1,0 +1,16 @@
+{
+  "name": "flow-animation",
+  "version": "1.0.0",
+  "description": "Flow animation module",
+  "main": "src/Animation.js",
+  "dependencies": {
+    "three": "file:../../third-parties/three/0.82",
+    "flow-math-utils": "file:../../flow-framework/flow-math-utils",
+    "flow-text": "file:../../flow-framework/flow-text"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Iker Jamardo (aka JudaX)",
+  "license": "All rights reserved"
+}
