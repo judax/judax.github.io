@@ -137,6 +137,12 @@
 				sceneCSS = new THREE.Scene();
 
 				var youtubeDiv = document.getElementById("youtube");
+
+				youtubeDiv.contentDocument.querySelector("video").play();
+				youtubeDiv.addEventListener("click", function() {
+					alert("click on the youtube video!");
+				});
+
 				youtubeDiv.style.display = "block";
 				youtubeDiv.style.visibility = "visible";
 				model = new THREE.CSS3DObject(youtubeDiv);
@@ -265,6 +271,7 @@
 				rendererWebGL.render( sceneWebGL, cameraPersp );
 
 				// Update the perspective sceneCSS
+				// Calculate the distance fron the camera to the model and show it.
 	            pos.subVectors(model.position, cameraPersp.position);
 	            var distance = pos.length().toFixed(2);
 	            var message = "" + distance + " meters";
