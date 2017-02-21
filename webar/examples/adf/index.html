@@ -31,20 +31,23 @@
                     }
                 }
                 if (vrDisplay !== null) {
-                    var active = false;
-                    // Only try to activate/deactivate the first ADF from the list.
+                    var adfEnabled = false;
+                    // Only try to enable/disable the first ADF from the list.
                     window.addEventListener("click", function() {
                         if (adfs.length > 0) {
-                            if (!active) {
-                                vrDisplay.enableADF(adfs[0].uuid);
+                            var uuid = adfs[0].uuid;
+                            if (!adfEnabled) {
+                                vrDisplay.enableADF(uuid);
+                                alert("ADF with UUID '" + uuid + "' enabled.");
                             }
                             else {
                                 vrDisplay.disableADF();
+                                alert("ADF disabled.");
                             }
-                            active = !active;
+                            adfEnabled = !adfEnabled;
                         }
                         else {
-                            alert("Cannot activate or deactivate ADFs because there were none on the VRDisplay.");
+                            alert("Cannot ennable/disable ADFs because there were none on the VRDisplay.");
                         }
                     });
 
