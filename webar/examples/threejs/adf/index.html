@@ -2,9 +2,6 @@
 <html lang="en">
 	<head>
 
-	<link rel="stylesheet" href="css/normalize.css">
-	<link rel="stylesheet" href="css/main.css">
-
     <!-- Error handling -->
     <script>
         window.addEventListener('error', function(event) {
@@ -42,15 +39,10 @@
 		</style>
 	</head>
 	<body>
-		<div id="loader-wrapper">
-			<div id="loader"></div>
-			<div class="loader-section section-left"></div>
-            <div class="loader-section section-right"></div>
-		</div>
 
 		<div id="info">
 			<a href="http://threejs.org" target="_blank">three.js</a> -
-			WebAR (Tango) Chair ThreeJS Example <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
+			WebAR (Tango) ADF ThreeJS Example <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
 		</div>
 
 		<script src="../../libs/third_party/three.js"></script>
@@ -62,22 +54,6 @@
 		<script src="../../libs/THREE.WebAR.js"></script>
 
 		<script>
-			function addClass(node, className) {
-				if (node.classList) {
-					node.classList.add(className);
-				}
-				else {
-					node.className += ' ' + className;
-				}
-			}
-
-			function removeLoadSpinner() {
-				addClass(document.body, 'loaded');
-				setTimeout(function() {
-					document.body.removeChild(document.getElementById("loader-wrapper"));
-				}, 5000);
-			}
-
 			function GUI() {
 				this.showPointCloud = showPointCloud;
 				this.showSeeThroughCamera = true;
@@ -106,7 +82,6 @@
 	                    for (var i = 0; i < vrDisplays.length; i++) {
 	                        vrDisplay = vrDisplays[i];
 	                        if (vrDisplay.displayName === "Tango VR Device") {
-								removeLoadSpinner();
 								init(vrDisplay);
 								updateAndRender();									
 	                            break;
@@ -117,7 +92,6 @@
 	        }
 	        else {
 	            alert("No navigator.getVRDisplays");
-	            removeLoadSpinner();
 	            init();
 	            updateAndRender();
 	        }
