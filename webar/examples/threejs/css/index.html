@@ -138,9 +138,10 @@
 
 				var youtubeDiv = document.getElementById("youtube");
 
-				youtubeDiv.contentDocument.addEventListener("load", function() {
+				var iframe = youtubeDiv.children[0];
+				iframe.contentDocument.addEventListener("load", function() {
 					alert("iframe loaded!");
-					youtubeDiv.contentDocument.querySelector("video").play();
+					iframe.contentDocument.querySelector("video").play();
 				});
 				youtubeDiv.addEventListener("click", function() {
 					alert("click on the youtube video!");
