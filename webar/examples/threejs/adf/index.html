@@ -58,6 +58,9 @@
 				this.showPointCloud = showPointCloud;
 				this.showSeeThroughCamera = true;
 				this.pointsToSkip = 0;
+				this.adf = function() {
+					alert("ADF button clicked!");
+				};
 				return this;
 			}
 
@@ -113,6 +116,7 @@
 				});
 				datGUI.add(gui, "showSeeThroughCamera");
 				datGUI.add(gui, "pointsToSkip", 0, 10);
+				datGUI.add(gui, "adf");
 
 				// Initialize everything related to ThreeJS.
 				container = document.createElement( 'div' );
