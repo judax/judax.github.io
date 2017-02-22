@@ -51,9 +51,7 @@
 	<body>
 
 	<div id="youtube" style="width:560px; height:500px; display:none; visibility:hidden;" onclick="alert('ja!');">
-		<video width="560" height="315" src="https://www.youtube.com/embed/Qe10ExwzCqk?rel=0&autoplay=1" frameborder="0">
-			<source type="video/youtube" src="https://www.youtube.com/embed/Qe10ExwzCqk?rel=0&autoplay=1" />
-		</video>
+		<iframe width="560" height="315" src="https://www.youtube.com/embed/Qe10ExwzCqk?rel=0&autoplay=1" frameborder="0"></iframe>
 		<!-- <iframe width="100%" height="80%" src="https://vr.google.com/daydream/"></iframe> -->
 		<div id="distanceText" style="width:100%; height:185px;"></div>
 	</div>
@@ -139,13 +137,6 @@
 				sceneCSS = new THREE.Scene();
 
 				var youtubeDiv = document.getElementById("youtube");
-
-				// var video = youtubeDiv.children[0];
-				// video.play();
-				// youtubeDiv.addEventListener("click", function() {
-				// 	alert("click on the youtube video!");
-				// });
-
 				youtubeDiv.style.display = "block";
 				youtubeDiv.style.visibility = "visible";
 				model = new THREE.CSS3DObject(youtubeDiv);
