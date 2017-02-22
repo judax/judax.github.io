@@ -76,6 +76,7 @@
 			var firstScriptTag = document.getElementsByTagName('script')[0];
 			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 			var player;
+			var videoIsReady = false;
 			function onYouTubeIframeAPIReady() {
 				player = new YT.Player('youtubeiframe', {
 					height: '315',
@@ -83,16 +84,13 @@
 					videoId: 'Qe10ExwzCqk',
 					events: {
 						'onReady': function(event) {
-							// rendererCSS.domElement.addEventListener("dblclick", function() {
-								event.target.playVideo();
-								alert("READY!");
-							// })
+							videoIsReady = true;
 						}
 					}
 				});
 			}
 		</script>
-		
+
 		<script>
 
 			function GUI() {
@@ -194,7 +192,7 @@
 
 				// Create a way to measure performance
 				stats = new Stats();
-				rendererCSS.domElement.appendChild( stats.dom );
+				// rendererCSS.domElement.appendChild( stats.dom );
 
 				// Control the resizing of the window to correctly display the sceneWebGL.
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -236,6 +234,12 @@
 			            	// alert("Could not retrieve the correct point and plane.");
 			            }
 			        }
+			    });
+
+			    rendererCSS.domElement.addEventListener("dblclick", function() {
+			    	if (videoIsReady) {
+						player.playVideo();
+			    	}
 			    });
 
 				// Initialize the dat.GUI.
