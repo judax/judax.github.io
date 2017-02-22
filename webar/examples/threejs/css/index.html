@@ -164,7 +164,7 @@
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				// cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.00001, 1000);
 				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
-				cameraPersp.scale.set(1000, 1000, 1000);
+				// cameraPersp.scale.set(1000, 1000, 1000);
 				vrControls = new THREE.VRControls(cameraPersp);
 
 				// Create a way to measure performance
