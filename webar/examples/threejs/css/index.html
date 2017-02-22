@@ -254,7 +254,7 @@
 				// Update the perspective sceneWebGL
 				vrControls.update();
 
-				camerPersp.position.multiplyScalar(800);
+				cameraPersp.position.multiplyScalar(800);
 
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
 				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
