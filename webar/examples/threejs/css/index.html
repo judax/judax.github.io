@@ -249,20 +249,20 @@
 				// THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
 
 				// Render the see through camera sceneWebGL
-				rendererWebGL.clear();
-				if (gui.showSeeThroughCamera)
-					rendererWebGL.render( sceneCamera, cameraOrtho );
+				// rendererWebGL.clear();
+				// if (gui.showSeeThroughCamera)
+				// 	rendererWebGL.render( sceneCamera, cameraOrtho );
 
 				// Update the perspective sceneWebGL
-				vrControls.update();
+				// vrControls.update();
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
-				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
+				// THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
 				// Update the point cloud
-				pointCloud.update(showPointCloud, gui.pointsToSkip);
+				// pointCloud.update(showPointCloud, gui.pointsToSkip);
 
 				// Render the perspective sceneWebGL
-				rendererWebGL.clearDepth();
-				rendererWebGL.render( sceneWebGL, cameraPersp );
+				// rendererWebGL.clearDepth();
+				// rendererWebGL.render( sceneWebGL, cameraPersp );
 
 				// Update the perspective sceneCSS
 				// Calculate the distance fron the camera to the model and show it.
