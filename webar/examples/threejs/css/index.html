@@ -149,8 +149,8 @@
 				youtubeDiv.appendChild( iframe );
 
 				model = new THREE.CSS3DObject(youtubeDiv);
-				model.scale.set(0.001, 0.001, 0.001);
-				model.position.set(0, 0, -0.3);
+				// model.scale.set(0.001, 0.001, 0.001);
+				model.position.set(0, 0, -300);
 				// model.position.set(Infinity, Infinity, Infinity);
 				sceneCSS.add(model);
 
@@ -177,7 +177,7 @@
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				// cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.00001, 1000);
 				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
-				vrControls = new THREE.VRControls(cameraPersp);
+				// vrControls = new THREE.VRControls(cameraPersp);
 
 				// Create a way to measure performance
 				// stats = new Stats();
