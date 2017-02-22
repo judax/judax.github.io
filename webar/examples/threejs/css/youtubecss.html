@@ -23,7 +23,7 @@
 		<script src="../../libs/third_party/three.js"></script>
 		<script src="../../libs/third_party/CSS3DRenderer.js"></script>
 
-		<div id="container"></div>
+		<!-- <div id="container"></div> -->
 
 		<script>
 
@@ -56,7 +56,8 @@
 
 			function init() {
 
-				var container = document.getElementById( 'container' );
+				// var container = document.getElementById( 'container' );
+				var container = document.body;
 
 				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 5000 );
 				camera.position.set( 120, 120, 750 );
