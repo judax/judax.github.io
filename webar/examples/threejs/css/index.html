@@ -140,7 +140,7 @@
 				var youtubeDiv = document.getElementById("youtube");
 				model = new THREE.CSS3DObject(youtubeDiv);
 				// model.scale.set(0.001, 0.001, 0.001);
-				model.position.set(0, 0, -0.3);
+				model.position.set(0, 0, -300);
 				// model.position.set(Infinity, Infinity, Infinity);
 				sceneCSS.add(model);
 
@@ -164,7 +164,7 @@
 
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				// cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.00001, 1000);
-				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
+				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 10000);
 				// cameraPersp.scale.set(1000, 1000, 1000);
 				vrControls = new THREE.VRControls(cameraPersp);
 
@@ -254,7 +254,7 @@
 				// Update the perspective sceneWebGL
 				vrControls.update();
 
-				camerPersp.position.multiplyScalar(1000);
+				camerPersp.position.multiplyScalar(800);
 
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
 				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
