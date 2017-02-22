@@ -50,16 +50,17 @@
 	</head>
 	<body>
 
-<!-- 	<div id="youtube" style="width:560px; height:500px;">
-		<iframe width="560" height="315" src="https://www.youtube.com/embed/Qe10ExwzCqk?rel=0" frameborder="0"></iframe>
+	<div id="youtube" style="width:560px; height:500px;">
+		<iframe width="560" height="315" src="https://www.youtube.com/embed/Qe10ExwzCqk?rel=0&autoplay=1" frameborder="0"></iframe>
+		<!-- <iframe width="100%" height="80%" src="https://vr.google.com/daydream/"></iframe> -->
 		<div id="distanceText" style="width:100%; height:185px;"></div>
 	</div>
- -->
-<!-- 		<div id="info">
+
+		<div id="info">
 			<a href="http://threejs.org" target="_blank">three.js</a> -
 			WebAR (Tango) CSS ThreeJS Example <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
 		</div>
- -->
+
 		<script src="../../libs/third_party/three.js"></script>
 		<script src="../../libs/third_party/CSS3DRenderer.js"></script>
 		<script src="../../libs/third_party/Detector.js"></script>
@@ -118,8 +119,8 @@
 				// Create the see through camera sceneWebGL and camera
 				sceneCamera = new THREE.Scene();
 				cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
-				// cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
-				// sceneCamera.add(cameraMesh);
+				cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
+				sceneCamera.add(cameraMesh);
 
 				// Create the 3D sceneWebGL and camera
 				sceneWebGL = new THREE.Scene();
@@ -135,19 +136,7 @@
 				// Create the 3D sceneCSS
 				sceneCSS = new THREE.Scene();
 
-				// var youtubeDiv = document.getElementById("youtube");
-
-				var youtubeDiv = document.createElement( 'div' );
-				youtubeDiv.style.width = '480px';
-				youtubeDiv.style.height = '360px';
-				youtubeDiv.style.backgroundColor = '#000';
-				var iframe = document.createElement( 'iframe' );
-				iframe.style.width = '480px';
-				iframe.style.height = '360px';
-				iframe.style.border = '0px';
-				iframe.src = [ 'https://www.youtube.com/embed/', "Qe10ExwzCqk", '?rel=0' ].join( '' );
-				youtubeDiv.appendChild( iframe );
-
+				var youtubeDiv = document.getElementById("youtube");
 				model = new THREE.CSS3DObject(youtubeDiv);
 				// model.scale.set(0.001, 0.001, 0.001);
 				model.position.set(0, 0, -300);
@@ -160,14 +149,12 @@
 				rendererWebGL.setSize( window.innerWidth, window.innerHeight );
 				rendererWebGL.autoClear = false;
 				rendererWebGL.domElement.style.position = 'absolute';
-				// rendererWebGL.domElement.style.zIndex = 0;
 				rendererWebGL.domElement.style.top = 0;
 
 				// Create the rendererCSS
 				rendererCSS = new THREE.CSS3DRenderer();
 				rendererCSS.setSize( window.innerWidth, window.innerHeight );
 				rendererCSS.domElement.style.position = 'absolute';
-				// rendererCSS.domElement.style.zIndex = 1;
 				rendererCSS.domElement.style.top = 0;
 
 				// Add the renderer's domElements to the page.
@@ -177,11 +164,11 @@
 				// The cameraPersp is shared by both scenes/renderers and it is controlled by the VRControls
 				// cameraPersp = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.00001, 1000);
 				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 1000);
-				// vrControls = new THREE.VRControls(cameraPersp);
+				vrControls = new THREE.VRControls(cameraPersp);
 
 				// Create a way to measure performance
-				// stats = new Stats();
-				// rendererCSS.domElement.appendChild( stats.dom );
+				stats = new Stats();
+				rendererCSS.domElement.appendChild( stats.dom );
 
 				// Control the resizing of the window to correctly display the sceneWebGL.
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -223,20 +210,20 @@
 			    });
 
 				// Initialize the dat.GUI.
-				// var datGUI = new dat.GUI();
+				var datGUI = new dat.GUI();
 				gui = new GUI();
-				// datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
-				// 	if (value) {
-				// 		sceneWebGL.add(points)
-				// 		showPointCloud = true;
-				// 	}
-				// 	else {
-				// 		sceneWebGL.remove(points);
-				// 		showPointCloud = false;
-				// 	}
-				// });
-				// datGUI.add(gui, "showSeeThroughCamera");
-				// datGUI.add(gui, "pointsToSkip", 0, 10);
+				datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
+					if (value) {
+						sceneWebGL.add(points)
+						showPointCloud = true;
+					}
+					else {
+						sceneWebGL.remove(points);
+						showPointCloud = false;
+					}
+				});
+				datGUI.add(gui, "showSeeThroughCamera");
+				datGUI.add(gui, "pointsToSkip", 0, 10);
 
 			}
 
@@ -251,35 +238,35 @@
 
 			//
 			function updateAndRender() {
-				// stats.update();
+				stats.update();
 
 				// Update the see through sceneCamera
 				// IMPORTANT: This call makes sure that the camera mesh (quad) uses the correct texture coordinates depending on the camera and device orientations.
-				// THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
+				THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
 
 				// Render the see through camera sceneWebGL
-				// rendererWebGL.clear();
-				// if (gui.showSeeThroughCamera)
-				// 	rendererWebGL.render( sceneCamera, cameraOrtho );
+				rendererWebGL.clear();
+				if (gui.showSeeThroughCamera)
+					rendererWebGL.render( sceneCamera, cameraOrtho );
 
 				// Update the perspective sceneWebGL
-				// vrControls.update();
+				vrControls.update();
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
-				// THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
+				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
 				// Update the point cloud
-				// pointCloud.update(showPointCloud, gui.pointsToSkip);
+				pointCloud.update(showPointCloud, gui.pointsToSkip);
 
 				// Render the perspective sceneWebGL
-				// rendererWebGL.clearDepth();
-				// rendererWebGL.render( sceneWebGL, cameraPersp );
+				rendererWebGL.clearDepth();
+				rendererWebGL.render( sceneWebGL, cameraPersp );
 
 				// Update the perspective sceneCSS
 				// Calculate the distance fron the camera to the model and show it.
-	            // pos.subVectors(model.position, cameraPersp.position);
-	            // var distance = pos.length().toFixed(2);
-	            // var message = "" + distance + " meters";
-	            // var distanceTextDiv = document.getElementById("distanceText");
-	            // distanceTextDiv.innerHTML = message;
+	            pos.subVectors(model.position, cameraPersp.position);
+	            var distance = pos.length().toFixed(2);
+	            var message = "" + distance + " meters";
+	            var distanceTextDiv = document.getElementById("distanceText");
+	            distanceTextDiv.innerHTML = message;
 
 				// Render the perspective sceneCSS
 				rendererCSS.render( sceneCSS, cameraPersp );
