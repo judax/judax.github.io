@@ -54,7 +54,7 @@
 				var container = document.body;
 
 				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.00001, 5000 );
-				camera.position.set( 120, 120, 750 );
+				camera.position.set( 120, -120, 750 );
 
 				scene = new THREE.Scene();
 
@@ -77,13 +77,8 @@
 					console.log("clicked on the css renderer");
 				});
 
-				var group = new THREE.Group();
-				group.add( new Element( 'Qe10ExwzCqk', 0, 0, 240, 0 ) );
-				group.add( new Element( 'HDh4uK9PvJU', 240, 0, 0, Math.PI / 2 ) );
-				group.add( new Element( 'OX9I1KyNa8M', 0, 0, - 240, Math.PI ) );
-				group.add( new Element( 'nhORZ6Ep_jE', - 240, 0, 0, - Math.PI / 2 ) );
+				scene.add( new Element( 'Qe10ExwzCqk', 0, 0, 240, 0 ) );
 				scene.add( group );
-				group.rotation.set(0.5, 0.2, 0.8);
 
 				// controls = new THREE.TrackballControls( camera );
 				// controls.rotateSpeed = 4;
