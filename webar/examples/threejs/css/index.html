@@ -204,6 +204,9 @@
 			            	// alert(pointAndPlane.point);
 							// model.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
 				            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
+
+				            // Hack! To work in the div space (pixels)
+				            model.position.multiplyScalar(1000);
 			            }
 			            else {
 			            	alert("Could not retrieve the correct point and plane.");
@@ -254,7 +257,8 @@
 				// Update the perspective sceneWebGL
 				vrControls.update();
 
-				cameraPersp.position.multiplyScalar(800);
+	            // Hack! To work in the div space (pixels)
+				cameraPersp.position.multiplyScalar(1000);
 
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
 				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
