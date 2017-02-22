@@ -226,10 +226,10 @@
 						width: '500',
 						videoId: 'Qe10ExwzCqk',
 						events: {
-							'onReady': function() {
-								rendererCSS.domElement.addEventListener("dblclick", function() {
-									player.playVideo();
-								})
+							'onReady': function(event) {
+								// rendererCSS.domElement.addEventListener("dblclick", function() {
+									event.target.playVideo();
+								// })
 							}
 						}
 					});
