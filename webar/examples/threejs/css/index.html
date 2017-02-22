@@ -301,7 +301,7 @@
 				// Update the perspective sceneCSS
 				// Calculate the distance fron the camera to the model and show it.
 	            pos.subVectors(model.position, cameraPersp.position);
-	            var distance = (pos.length() / 10).toFixed(2);
+	            var distance = (pos.length() * 100).toFixed(2);
 	            var message = "" + distance + " cms";
 	            distanceTextDiv.innerHTML = message;
 
