@@ -199,7 +199,7 @@
 
 				// Create a way to measure performance
 				stats = new Stats();
-				container.appendChild( stats.dom );
+				// container.appendChild( stats.dom );
 
 				// Control the resizing of the window to correctly display the scene.
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -234,7 +234,7 @@
 				            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
 			            }
 			            else {
-			            	alert("Could not retrieve the correct point and plane.");
+			            	// alert("Could not retrieve the correct point and plane.");
 			            }
 			        }
 			    });
