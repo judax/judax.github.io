@@ -56,11 +56,11 @@
 		<div id="distanceText" style="width:100%; height:185px;"></div>
 	</div>
 
-		<div id="info">
+<!-- 		<div id="info">
 			<a href="http://threejs.org" target="_blank">three.js</a> -
 			WebAR (Tango) CSS ThreeJS Example <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
 		</div>
-
+ -->
 		<script src="../../libs/third_party/three.js"></script>
 		<script src="../../libs/third_party/CSS3DRenderer.js"></script>
 		<script src="../../libs/third_party/Detector.js"></script>
@@ -171,8 +171,8 @@
 				vrControls = new THREE.VRControls(cameraPersp);
 
 				// Create a way to measure performance
-				stats = new Stats();
-				rendererCSS.domElement.appendChild( stats.dom );
+				// stats = new Stats();
+				// rendererCSS.domElement.appendChild( stats.dom );
 
 				// Control the resizing of the window to correctly display the sceneWebGL.
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -214,20 +214,20 @@
 			    });
 
 				// Initialize the dat.GUI.
-				var datGUI = new dat.GUI();
-				gui = new GUI();
-				datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
-					if (value) {
-						sceneWebGL.add(points)
-						showPointCloud = true;
-					}
-					else {
-						sceneWebGL.remove(points);
-						showPointCloud = false;
-					}
-				});
-				datGUI.add(gui, "showSeeThroughCamera");
-				datGUI.add(gui, "pointsToSkip", 0, 10);
+				// var datGUI = new dat.GUI();
+				// gui = new GUI();
+				// datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
+				// 	if (value) {
+				// 		sceneWebGL.add(points)
+				// 		showPointCloud = true;
+				// 	}
+				// 	else {
+				// 		sceneWebGL.remove(points);
+				// 		showPointCloud = false;
+				// 	}
+				// });
+				// datGUI.add(gui, "showSeeThroughCamera");
+				// datGUI.add(gui, "pointsToSkip", 0, 10);
 
 			}
 
@@ -242,7 +242,7 @@
 
 			//
 			function updateAndRender() {
-				stats.update();
+				// stats.update();
 
 				// Update the see through sceneCamera
 				// IMPORTANT: This call makes sure that the camera mesh (quad) uses the correct texture coordinates depending on the camera and device orientations.
