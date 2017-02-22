@@ -258,7 +258,7 @@
 				vrControls.update();
 
 	            // Hack! To work in the div space (pixels)
-				cameraPersp.position.multiplyScalar(1000);
+				cameraPersp.position.multiplyScalar(1500);
 
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
 				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
@@ -272,8 +272,8 @@
 				// Update the perspective sceneCSS
 				// Calculate the distance fron the camera to the model and show it.
 	            pos.subVectors(model.position, cameraPersp.position);
-	            var distance = pos.length().toFixed(2);
-	            var message = "" + distance + " meters";
+	            var distance = (pos.length() / 10).toFixed(2);
+	            var message = "" + distance + " cms";
 	            distanceTextDiv.innerHTML = message;
 
 				// Render the perspective sceneCSS
