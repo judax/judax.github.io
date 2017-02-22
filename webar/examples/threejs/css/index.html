@@ -70,8 +70,8 @@
       var player;
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('youtubeiframe', {
-          height: '500',
-          width: '315',
+          height: '315',
+          width: '500',
           videoId: 'Qe10ExwzCqk',
           events: {
             'onReady': onPlayerReady,
@@ -169,7 +169,7 @@
 				var youtubeDiv = document.getElementById("youtube");
 				model = new THREE.CSS3DObject(youtubeDiv);
 				// model.scale.set(0.001, 0.001, 0.001);
-				model.position.set(0, 0, -300);
+				model.position.set(0, 0, 0.3);
 				// model.position.set(Infinity, Infinity, Infinity);
 				sceneCSS.add(model);
 
@@ -235,7 +235,7 @@
 				            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
 
 				            // Hack! To work in the div space (pixels)
-				            model.position.multiplyScalar(1000);
+				            // model.position.multiplyScalar(1000);
 			            }
 			            else {
 			            	alert("Could not retrieve the correct point and plane.");
@@ -287,7 +287,7 @@
 				vrControls.update();
 
 	            // Hack! To work in the div space (pixels)
-				cameraPersp.position.multiplyScalar(1500);
+				// cameraPersp.position.multiplyScalar(1500);
 
 				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
 				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
