@@ -51,40 +51,10 @@
 	<body>
 
 	<div id="youtube" style="width:560px; height:500px;">
-		<!-- <div id="youtubeiframe"></div> -->
-		<iframe width="560" height="315" src="https://www.youtube.com/embed/Qe10ExwzCqk?rel=0" frameborder="0"></iframe>
+		<div id="youtubeiframe"></div>
+		<!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/Qe10ExwzCqk?rel=0" frameborder="0"></iframe> -->
 		<div id="distanceText" style="width:100%; height:185px;"></div>
 	</div>
-
-<!--
-   <script>
-      // 2. This code loads the IFrame Player API code asynchronously.
-      var tag = document.createElement('script');
-
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      // 3. This function creates an <iframe> (and YouTube player)
-      //    after the API code downloads.
-      var player;
-      function onYouTubeIframeAPIReady() {
-        player = new YT.Player('youtubeiframe', {
-          height: '315',
-          width: '500',
-          videoId: 'Qe10ExwzCqk',
-          events: {
-            'onReady': onPlayerReady,
-          }
-        });
-      }
-
-      // 4. The API will call this function when the video player is ready.
-      function onPlayerReady(event) {
-        event.target.playVideo();
-      }
-    </script>
--->
 
 		<div id="info">
 			<a href="http://threejs.org" target="_blank">three.js</a> -
@@ -101,6 +71,7 @@
 		<script src="../../libs/THREE.WebAR.js"></script>
 
 		<script>
+
 			function GUI() {
 				this.showPointCloud = showPointCloud;
 				this.showSeeThroughCamera = true;
@@ -165,7 +136,6 @@
 
 				// Create the 3D sceneCSS
 				sceneCSS = new THREE.Scene();
-				sceneCSS.scale.set(1000, 1000, 1000);
 
 	            distanceTextDiv = document.getElementById("distanceText");
 				var youtubeDiv = document.getElementById("youtube");
@@ -198,8 +168,6 @@
 				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.00001, 10000);
 				// cameraPersp.scale.set(1000, 1000, 1000);
 				vrControls = new THREE.VRControls(cameraPersp);
-
-				sceneCSS.add(cameraPersp);
 
 				// Create a way to measure performance
 				stats = new Stats();
@@ -246,6 +214,26 @@
 			            }
 			        }
 			    });
+
+				var tag = document.createElement('script');
+				tag.src = "https://www.youtube.com/iframe_api";
+				var firstScriptTag = document.getElementsByTagName('script')[0];
+				firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+				var player;
+				function onYouTubeIframeAPIReady() {
+					player = new YT.Player('youtubeiframe', {
+						height: '315',
+						width: '500',
+						videoId: 'Qe10ExwzCqk',
+						events: {
+							'onReady': function() {
+								rendererCSS.domElement.addEventListener("dblclick", function() {
+									player.playVideo();
+								})
+							}
+						}
+					});
+				}
 
 				// Initialize the dat.GUI.
 				var datGUI = new dat.GUI();
