@@ -227,7 +227,12 @@
 				function move(x) {
 		        	var diffX = x - lastX;
 		        	lastX = x;
-		        	model.rotateY(THREE.Math.degToRad(diffX));
+		        	if (vrDisplay) {
+			        	model.rotateZ(THREE.Math.degToRad(diffX));
+		        	}
+		        	else {
+			        	model.rotateY(THREE.Math.degToRad(diffX));
+		        	}
 				}
 
 			    renderer.domElement.addEventListener("touchstart", function(event) {
