@@ -343,10 +343,8 @@ THREE.WebAR._cameraOrientationCorrectionQuaternions = [
 * @param {THREE.Camera} camera The ThreeJS camera that needs to be updated/rotated depending on the device and camera orientations.
 */
 THREE.WebAR.updateCameraOrientation = function(vrDisplay, camera) {
+	if (!vrDisplay) return;
 	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
-
-	console.log(orientationIndex);
-
 	var quaternion = THREE.WebAR._cameraOrientationCorrectionQuaternions[orientationIndex];
 	camera.quaternion.multiply(quaternion);
 };
