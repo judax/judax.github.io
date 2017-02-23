@@ -344,6 +344,9 @@ THREE.WebAR._cameraOrientationCorrectionQuaternions = [
 */
 THREE.WebAR.updateCameraOrientation = function(vrDisplay, camera) {
 	var orientationIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
+
+	console.log(orientationIndex);
+
 	var quaternion = THREE.WebAR._cameraOrientationCorrectionQuaternions[orientationIndex];
 	camera.quaternion.multiply(quaternion);
 };
