@@ -91,6 +91,10 @@
 				loader.load( '../../resources/3dmodels/geometry_5.dae', function ( collada ) {
 		            removeLoadSpinner();
 					var colladaScene = collada.scene;
+					if (vrDisplay) {
+						colladaScene.rotateX(THREE.Math.degToRad(90));
+						colladaScene.updateMatrix();
+					}
 					model = new THREE.Object3D();
 					model.add(colladaScene);
 					callback();
@@ -178,12 +182,12 @@
 					model = new THREE.Mesh(new THREE.BoxBufferGeometry(0.1, 0.1, 0.01), new THREE.MeshLambertMaterial( {color: 0x888888 } ));
 				}
 				if (vrDisplay) {
-					model.rotateX(THREE.Math.degToRad(90));
 					model.position.set(Infinity, Infinity, Infinity);
 				}
 				else {
 					model.position.set(0, -0.25, -1.4);
 					model.rotateX(THREE.Math.degToRad(35));
+					// colladaScene.updateMatrix();
 				}
 				scene.add(model);
 
