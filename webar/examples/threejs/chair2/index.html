@@ -59,7 +59,7 @@
 		<script src="../../libs/third_party/dat.gui.min.js"></script>
 		<script src="../../libs/third_party/ColladaLoader.js"></script>
 
-		<script src="../../libs/THREE.WebAR.js"></script>
+		<script src="../../libs/THREE.WebAR.js?1"></script>
 
 		<script>
 			function addClass(node, className) {
@@ -289,8 +289,6 @@
 				// cameraPersp.updateProjectionMatrix();
 				THREE.WebAR.resizeVRSeeThroughCamera(vrDisplay, cameraPersp);
 				renderer.setSize( window.innerWidth, window.innerHeight );
-
-				alert(screen.orientation.angle);
 			}
 
 			//
