@@ -234,7 +234,7 @@
 			    });
 
 			    renderer.domElement.addEventListener("touchmove", function(event) {
-			        if (event.changedTouches.length > 0 && vrDisplay) {
+			        if (event.changedTouches.length > 0) {
 			        	move(event.changedTouches[0].pageX);
 			        }
 			    });
