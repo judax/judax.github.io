@@ -114,6 +114,9 @@
 
 			var gui;
 
+			var modelRotationSpeed = 0.5
+			var lastTime = 0;
+
 	        if (navigator.getVRDisplays) {
 	            navigator.getVRDisplays().then(function(vrDisplays) {
 	                if (vrDisplays && vrDisplays.length > 0) {
@@ -180,8 +183,8 @@
 					model.position.set(Infinity, Infinity, Infinity);
 				}
 				else {
-					model.position.set(0, -0.2, -1);
-					model.rotateX(THREE.Math.degToRad(40));
+					model.position.set(0, -0.25, -1.4);
+					model.rotateX(THREE.Math.degToRad(35));
 					// colladaScene.updateMatrix();
 				}
 				scene.add(model);
@@ -207,7 +210,9 @@
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				renderer.autoClear = false;
-				renderer.setClearColor( 0x909090);
+				if (!vrDisplay) {
+					renderer.setClearColor( 0x909090);
+				}
 				document.body.appendChild( renderer.domElement );
 
 				// Control the resizing of the window to correctly display the scene.
@@ -282,6 +287,11 @@
 			//
 			function updateAndRender() {
 
+				var time = performance.now() / 1000.0;
+				if (lastTime === 0) lastTime = time;
+				var elapsedTime = time - lastTime;
+				lastTime = time;
+
 				// Render the see through camera scene
 				renderer.clear();
 
@@ -302,6 +312,11 @@
 
 				if (vrDisplay) {
 					pointCloud.update(showPointCloud, gui.pointsToSkip);
+				}
+
+				if (!vrDisplay && !mousedown) {
+					var rot = modelRotationSpeed * elapsedTime;
+					model.rotateY(rot);
 				}
 
 				// Render the perspective scene
