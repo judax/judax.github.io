@@ -89,6 +89,7 @@
 				var loader = new THREE.ColladaLoader();
 				loader.options.convertUpAxis = true;
 				loader.load( '../../resources/3dmodels/geometry_5.dae', function ( collada ) {
+		            removeLoadSpinner();
 					var colladaScene = collada.scene;
 					// colladaScene.rotateX(THREE.Math.degToRad(90));
 					// colladaScene.updateMatrix();
@@ -119,26 +120,27 @@
 	                    for (var i = 0; i < vrDisplays.length; i++) {
 	                        vrDisplay = vrDisplays[i];
 	                        if (vrDisplay.displayName === "Tango VR Device") {
-					            removeLoadSpinner();
-					            loadChair(function() {
-						            init();
-						            updateAndRender();
-					            });
 	                            break;
+	                        }
+	                        else {
+	                        	vrDisplay = null;
 	                        }
 	                    }
 	                }
+		            loadChair(function() {
+			            init();
+			            updateAndRender();
+		            });
 	            });
 	        }
 	        else {
-	            removeLoadSpinner();
 	            loadChair(function() {
 		            init();
 		            updateAndRender();
 	            });
 	        }
 
-			function init(vrDisplay) {
+			function init() {
 
 				// Initialize everything related to ThreeJS.
 				container = document.createElement( 'div' );
