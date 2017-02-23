@@ -56,6 +56,7 @@
 		<script src="../../libs/third_party/three.js"></script>
 		<script src="../../libs/third_party/Detector.js"></script>
 		<script src="../../libs/third_party/VRControls.js"></script>
+		<script src="../../libs/third_party/OrbitControls.js"></script>
 		<script src="../../libs/third_party/dat.gui.min.js"></script>
 		<script src="../../libs/third_party/ColladaLoader.js"></script>
 
@@ -185,7 +186,8 @@
 					model.position.set(Infinity, Infinity, Infinity);
 				}
 				else {
-					model.position.set(0, -0.25, -1.4);
+					model.position.set(0, -0.30, 0);
+					cameraPersp.position.set(0, 0, 1.4);
 					model.rotateX(THREE.Math.degToRad(35));
 					// colladaScene.updateMatrix();
 				}
@@ -200,7 +202,7 @@
 					points.renderDepth = 0;
 					if (showPointCloud)
 						scene.add(points);
-					vrControls = new THREE.VRControls(cameraPersp);
+					controls = new THREE.controls(cameraPersp);
 				}
 
 				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
@@ -214,6 +216,10 @@
 				renderer.autoClear = false;
 				if (!vrDisplay) {
 					renderer.setClearColor( 0x909090);
+					controls = new THREE.OrbitControls(cameraPersp, renderer.domElement);
+					controls.enableZoom = true;
+					controls.enablePan = false;
+					controls.enableRotate = true;
 				}
 				document.body.appendChild( renderer.domElement );
 
@@ -235,51 +241,53 @@
 		        	}
 				}
 
-			    renderer.domElement.addEventListener("touchstart", function(event) {
-			    	if (event.changedTouches.length > 0)
-			    		moveStart(event.changedTouches[0].pageX);
-			    });
+				if (vrDisplay) {
+				    renderer.domElement.addEventListener("touchstart", function(event) {
+				    	if (event.changedTouches.length > 0)
+				    		moveStart(event.changedTouches[0].pageX);
+				    });
 
-			    renderer.domElement.addEventListener("touchmove", function(event) {
-			        if (event.changedTouches.length > 0) {
-			        	move(event.changedTouches[0].pageX);
-			        }
-			    });
+				    renderer.domElement.addEventListener("touchmove", function(event) {
+				        if (event.changedTouches.length > 0) {
+				        	move(event.changedTouches[0].pageX);
+				        }
+				    });
 
-			    renderer.domElement.addEventListener("mousedown", function(event) {
-			    	moveStart(event.pageX);
-			    	mousedown = true;
-			    });
+				    renderer.domElement.addEventListener("mousedown", function(event) {
+				    	moveStart(event.pageX);
+				    	mousedown = true;
+				    });
 
-			    renderer.domElement.addEventListener("mousemove", function(event) {
-			    	if (mousedown)
-			    		move(event.pageX);
-			    });
+				    renderer.domElement.addEventListener("mousemove", function(event) {
+				    	if (mousedown)
+				    		move(event.pageX);
+				    });
 
-			    renderer.domElement.addEventListener("mouseup", function(event) {
-			    	mousedown = false;
-			    });
+				    renderer.domElement.addEventListener("mouseup", function(event) {
+				    	mousedown = false;
+				    });
 
-			    renderer.domElement.addEventListener("click", function(event) {
-			        if (vrDisplay) {
-			            pos.x = event.pageX / window.innerWidth;
-			            pos.y = event.pageY / window.innerHeight;
+				    renderer.domElement.addEventListener("click", function(event) {
+				        if (vrDisplay) {
+				            pos.x = event.pageX / window.innerWidth;
+				            pos.y = event.pageY / window.innerHeight;
 
-			            THREE.WebAR.updateVector3Orientation(vrDisplay, pos);
+				            THREE.WebAR.updateVector3Orientation(vrDisplay, pos);
 
-			            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
-			            // console.log("x = " + lastX + ", y = " + lastY + ", window.innerWidth = " + window.innerWidth + ", window.innerHeight = " + window.innerHeight + ", uvx = " + x + ", uvy = " + y + ", point[0] = " + pointAndPlane.point[0] + ", point[1] = " + pointAndPlane.point[1] + ", point[2] = " + pointAndPlane.point[2] + ", plane[0] = " + pointAndPlane.plane[0] + ", plane[1] = " + pointAndPlane.plane[1] + ", plane[2] = " + pointAndPlane.plane[2] + ", plane[3] = " + pointAndPlane.plane[3]);  
+				            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
+				            // console.log("x = " + lastX + ", y = " + lastY + ", window.innerWidth = " + window.innerWidth + ", window.innerHeight = " + window.innerHeight + ", uvx = " + x + ", uvy = " + y + ", point[0] = " + pointAndPlane.point[0] + ", point[1] = " + pointAndPlane.point[1] + ", point[2] = " + pointAndPlane.point[2] + ", plane[0] = " + pointAndPlane.plane[0] + ", plane[1] = " + pointAndPlane.plane[1] + ", plane[2] = " + pointAndPlane.plane[2] + ", plane[3] = " + pointAndPlane.plane[3]);  
 
-			            if (pointAndPlane) {
-			            	// alert(pointAndPlane.point);
-							// model.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
-				            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
-			            }
-			            else {
-			            	// alert("Could not retrieve the correct point and plane.");
-			            }
-			        }
-			    });
+				            if (pointAndPlane) {
+				            	// alert(pointAndPlane.point);
+								// model.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
+					            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
+				            }
+				            else {
+				            	// alert("Could not retrieve the correct point and plane.");
+				            }
+				        }
+				    });
+				}
 
 			}
 
@@ -309,12 +317,12 @@
 
 					if (gui.showSeeThroughCamera)
 						renderer.render( sceneCamera, cameraOrtho );
-
-					// Update the perspective scene
-					vrControls.update();
 				}
 
-				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
+				// Update the perspective scene
+				controls.update();
+
+				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous controls.update call, is correctly transformed depending on the device orientation.
 				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
 
 				if (vrDisplay) {
