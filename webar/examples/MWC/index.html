@@ -1,0 +1,262 @@
+<!-- 
+Web AR demo for Google Campus Madrid using Chromium WebAR 
+Asier Arranz - Onirux Labs - asier@onirux.com 
+
+Based on ThreeJS WebAR examples by Iker Jamardo. https://github.com/judax
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/main.css">
+    <!-- Error handling -->
+    <script>
+        window.addEventListener('error', function(event) {
+            var errorMessage = event.message;
+            var url = event.filename;
+            var lineNumber = event.lineno;
+            var columnNumber = event.colno;
+            alert("ERROR: " + errorMessage + " at " + url + " : " + lineNumber + " : " + columnNumber);
+        });
+    </script>
+
+		<title>WebAR (Tango) Google Campus Welcome Pack</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			} 
+			#info {
+				color: #fff;
+				position: absolute;
+				bottom: 10px;
+				width: 100%;
+				text-align: center;
+				z-index: 100;
+				display:block;
+			}
+			a { color: skyblue }
+		</style>
+	</head>
+	<body>
+		<div id="loader-wrapper">
+			<div id="loader"></div>
+			<div class="loader-section section-left"></div>
+            <div class="loader-section section-right"></div>
+		</div>
+
+		<!-- <script src="js/stats.min.js"></script>  Debugging stats -->
+		<script src="js/three.js"></script>
+		<script src="js/Detector.js"></script> <!-- Detect WebGL capabilities -->
+		<script src="js/VRControls.js"></script> <!-- Change the perspective/pose of the VR camera in ThreeJS -->
+		<script src="js/JDLoader.min.js"></script> <!-- JSON importer from 3Dmax -> More info: http://www.cgdev.net -->
+		<script src="js/THREE.WebAR.js"></script>	<!-- WebAR library -->
+
+		<script>
+			function addClass(node, className) {
+				if (node.classList) {
+					node.classList.add(className);
+				}
+				else {
+					node.className += ' ' + className;
+				}
+			}
+
+			function removeLoadSpinner() {
+				addClass(document.body, 'loaded');
+				setTimeout(function() {
+					document.body.removeChild(document.getElementById("loader-wrapper"));
+				}, 5000);
+			}
+
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			var container;
+			var stats; // Debugging stats
+			var cameraOrtho, cameraPersp, sceneCamera, scene, renderer, cameraMesh;
+			var pointCloud, showPointCloud = true;
+			var vrDisplay;
+			var lastX, lastY;
+			var pos = new THREE.Vector3();
+			var mesh;
+			var meshes = []; // Meshes array for multiple materials
+			var model;
+			var clock = new THREE.Clock; // Animation clock
+			var mixers = []; // Animation mixers
+
+	        if (navigator.getVRDisplays) {
+	            navigator.getVRDisplays().then(function(vrDisplays) {
+	                if (vrDisplays && vrDisplays.length > 0) {
+	                    for (var i = 0; i < vrDisplays.length; i++) {
+	                        vrDisplay = vrDisplays[i];
+	                        if (vrDisplay.displayName === "Tango VR Device") { 
+									var loader = new THREE.JDLoader();
+									loader.load("3dmodels/model.jd", function (data) {
+										removeLoadSpinner();
+			                            var multiMaterial = new THREE.MultiMaterial(data.materials);
+			                            model = new THREE.Object3D();
+			                            for (var i = 0; i < data.geometries.length; ++i) {
+			                                mesh = new THREE.SkinnedMesh(data.geometries[i], multiMaterial);
+			                                meshes.push(mesh);
+			                                model.add(mesh);
+			                                if (mesh.geometry.animations) {
+			                                    var mixer = new THREE.AnimationMixer(mesh);
+			                                    mixers.push(mixer);
+			                                    mixer.clipAction(mesh.geometry.animations[0]).play();
+			                                }
+			                            }
+			                            init(vrDisplay);
+										updateAndRender();
+									 });							
+	                            break;
+	                        }
+	                    }
+	                }
+	            });
+	        }
+	        else {
+	            alert("No navigator.getVRDisplays");
+	            removeLoadSpinner();
+	            init();
+	            updateAndRender();
+	        }
+
+			function init(vrDisplay) {
+				// Initialize everything related to ThreeJS.
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				// See through camera scene and camera
+				sceneCamera = new THREE.Scene();
+				cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
+				cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
+				sceneCamera.add(cameraMesh);
+
+				// 3D scene and camera
+				scene = new THREE.Scene();
+
+				cameraPersp = THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.01, 1000); // createVRSeeThroughCamera(vrDisplay,near,far) Default near was 0.00001 -> Changed to avoid clipping issues between near planes
+
+				// Add model to the scene
+				if (model)	{
+				model.position.set(Infinity, Infinity, Infinity);
+				scene.add(model);
+				}
+				// Pointcloud properties
+				var material = new THREE.PointsMaterial( { size: 0.001, vertexColors: THREE.VertexColors } );
+				material.depthWrite = false;
+				pointCloud = new THREE.WebAR.VRPointCloud(vrDisplay, true);
+				points = new THREE.Points( pointCloud.getBufferGeometry(), material );
+				points.frustumCulled = false;
+				points.renderDepth = 0;
+				if (showPointCloud)
+					scene.add(points);
+
+				// VRcontrols
+				vrControls = new THREE.VRControls(cameraPersp);
+
+				// Lights
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+				directionalLight.position.set( 0, 1, 0);
+				scene.add( directionalLight );
+				var light = new THREE.AmbientLight( 0xf0f0f0 ); 
+				scene.add( light );
+
+				// Renderer
+				renderer = new THREE.WebGLRenderer({antialias: true});
+
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.autoClear = false;
+				document.body.appendChild( renderer.domElement );
+
+				/* // Debugging stats
+				stats = new Stats();
+				container.appendChild( stats.dom );
+				*/
+
+				// Control the resizing of the window to correctly display the scene.
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			    renderer.domElement.addEventListener("touchstart", function(event) {
+			    	if (event.changedTouches.length > 0)
+			    		lastX = event.changedTouches[0].pageX;
+			    });
+
+			    renderer.domElement.addEventListener("touchmove", function(event) {
+			        if (event.changedTouches.length > 0 && vrDisplay) {
+			        	var x = event.changedTouches[0].pageX;
+			        	var diffX = x - lastX;
+			        	lastX = x;
+			        	model.rotateZ(THREE.Math.degToRad(diffX));
+			        }
+			    });
+
+			    renderer.domElement.addEventListener("click", function(event) {
+			        if (vrDisplay) {
+			            pos.x = event.pageX / window.innerWidth;
+			            pos.y = event.pageY / window.innerHeight;
+			            THREE.WebAR.updateVector3Orientation(vrDisplay, pos);
+			            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y); 
+			            if (pointAndPlane) {
+				            THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(pointAndPlane, model, 0.0);
+				            // When the model is placed, remove the pointcloud
+				            showPointCloud = false; 
+				            scene.remove(points);
+			            }
+			            else {
+			            	alert("Could not retrieve the correct point and plane.");
+			            }
+			        }
+			    });
+			}
+
+			function onWindowResize() {
+				THREE.WebAR.resizeVRSeeThroughCamera(vrDisplay, cameraPersp);
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+
+			function updateAndRender() {
+				//stats.update();  //Debugging stats
+
+				// Update the see through camera scene
+				// IMPORTANT: This call makes sure that the camera mesh (quad) uses the correct texture coordinates depending on the camera and device orientations.
+				THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
+
+				// Render the see through camera scene
+				renderer.clear();
+				renderer.render( sceneCamera, cameraOrtho );
+
+				// Animation updater
+				var delta = clock.getDelta();  
+            	for (var i = 0; i < mixers.length; ++i) 
+                	mixers[i].update(delta);
+
+				// Update the perspective scene
+				vrControls.update();
+
+				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
+				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
+
+				// Pointcloud drawing
+				pointCloud.update(showPointCloud, 1);
+
+				// Render the perspective scene
+				renderer.clearDepth();
+				renderer.render( scene, cameraPersp );
+
+				// Restart Render Loop
+				requestAnimationFrame( updateAndRender );
+			}
+
+		</script>
+	</body>
+</html>
