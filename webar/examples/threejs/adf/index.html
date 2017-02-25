@@ -194,8 +194,6 @@
 			            pos.x = event.pageX / window.innerWidth;
 			            pos.y = event.pageY / window.innerHeight;
 
-			            THREE.WebAR.updateVector3Orientation(vrDisplay, pos);
-
 			            var pointAndPlane = vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
 			            // console.log("x = " + lastX + ", y = " + lastY + ", window.innerWidth = " + window.innerWidth + ", window.innerHeight = " + window.innerHeight + ", uvx = " + x + ", uvy = " + y + ", point[0] = " + pointAndPlane.point[0] + ", point[1] = " + pointAndPlane.point[1] + ", point[2] = " + pointAndPlane.point[2] + ", plane[0] = " + pointAndPlane.plane[0] + ", plane[1] = " + pointAndPlane.plane[1] + ", plane[2] = " + pointAndPlane.plane[2] + ", plane[3] = " + pointAndPlane.plane[3]);  
 
@@ -236,9 +234,6 @@
 
 				// Update the perspective scene
 				vrControls.update();
-
-				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
-				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
 
 				pointCloud.update(showPointCloud, gui.pointsToSkip);
 

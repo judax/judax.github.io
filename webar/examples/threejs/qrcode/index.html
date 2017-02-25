@@ -239,8 +239,6 @@
 
 				// Update the perspective scene
 				vrControls.update();
-				// IMPORTANT: this call makes sure that the camera, that has taken the pose from the previous VRControls.update call, is correctly transformed depending on the device orientation.
-				THREE.WebAR.updateCameraOrientation(vrDisplay, cameraPersp);
 
 				// Update the point cloud but do not update the point buffer geometry as it won't be shown
 				pointCloud.update(false);
