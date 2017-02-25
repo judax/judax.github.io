@@ -370,6 +370,11 @@ THREE.WebAR.resizeVRSeeThroughCamera = function(vrDisplay, camera) {
 	}
 }
 
+// Some precalculated private objects to avoid garbage collection
+THREE.WebAR._worldUp = new THREE.Vector3(0.0, 1.0, 0.0);
+THREE.WebAR._normalY = new THREE.Vector3();
+THREE.WebAR._normalZ = new THREE.Vector3();
+THREE.WebAR._rotationMatrix = new THREE.Matrix4();
 /**
 * Transform a given THREE.Object3D instance to be correctly positioned and oriented according to a given VRPickingPointAndPlane and a scale (half the size of the object3d).
 * @param {VRPickingPointandPlane} pointAndPlane - The point and plane retrieved using the VRDisplay.getPickingPointAndPlaneInPointCloud function.
