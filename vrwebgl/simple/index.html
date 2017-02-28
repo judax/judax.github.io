@@ -1,8 +1,16 @@
 <html>
 <body>
+<script src="../VRWebGL.js"></script>
 <script>
 alert("HELLO alert!!!");
 console.log("HELLO log!!!");
+var canvas = document.createElement("canvas");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+document.body.appendChild(canvas);
+var gl = canvas.getContext("webgl");
+var vs = gl.createShader(gl.VERTEX_SHADER);
+var buf = gl.createBuffer();
 </script>
 </body>
 </html>
