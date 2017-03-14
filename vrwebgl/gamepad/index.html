@@ -21,6 +21,8 @@
 	</head>
 	<body>
 
+		<script src= "../../VRWebGL.js"></script>
+
 		<script src="three.js"></script>
 
 		<script src="VRControls.js"></script>
@@ -43,6 +45,7 @@
 			var container;
 			var camera, scene, ray, raycaster, renderer;
 			var effect, controls, gamepad;
+			var respawnIndex = -1;
 
 			var room;
 
@@ -83,7 +86,7 @@
 
 				var geometry = new THREE.BoxGeometry( 0.15, 0.15, 0.15 );
 
-				for ( var i = 0; i < 200; i ++ ) {
+				for ( var i = 0; i < 150; i ++ ) {
 
 					var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 
@@ -171,16 +174,37 @@
 			//
 
 			function animate() {
-
-				effect.requestAnimationFrame( animate );
 				render();
-				gamepad.update();
-
+				effect.requestAnimationFrame( animate );
 			}
 
 			function render() {
 
 				var delta = clock.getDelta() * 60;
+
+				gamepad.update();
+				controls.update();
+			    camera.updateMatrixWorld(true);
+
+				if (window.VRWebGLRenderingContext) {
+					renderer.getContext().setCameraProjectionMatrix(camera.projectionMatrix.elements);
+					renderer.getContext().setCameraWorldMatrix(camera.matrixWorld.elements);
+				}
+
+				// Launch cubes if the gamepad has been pressed.
+				if ( gamepad.getTouchPadState() ) {
+					respawnIndex++;
+					respawnIndex %= room.children.length;
+					var cube = room.children[ respawnIndex ];
+					// cube.position.set( 0, 0, - 0.75 );
+					cube.position.copy(gamepad.position);
+					// cube.position.applyQuaternion( gamepad.quaternion );
+					cube.userData.velocity.x = ( Math.random() - 0.5 ) * 0.01 * delta;
+					cube.userData.velocity.y = ( Math.random() - 0.5 ) * 0.01 * delta;
+					cube.userData.velocity.z = ( Math.random() * 0.01 - 0.05 ) * delta;
+					cube.userData.velocity.applyQuaternion( gamepad.quaternion );
+				}
+
 
 				// find intersections
 
@@ -211,9 +235,11 @@
 
 				// keep cubes inside room
 
+				room.frustumCulled = false;
 				for ( var i = 0; i < room.children.length; i ++ ) {
 
 					var cube = room.children[ i ];
+					cube.frustumCulled = false;
 
 					cube.userData.velocity.multiplyScalar( 1 - ( 0.001 * delta ) );
 
@@ -246,7 +272,6 @@
 
 				}
 
-				controls.update();
 				effect.render( scene, camera );
 
 			}
