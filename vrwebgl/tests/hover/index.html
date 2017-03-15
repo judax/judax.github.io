@@ -23,35 +23,37 @@
 -->
 
 		<script>
-			var canvas = document.createElement("canvas");
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
-			document.body.appendChild(canvas);
-			var context = canvas.getContext("2d");
-			var x = canvas.width >> 1, y = canvas.height >> 1;
-			alert("Hover example: " + canvas.width + ", " + canvas.height + ", " + x + ", " + y);
-			function raf() {
-				context.fillStyle = "white";
-				context.fillRect(0, 0, canvas.width, canvas.height);
-				context.fillStyle = "grey";
-				var size = Math.max(canvas.width, canvas.height) * 0.05;
-				var halfSize = size >> 1;
-				context.fillRect(x - halfSize, y - halfSize, size, size);
+			document.addEventListener("load", function() {
+				var canvas = document.createElement("canvas");
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+				document.body.appendChild(canvas);
+				var context = canvas.getContext("2d");
+				var x = canvas.width >> 1, y = canvas.height >> 1;
+				alert("Hover example: " + canvas.width + ", " + canvas.height + ", " + x + ", " + y);
+				function raf() {
+					context.fillStyle = "white";
+					context.fillRect(0, 0, canvas.width, canvas.height);
+					context.fillStyle = "grey";
+					var size = Math.max(canvas.width, canvas.height) * 0.05;
+					var halfSize = size >> 1;
+					context.fillRect(x - halfSize, y - halfSize, size, size);
+					requestAnimationFrame(raf);
+				}
+				window.addEventListener("touchstart", function(ev) {
+					x = ev.changedTouches[0].pageX;
+					y = ev.changedTouches[0].pageY;
+				});
+				window.addEventListener("touchend", function(ev) {
+					x = ev.changedTouches[0].pageX;
+					y = ev.changedTouches[0].pageY;
+				});
+				window.addEventListener("touchmove", function(ev) {
+					x = ev.changedTouches[0].pageX;
+					y = ev.changedTouches[0].pageY;
+				});
 				requestAnimationFrame(raf);
-			}
-			window.addEventListener("touchstart", function(ev) {
-				x = ev.changedTouches[0].pageX;
-				y = ev.changedTouches[0].pageY;
 			});
-			window.addEventListener("touchend", function(ev) {
-				x = ev.changedTouches[0].pageX;
-				y = ev.changedTouches[0].pageY;
-			});
-			window.addEventListener("touchmove", function(ev) {
-				x = ev.changedTouches[0].pageX;
-				y = ev.changedTouches[0].pageY;
-			});
-			requestAnimationFrame(raf);
 		</script>
 	</body>
 </html>
