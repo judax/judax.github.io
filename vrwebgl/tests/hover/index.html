@@ -34,7 +34,8 @@
 				context.fillRect(0, 0, canvas.width, canvas.height);
 				context.fillStyle = "grey";
 				var size = Math.max(canvas.width, canvas.height) * 0.05;
-				context.fillRect(x, y, size, size);
+				var halfSize = size >> 1;
+				context.fillRect(x - halfSize, y - halfSize, size, size);
 				requestAnimationFrame(raf);
 			}
 			window.addEventListener("touchstart", function(ev) {
