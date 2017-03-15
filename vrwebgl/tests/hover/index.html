@@ -33,20 +33,21 @@
 				context.fillStyle = "white";
 				context.fillRect(0, 0, canvas.width, canvas.height);
 				context.fillStyle = "grey";
-				context.fillRect(x, y, canvas.width * 0.05, canvas.height * 0.05);
+				var size = Math.max(canvas.widht, canvas.height) * 0.05;
+				context.fillRect(x, y, size, size);
 				requestAnimationFrame(raf);
 			}
 			window.addEventListener("touchstart", function(ev) {
 				x = ev.changedTouches[0].pageX;
-				y = ev.changedTouches[0].pageX;
+				y = ev.changedTouches[0].pageY;
 			});
 			window.addEventListener("touchend", function(ev) {
 				x = ev.changedTouches[0].pageX;
-				y = ev.changedTouches[0].pageX;
+				y = ev.changedTouches[0].pageY;
 			});
 			window.addEventListener("touchmove", function(ev) {
 				x = ev.changedTouches[0].pageX;
-				y = ev.changedTouches[0].pageX;
+				y = ev.changedTouches[0].pageY;
 			});
 			requestAnimationFrame(raf);
 		</script>
