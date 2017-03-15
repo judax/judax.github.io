@@ -23,7 +23,7 @@
 -->
 
 		<script>
-			document.addEventListener("load", function() {
+			window.addEventListener("load", function() {
 				var canvas = document.createElement("canvas");
 				canvas.width = window.innerWidth;
 				canvas.height = window.innerHeight;
@@ -32,9 +32,9 @@
 				var x = canvas.width >> 1, y = canvas.height >> 1;
 				alert("Hover example: " + canvas.width + ", " + canvas.height + ", " + x + ", " + y);
 				function raf() {
-					context.fillStyle = "white";
-					context.fillRect(0, 0, canvas.width, canvas.height);
 					context.fillStyle = "grey";
+					context.fillRect(0, 0, canvas.width, canvas.height);
+					context.fillStyle = "black";
 					var size = Math.max(canvas.width, canvas.height) * 0.05;
 					var halfSize = size >> 1;
 					context.fillRect(x - halfSize, y - halfSize, size, size);
