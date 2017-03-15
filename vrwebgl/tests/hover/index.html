@@ -23,13 +23,13 @@
 -->
 
 		<script>
-			alert("Hover example!");
 			var canvas = document.createElement("canvas");
 			canvas.width = window.innerWidth;
 			canvas.height = window.innerHeight;
 			document.body.appendChild(canvas);
 			var context = canvas.getContext("2d");
 			var x = canvas.width >> 1, y = canvas.height >> 1;
+			alert("Hover example: " + canvas.width + ", " + canvas.height + ", " + x + ", " + y);
 			function raf() {
 				context.fillStyle = "white";
 				context.fillRect(0, 0, canvas.width, canvas.height);
