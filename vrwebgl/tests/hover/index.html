@@ -28,7 +28,7 @@
 			canvas.height = window.innerHeight;
 			document.body.appendChild(canvas);
 			var context = canvas.getContext("2d");
-			var x = 0, y = 0;
+			var x = canvas.width >> 1, y = canvas.height >> 1;
 			function raf() {
 				context.fillStyle = "white";
 				context.fillRect(0, 0, canvas.width, canvas.height);
