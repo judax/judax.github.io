@@ -152,8 +152,12 @@
 
 				//
 
-				var gamepadHelper = new THREE.Line( new THREE.BufferGeometry(), new THREE.LineBasicMaterial( { linewidth: 4 } ) );
-				gamepadHelper.geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( [ 0, 0, 0, 0, 0, - 10 ], 3 ) );
+				var gamepadHelper = new THREE.Mesh(new THREE.CylinderBufferGeometry(0.5, 0.5, 1), new THREE.MeshBasicMaterial( { color: 0x87cefa  } ) );
+				gamepadHelper.rotation.set(Math.PI / 2, 0, 0);
+				gamepadHelper.position.set(0, 0, -0.5);
+				gamepadHelper = new THREE.Object3D().add(gamepadHelper);
+				gamepadHelper.scale.set(0.01, 0.01, 5.0);
+				gamepadHelper = new THREE.Object3D().add(gamepadHelper);
 				gamepad.add( gamepadHelper );
 
 				//
