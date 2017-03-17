@@ -1133,14 +1133,18 @@
 					}
 				};
 
+				var originalDocumentDeleteElement = document.deleteElement;
 				document.deleteElement = function(obj) {
+					var argumentsArray = Array.prototype.slice.apply(arguments);
+					var found = false;
 					for (var i =0; i < vrWebGLVideos.length; i++) {
 						if (vrWebGLVideos[i] === obj) {
 							vrWebGLVideos.splice(i, 1);
+							found = true;
 							break;
 						}
 					}
-					return this;
+					return found ? this : originalDocumentDeleteElement.apply(this, argumentsArray);
 				};
 			})();
 		}
@@ -1162,14 +1166,18 @@
 				}
 			};
 
+			var originalDocumentDeleteElement = document.deleteElement;
 			document.deleteElement = function(obj) {
+				var argumentsArray = Array.prototype.slice.apply(arguments);
+				var found = false;
 				for (var i =0; i < vrWebGLWebViews.length; i++) {
 					if (vrWebGLWebViews[i] === obj) {
 						vrWebGLWebViews.splice(i, 1);
+						found = true;
 						break;
 					}
 				}
-				return this;
+				return found ? this : originalDocumentDeleteElement.apply(this, argumentsArray);
 			};
 		})();
 
