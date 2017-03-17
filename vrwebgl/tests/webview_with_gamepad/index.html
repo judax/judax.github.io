@@ -390,6 +390,7 @@
 						}
 						if (!webviewMeshInverseMatrixWorld) {
 							// NOTE: We will assume for now that the webviewMesh won't be dynamically transformed and so, we will calculate the inverse of its matrixWorld only once as it is an expensive calculation.
+							// With the inverse matrix we will normalize the intersection point (assuming that the webview mesh started with a normalized plane, check the createWebViewMesh function)
 							webviewMeshInverseMatrixWorld = new THREE.Matrix4();
 							webviewMesh.updateMatrixWorld(true);
 							webviewMeshInverseMatrixWorld.getInverse(webviewMesh.matrixWorld);
@@ -405,6 +406,10 @@
 								action = VRWebGLWebView.prototype.touchstart;
 								lastGamepadTouchedOnWebView = true;
 								actionCameFromTouched = true;
+								// Store the intersection point when the touch starts as it will be the pivotal point where all the offsets are added.
+								lastWebviewIntersectionPoint.copy(webviewIntersectionPoint);
+								// Also store the touchpad pos so the initial offset is 0.
+								touchpadPos.set(realGamepad.axes[0], realGamepad.axes[1], 0);
 							}
 							else if (lastGamepadTouchedOnWebView && !gamepadTouched) {
 								action = VRWebGLWebView.prototype.touchend;
@@ -450,17 +455,18 @@
 					// Is there any action to be executed upon the webview?
 					if (action) {
 						if (!actionCameFromPressed && actionCameFromTouched) {
-							if (action === VRWebGLWebView.prototype.touchmove) {
-								var offsetX = realGamepad.axes[0] - touchpadPos.x;
-								var offsetY = (realGamepad.axes[1] - touchpadPos.y) * -1.0;
-								webviewIntersectionPoint.x = lastWebviewIntersectionPoint.x + offsetX;
-								webviewIntersectionPoint.y = lastWebviewIntersectionPoint.y + offsetY;
-							}
+
+							// The touchpad ise used only to calculate the difference between touches and apply it to the last intersection point stored.
+							var offsetX = realGamepad.axes[0] - touchpadPos.x;
+							var offsetY = (realGamepad.axes[1] - touchpadPos.y) * -1.0;
+							webviewIntersectionPoint.x = lastWebviewIntersectionPoint.x + offsetX;
+							webviewIntersectionPoint.y = lastWebviewIntersectionPoint.y + offsetY;
 
 							// Only store last intersection points from touch events as press events handle them differently (1.0 - X).
 							lastWebviewIntersectionPoint.copy(webviewIntersectionPoint);
 						}
 
+						// Correct the Y value to match 2D intergaces where 0,0 is the upper left corner.
 						webviewIntersectionPoint.y = 1.0 - webviewIntersectionPoint.y;
 						// Call the actual action upon the webview
 						action.call(webview, webviewIntersectionPoint.x, webviewIntersectionPoint.y);
