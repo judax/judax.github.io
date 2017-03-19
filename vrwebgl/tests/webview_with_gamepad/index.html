@@ -142,6 +142,7 @@
 			var touchpadPos = null;
 			var navigationButtonsPanel;
 			var useTouchpad = location.search.includes("usetouchpad");
+			var gamepadPosToIntersectionPosVector = new THREE.Vector3();
 
 			var room;
 
@@ -209,7 +210,7 @@
 
 				webview = window.VRWebGLWebView ? document.createElement("webview") : null;
 				webviewMesh = createWebViewMesh(webview);
-				webviewMesh.scale.set(2, 2, 1);
+				webviewMesh.scale.set(2.88, 1.92, 1);
 				webviewMesh.position.set(0, 0, -2.99);
 				scene.add(webviewMesh);
 
@@ -217,17 +218,19 @@
 				var navigationButtonsData = [ 
 					{ name: "back", imagePath: "back.png" },
 					{ name: "forward", imagePath: "forward.png" },
-					{ name: "reload", imagePath: "reload.png" }
+					{ name: "reload", imagePath: "reload.png" },
+					{ name: "https://en.wikipedia.org/wiki/WebVR", imagePath: "wikipedia.png" },
+					{ name: "http://www.airbnb.com", imagePath: "airbnb.png" }
 				];
 				var navigationButtonPosXOffset = webviewMesh.scale.x / navigationButtonsData.length;
-				var navigationButtonScale = new THREE.Vector3().copy(webviewMesh.scale).multiplyScalar(1 / navigationButtonsData.length * 0.7);
-				var navigationButtonPos = new THREE.Vector3().copy(webviewMesh.position).sub(new THREE.Vector3(webviewMesh.scale.x / 2.0 - navigationButtonPosXOffset / 2.0, webviewMesh.scale.y / 2.0 + navigationButtonScale.y / 2.0 + (webviewMesh.scale.y + navigationButtonScale.y) * 0.05, 0));
+				var navigationButtonScale = webviewMesh.scale.x * 1 / navigationButtonsData.length * 0.7;
+				var navigationButtonPos = new THREE.Vector3().copy(webviewMesh.position).sub(new THREE.Vector3(webviewMesh.scale.x / 2.0 - navigationButtonPosXOffset / 2.0, webviewMesh.scale.y / 2.0 + navigationButtonScale / 2.0 + (webviewMesh.scale.y + navigationButtonScale) * 0.05, 0));
 				navigationButtonsPanel = new THREE.Object3D();
 				for (var i = 0; i < navigationButtonsData.length; i++) {
 					var texture = new THREE.TextureLoader().load( navigationButtonsData[i].imagePath );
 					var navigationButton = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1), new THREE.MeshBasicMaterial({transparent: true, map: texture}));
 					navigationButton.name = navigationButtonsData[i].name;
-					navigationButton.scale.copy(navigationButtonScale);
+					navigationButton.scale.set(navigationButtonScale, navigationButtonScale, 1);
 					navigationButton.position.copy(navigationButtonPos);
 					navigationButtonPos.x += navigationButtonPosXOffset;
 					navigationButtonsPanel.add(navigationButton);
@@ -280,17 +283,12 @@
 				gamepadHelper.position.set(0, 0, -0.5);
 				gamepadHelper = new THREE.Object3D().add(gamepadHelper);
 				gamepadHelper.scale.set(0.01, 0.01, 5.0);
-				gamepadHelper = new THREE.Object3D().add(gamepadHelper);
 				gamepad.add( gamepadHelper );
 
 				//
 
 				window.addEventListener( 'resize', onWindowResize, false );
 
-				window.addEventListener("click", function() {
-					if (webview) webview.src = "http://judax.github.io/vrwebgl/tests/hover/index.html";
-					// if (webview) webview.src = "http://www.effectgames.com/demos/canvascycle/";
-				})
 			}
 
 			function onWindowResize() {
@@ -364,6 +362,9 @@
 
 				// }
 
+				// Let's assume there won't be any collision.
+				gamepad.children[0].scale.z = 5.0;
+
 				// NOTE: this code needs to be refactored to try to get a more generic way of handling input. For now I am just trying to understand the input mechanisms. AFAIK the android webview is controlled forwarding touch events: touchstart, touchend, touchmove. The biggest problem is that the touchpad position is not the ray intersection position and thus, it cannot be used. The touchpad position can only be used to calculate the offset for movement (currentTouchpadPos - lastTouchpadPos) and add it to the interesected point that is the real position on the webview. In the Android webview there is a flingScroll method that seems not to work as advertised (actually there is not documentation) but it could be a great possibility. Another option could be to calculate the scroll mechanism internally in the webview but it seems to be a lot of work. How does the Hoverboard team resolve this issue? Also, is there a hover event in android so whenever the intersection point passes on top of an element that needs to be highlighted, it correctly highlights without meaning that is a touch event?
 				var realGamepad = gamepad.getGamepad();
 				if (realGamepad) {
@@ -399,6 +400,11 @@
 						webviewIntersectionPoint.applyMatrix4(webviewMeshInverseMatrixWorld);
 						webviewIntersectionPoint.x += 0.5;
 						webviewIntersectionPoint.y += 0.5;
+
+						// Adjust the scale of the gamepadhelper to the size of the distance to the intersection point
+						gamepadPosToIntersectionPosVector.copy(intersects[0].point).sub(gamepad.position);
+						gamepad.children[0].scale.z = gamepadPosToIntersectionPosVector.length();
+						console.log(gamepad.children[0].scale.z);
 
 						// Handle touchpad
 						if (useTouchpad) {
@@ -477,15 +483,24 @@
 					// Handle navigation buttons: just "click"
 					intersects = raycaster.intersectObject( navigationButtonsPanel, true );
 					if (intersects.length > 0) {
+
+						// Adjust the scale of the gamepadhelper to the size of the distance to the intersection point
+						gamepadPosToIntersectionPosVector.copy(intersects[0].point).sub(gamepad.position);
+						gamepad.children[0].scale.z = gamepadPosToIntersectionPosVector.length();
+
 						var navigationButtonName = intersects[0].object.name;
-						console.log(navigationButtonName);
 						if (!lastGamepadPressedOnNavigationPanel && gamepadPressed) {
 							lastGamepadPressedOnNavigationPanel = true;
 						}
 						else if (lastGamepadPressedOnNavigationPanel && !gamepadPressed) {
 							lastGamepadPressedOnNavigationPanel = false;
-							// Use the name of the button to call the corresponding method in the webview.
-							webview[navigationButtonName]();
+							// Use the name of the button to call the corresponding method in the webview or if it contains http at the beginning of the name, to load a url.
+							if (navigationButtonName.indexOf("http") === 0) {
+								webview.src = navigationButtonName;
+							}
+							else {
+								webview[navigationButtonName]();
+							}
 						}
 					}
 					else {
