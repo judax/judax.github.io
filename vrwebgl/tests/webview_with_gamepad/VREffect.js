@@ -390,6 +390,17 @@ THREE.VREffect = function ( renderer, onError ) {
 
 		// Regular render mode if not HMD
 
+		// Merge the projection matrices FOVs of the two eyes so frustum culling works correctly. It won't affect the rendering FOV as it is injected in the native side.
+		if (vrDisplay) {
+			var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
+			var eyeParamsR = vrDisplay.getEyeParameters( 'right' );
+			eyeParamsL.fieldOfView.upDegrees = Math.max(eyeParamsL.fieldOfView.upDegrees, eyeParamsR.fieldOfView.upDegrees);
+			eyeParamsL.fieldOfView.downDegrees = Math.max(eyeParamsL.fieldOfView.downDegrees, eyeParamsR.fieldOfView.downDegrees);
+			eyeParamsL.fieldOfView.leftDegrees = Math.max(eyeParamsL.fieldOfView.leftDegrees, eyeParamsR.fieldOfView.leftDegrees);
+			eyeParamsL.fieldOfView.rightDegrees = Math.max(eyeParamsL.fieldOfView.rightDegrees, eyeParamsR.fieldOfView.rightDegrees);
+			camera.projectionMatrix = fovToProjection( eyeParamsL.fieldOfView, true, camera.near, camera.far );
+		}
+
 		renderer.render( scene, camera, renderTarget, forceClear );
 
 	};
