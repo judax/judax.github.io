@@ -786,7 +786,7 @@
 				this.getEyeParameters = function(eye) {
 					var eyeParameters = null;
 					if (vrWebGLRenderingContexts.length > 0) {
-						eyeParameters = vrWebGLRenderingContexts[0].getEyeParameters();
+						eyeParameters = vrWebGLRenderingContexts[0].getEyeParameters(eye);
 					}
 					if (eyeParameters !== null && eye === 'left') {
 						eyeParameters.offset = -eyeParameters.offset;
