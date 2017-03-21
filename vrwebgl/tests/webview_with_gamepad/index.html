@@ -219,6 +219,7 @@
 					{ name: "back", imagePath: "back.png" },
 					{ name: "forward", imagePath: "forward.png" },
 					{ name: "reload", imagePath: "reload.png" },
+					{ name: "voiceSearch", imagePath: "voiceSearch.png" },
 					{ name: "https://en.wikipedia.org/wiki/WebVR", imagePath: "wikipedia.png" },
 					{ name: "http://www.airbnb.com", imagePath: "airbnb.png" }
 				];
@@ -315,8 +316,11 @@
 				controls.update();
 			    camera.updateMatrixWorld(true);
 
+			    // This code is specific to VRWebGL. 
 				if (window.VRWebGLRenderingContext) {
+					// Pass the camera projection matrix so VRWebGL knows the near and far planes you want to use.
 					renderer.getContext().setCameraProjectionMatrix(camera.projectionMatrix.elements);
+					// Pass the camera world matrix so VRWebGL knows the position you want to use.
 					renderer.getContext().setCameraWorldMatrix(camera.matrixWorld.elements);
 				}
 
@@ -404,7 +408,6 @@
 						// Adjust the scale of the gamepadhelper to the size of the distance to the intersection point
 						gamepadPosToIntersectionPosVector.copy(intersects[0].point).sub(gamepad.position);
 						gamepad.children[0].scale.z = gamepadPosToIntersectionPosVector.length();
-						console.log(gamepad.children[0].scale.z);
 
 						// Handle touchpad
 						if (useTouchpad) {
