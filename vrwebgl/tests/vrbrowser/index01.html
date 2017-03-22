@@ -8,13 +8,22 @@
 	var colors = ["red", "blue", "green"];
 	colorIndex = 0;
 
-	setInterval(function() {
-		colorIndex = (colorIndex + 1) % colors.length;
-	}, 100);
+	// setInterval(function() {
+	// 	colorIndex = (colorIndex + 1) % colors.length;
+	// }, 100);
+
+	var x = canvas.width >> 1, y = canvas.height >> 1;
+
+	window.addEventListener("touchmove", function(ev) {
+		x = ev.changedTouches[0].pageX;
+		y = ev.changedTouches[0].pageY;
+	});
 
 	function raf() {
 		ctx.fillStyle = colors[colorIndex];
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = "black";
+		ctx.fillRect(x - 10, y - 10, 20, 20);
 		requestAnimationFrame(raf);
 	}
 
