@@ -3,11 +3,19 @@
 <script>
 	var canvas = document.createElement("canvas");
 	var ctx = canvas.getContext("2d");
-	ctx.fillStyle = "red";
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	document.body.appendChild(canvas);
 
-	alert(window.vrbrowser);
+	function raf() {
+		ctx.fillStyle = "red";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		requestAnimationFrame(raf);
+	}
+
+	requestAnimationFrame(raf);
+
+	// window.addEventListener("load", function() {
+		// alert(window.vrbrowser);
+	// });
 </script>
 </body>
 </html>
