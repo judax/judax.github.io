@@ -29,6 +29,7 @@
 		<script src="VREffect.js"></script>
 		<script src="DaydreamController.js"></script>
 		<script src="WebVR.js"></script>
+		<script src="Tween.js"></script>
 
 		<script>
 
@@ -143,10 +144,22 @@
 			var navigationButtonsPanel;
 			var useTouchpad = location.search.includes("usetouchpad");
 			var gamepadPosToIntersectionPosVector = new THREE.Vector3();
-
+			var intersectingWithWebView = false;
+			var intersectingWithNavigationButton = false;
+			var lastIntersectedNavigationButton = null;
 			var room;
 
 			var INTERSECTED;
+
+			var ANIMATION_Z_POS = -2.99;
+			var ANIMATION_OVER_Z_POS = -2.94;
+			var ANIMATION_PRESS_Z_POS = -2.97;
+			var ANIMATION_OVER_DURATION = 100;
+			var ANIMATION_PRESS_DURATION = 75;
+			var ANIMATION_TWEEN_TYPE = TWEEN.Easing.Quadratic.In;
+
+			var useCubes = false;
+			var numberOfCubes = 50;
 
 			init();
 			animate();
@@ -183,7 +196,7 @@
 
 				var geometry = new THREE.BoxBufferGeometry( 0.15, 0.15, 0.15 );
 
-				for ( var i = 0; i < 50; i ++ ) {
+				for ( var i = 0; useCubes && i < numberOfCubes; i ++ ) {
 
 					var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 
@@ -211,7 +224,7 @@
 				webview = window.VRWebGLWebView ? document.createElement("webview") : null;
 				webviewMesh = createWebViewMesh(webview);
 				webviewMesh.scale.set(2.88, 1.92, 1);
-				webviewMesh.position.set(0, 0, -2.99);
+				webviewMesh.position.set(0, 0, ANIMATION_Z_POS);
 				scene.add(webviewMesh);
 
 				// Create the navigation panel: Just change the initial arrays info and the buttons will automagically layout
@@ -222,7 +235,11 @@
 					{ name: "voiceSearch", imagePath: "voiceSearch.png" },
 					{ name: "https://en.wikipedia.org/wiki/WebVR", imagePath: "wikipedia.png" },
 					{ name: "http://www.airbnb.com", imagePath: "airbnb.png" },
-					{ name: "http://judax.github.io/vrwebgl/tests/vrbrowser/index01.html", imagePath: "question.png" }
+					{ name: "key", imagePath: "question.png" },
+					// { name: "http://judax.github.io/vrwebgl/tests/vrbrowser/index01.html", imagePath: "question.png" },
+					// { name: "http://judax.github.io/vrwebgl/tests/lesson04/index.html", imagePath: "question.png" },
+					// { name: "https://webvr.info/samples/03-vr-presentation.html", imagePath: "question.png" },
+					// { name: "http://breakout.enclavegames.com/lesson10.html", imagePath: "question.png" }
 				];
 				var navigationButtonPosXOffset = webviewMesh.scale.x / navigationButtonsData.length;
 				var navigationButtonScale = webviewMesh.scale.x * 1 / navigationButtonsData.length * 0.7;
@@ -316,6 +333,7 @@
 				gamepad.update();
 				controls.update();
 			    camera.updateMatrixWorld(true);
+			    TWEEN.update();
 
 			    // This code is specific to VRWebGL. 
 				if (window.VRWebGLRenderingContext) {
@@ -326,7 +344,7 @@
 				}
 
 				// Launch cubes if the gamepad has been pressed.
-				if ( gamepad.getTouchPadState() ) {
+				if ( useCubes && gamepad.getTouchPadState() ) {
 					respawnIndex++;
 					respawnIndex %= room.children.length;
 					var cube = room.children[ respawnIndex ];
@@ -383,6 +401,15 @@
 
 					// Does the ray collide with the webview?
 					if (webview && intersects.length > 0) {
+
+						// Activate a simple animation to mark that the webview is the element to act upon
+						if (!intersectingWithWebView) {
+							intersectingWithWebView = true;
+							new TWEEN.Tween(webviewMesh.position)
+								.to({z: ANIMATION_OVER_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+						}
 
 						// Calculate the intersection point
 						if (!webviewIntersectionPoint) {
@@ -460,6 +487,12 @@
 							lastGamepadTouchedOnWebView = false;
 							actionCameFromTouched = true;
 						}
+						// Activate an animation to mark that the webview is no longer acted upon
+						intersectingWithWebView = false;
+						new TWEEN.Tween(webviewMesh.position)
+							.to({z: ANIMATION_Z_POS}, ANIMATION_OVER_DURATION)
+							.easing(ANIMATION_TWEEN_TYPE)
+							.start();
 					}
 
 					// Is there any action to be executed upon the webview?
@@ -488,6 +521,22 @@
 					intersects = raycaster.intersectObject( navigationButtonsPanel, true );
 					if (intersects.length > 0) {
 
+						if (lastIntersectedNavigationButton !== null && lastIntersectedNavigationButton !== intersects[0].object) {
+							new TWEEN.Tween(intersects[0].object.position)
+								.to({z: ANIMATION_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+							intersectingWithNavigationButton = false;
+						}
+						if (!intersectingWithNavigationButton) {
+							intersectingWithNavigationButton = true;
+							new TWEEN.Tween(intersects[0].object.position)
+								.to({z: ANIMATION_OVER_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+							lastIntersectedNavigationButton = intersects[0].object;
+						}
+
 						// Adjust the scale of the gamepadhelper to the size of the distance to the intersection point
 						gamepadPosToIntersectionPosVector.copy(intersects[0].point).sub(gamepad.position);
 						gamepad.children[0].scale.z = gamepadPosToIntersectionPosVector.length();
@@ -495,6 +544,17 @@
 						var navigationButtonName = intersects[0].object.name;
 						if (!lastGamepadPressedOnNavigationPanel && gamepadPressed) {
 							lastGamepadPressedOnNavigationPanel = true;
+
+							if (navigationButtonName.indexOf("key") === 0) {
+								webview.keydown(16);
+								webview.keydown(65);
+							}
+
+							// Activate a smaller animation to mark that the button is pressed
+							new TWEEN.Tween(lastIntersectedNavigationButton.position)
+								.to({z: ANIMATION_PRESS_Z_POS}, ANIMATION_PRESS_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
 						}
 						else if (lastGamepadPressedOnNavigationPanel && !gamepadPressed) {
 							lastGamepadPressedOnNavigationPanel = false;
@@ -502,13 +562,31 @@
 							if (navigationButtonName.indexOf("http") === 0) {
 								webview.src = navigationButtonName;
 							}
+							else if (navigationButtonName.indexOf("key") === 0) {
+								webview.keyup(16);
+								webview.keyup(65);
+							}
 							else {
 								webview[navigationButtonName]();
 							}
+
+							// Cancel the small press animation
+							new TWEEN.Tween(lastIntersectedNavigationButton.position)
+								.to({z: ANIMATION_OVER_Z_POS}, ANIMATION_PRESS_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
 						}
 					}
 					else {
 						lastGamepadPressedOnNavigationPanel = false;
+						if (lastIntersectedNavigationButton !== null) {
+							new TWEEN.Tween(lastIntersectedNavigationButton.position)
+								.to({z: ANIMATION_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+							lastIntersectedNavigationButton = null;
+						}
+						intersectingWithNavigationButton = false;
 					}
 
 				}
