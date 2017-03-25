@@ -1,0 +1,17 @@
+<html>
+<body>
+<script>
+if (window.vrbrowser) {
+	var event = {
+		id: "eventId",
+		data: {
+			a: 1,
+			b: "s string",
+			c: true
+		}
+	};
+	window.vrbrowser.dispatchEvent(JSON.stringify(event));
+}
+</script>
+</body>
+</html>
