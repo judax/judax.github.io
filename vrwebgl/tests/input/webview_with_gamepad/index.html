@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webvr - daydream</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<!-- Origin Trial Token, feature = WebVR, origin = https://threejs.org, expires = 2017-03-13 -->
+		<meta http-equiv="origin-trial" data-feature="WebVR" data-expires="2017-03-13" content="Any7HFKv+fkg+mBnJBBFIYyFbQgDyum3bNsVUXBInRDadbhafI6F0hXq/cStNqdi29167TYlkDuH/JE5ZZSI6gcAAABKeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJWUiIsImV4cGlyeSI6MTQ4OTQxNzU2OX0=">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #101010;
+				color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+			a {
+				color: #f00;
+			}
+		</style>
+	</head>
+	<body>
+
+		<script src= "../../../VRWebGL.js"></script>
+
+		<script src="three.js"></script>
+
+		<script src="VRControls.js"></script>
+		<script src="VREffect.js"></script>
+		<script src="DaydreamController.js"></script>
+		<script src="WebVR.js"></script>
+		<script src="Tween.js"></script>
+		<script src="../InputHandler.js"></script>
+		<script src="../InputElement.js"></script>
+		<script src="../WebView.js"></script>
+
+		<script>
+
+			function createWebViewMesh(webview, fallbackVideoPath) {
+				var geometry = new THREE.BufferGeometry();
+
+				// The camera or video and the texture coordinates may vary depending if the vrDisplay has the see through camera.
+				if (webview) {
+					// HACK: Needed to tell the THREE.VideoTexture that the "video" is ready and that the texture needs to update.
+					webview.readyState = 2;
+					webview.HAVE_CURRENT_DATA = 2;
+				}
+				else {
+					webview = document.createElement("video");
+					webview.src = typeof(fallbackVideoPath) === "string" ? fallbackVideoPath : "firefox.ogv";
+					webview.play();
+				}
+
+		        geometry.VRWebGL_textureCoords = [ new Float32Array([0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0]) ];
+
+				geometry.addAttribute("position", new THREE.BufferAttribute( new Float32Array([
+					-0.5,  0.5, 0.0, 
+					-0.5, -0.5, 0.0,
+					 0.5,  0.5, 0.0, 
+					 0.5, -0.5, 0.0
+				]), 3));
+
+				geometry.setIndex(new THREE.BufferAttribute( new Uint16Array([0, 1, 2, 2, 1, 3]), 1));
+				geometry.VRWebGL_textureCoordIndex = 0;
+				var textureCoords = geometry.VRWebGL_textureCoords[geometry.VRWebGL_textureCoordIndex];
+
+				geometry.addAttribute("uv", new THREE.BufferAttribute( new Float32Array(textureCoords), 2 ));
+				geometry.computeBoundingSphere();
+
+				var texture = new THREE.VideoTexture(webview);
+				texture.minFilter = THREE.NearestFilter;
+				texture.magFilter = THREE.NearestFilter;
+				texture.format = THREE.RGBFormat;			
+				texture.flipY = false;
+
+			   	// texture = new THREE.Texture(webview);
+			    // texture.generateMipmaps = false;
+			    // texture.minFilter = THREE.LinearFilter;
+			    // texture.magFilter = THREE.LinearFilter;
+			    // texture.format = THREE.RGBFormat;
+
+				// The material is different if we are using a real VRWebGLWebView or just an ordinary element.
+				var material;
+				if (window.VRWebGLWebView) {
+				    var vertexShaderSource = [
+				        'attribute vec3 position;',
+				        'attribute vec2 uv;',
+				        '',
+				        'uniform mat4 modelViewMatrix;',
+				        'uniform mat4 projectionMatrix;',
+				        '',
+				        'varying vec2 vUV;',
+				        '',
+				        'void main(void) {',
+				        '    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+				        '    vUV = uv;',
+				        '}'
+				    ];
+
+				    var fragmentShaderSource = [
+				        '#extension GL_OES_EGL_image_external : require',
+				        'precision mediump float;',
+				        '',
+				        'varying vec2 vUV;',
+				        '',
+				        'uniform samplerExternalOES map;',
+				        '',
+				        'void main(void) {',
+				        '   gl_FragColor = texture2D(map, vUV);',
+				        '}'
+				    ];
+
+				    material = new THREE.RawShaderMaterial({
+				        uniforms: {
+				            map: {type: 't', value: texture},
+				        },
+				        vertexShader: vertexShaderSource.join( '\r\n' ),
+				        fragmentShader: fragmentShaderSource.join( '\r\n' ),
+				        side: THREE.DoubleSide,
+				    });
+				}
+				else {
+					material = new THREE.MeshBasicMaterial( {color: 0xFFFFFF, side: THREE.DoubleSide, map: texture } );
+				}
+
+				var mesh = new THREE.Mesh(geometry, material);
+
+				return mesh;
+			};
+
+			if ( WEBVR.isAvailable() === false ) {
+
+				document.body.appendChild( WEBVR.getMessage() );
+
+			}
+
+			//
+
+			var clock = new THREE.Clock();
+
+			var container;
+			var camera, scene, ray, raycaster, renderer;
+			var effect, controls, gamepad, lastGamepadPressedOnWebView = false, lastGamepadTouchedOnWebView = false, lastGamepadPressedOnNavigationPanel = false;
+			var respawnIndex = -1;
+			var webview, webviewMesh, webviewMeshInverseMatrixWorld, webviewIntersectionPoint, lastWebviewIntersectionPoint;
+			var touchpadPos = null;
+			var navigationButtonsPanel;
+			var useTouchpad = location.search.includes("usetouchpad");
+			var gamepadPosToIntersectionPosVector = new THREE.Vector3();
+			var intersectingWithWebView = false;
+			var intersectingWithNavigationButton = false;
+			var lastIntersectedNavigationButton = null;
+			var room;
+
+			var INTERSECTED;
+
+			var ANIMATION_Z_POS = -2.99;
+			var ANIMATION_OVER_Z_POS = -2.94;
+			var ANIMATION_PRESS_Z_POS = -2.97;
+			var ANIMATION_OVER_DURATION = 100;
+			var ANIMATION_PRESS_DURATION = 75;
+			var ANIMATION_TWEEN_TYPE = TWEEN.Easing.Quadratic.In;
+
+			var useCubes = false;
+			var numberOfCubes = 50;
+
+			var inputHandler = null;
+			var webviewInputElement = null;
+
+			init();
+			animate();
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				var info = document.createElement( 'div' );
+				info.style.position = 'absolute';
+				info.style.top = '10px';
+				info.style.width = '100%';
+				info.style.textAlign = 'center';
+				info.innerHTML = '<a href="https://threejs.org" target="_blank">three.js</a> webvr - daydream';
+				container.appendChild( info );
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 10 );
+				scene.add( camera );
+
+				room = new THREE.Mesh(
+					new THREE.BoxBufferGeometry( 6, 6, 6, 8, 8, 8 ),
+					new THREE.MeshBasicMaterial( { color: 0x404040, wireframe: true } )
+				);
+				scene.add( room );
+
+				scene.add( new THREE.HemisphereLight( 0x606060, 0x404040 ) );
+
+				var light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 1, 1, 1 ).normalize();
+				scene.add( light );
+
+				var geometry = new THREE.BoxBufferGeometry( 0.15, 0.15, 0.15 );
+
+				for ( var i = 0; useCubes && i < numberOfCubes; i ++ ) {
+
+					var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+
+					object.position.x = Math.random() * 4 - 2;
+					object.position.y = Math.random() * 4 - 2;
+					object.position.z = Math.random() * 4 - 2;
+
+					object.rotation.x = Math.random() * 2 * Math.PI;
+					object.rotation.y = Math.random() * 2 * Math.PI;
+					object.rotation.z = Math.random() * 2 * Math.PI;
+
+					object.scale.x = Math.random() + 0.5;
+					object.scale.y = Math.random() + 0.5;
+					object.scale.z = Math.random() + 0.5;
+
+					object.userData.velocity = new THREE.Vector3();
+					object.userData.velocity.x = Math.random() * 0.01 - 0.005;
+					object.userData.velocity.y = Math.random() * 0.01 - 0.005;
+					object.userData.velocity.z = Math.random() * 0.01 - 0.005;
+
+					room.add( object );
+
+				}
+
+				webview = window.VRWebGLWebView ? document.createElement("webview") : null;
+				webviewMesh = createWebViewMesh(webview);
+				webviewMesh.scale.set(2.88, 1.92, 1);
+				webviewMesh.position.set(-1.6, 0, ANIMATION_Z_POS);
+				scene.add(webviewMesh)
+
+				// Testing the communication between the webview and the vrbrowser by listening to events sent from the webview.
+				if (webview) {
+					webview.addEventListener("eventfrompage", function(ev) {
+						alert("Event from page received: " + ev);
+					});
+				}
+
+				// Create the navigation panel: Just change the initial arrays info and the buttons will automagically layout
+				var navigationButtonsData = [ 
+					{ name: "back", imagePath: "back.png" },
+					{ name: "forward", imagePath: "forward.png" },
+					{ name: "reload", imagePath: "reload.png" },
+					{ name: "voiceSearch", imagePath: "voiceSearch.png" },
+					{ name: "https://en.wikipedia.org/wiki/WebVR", imagePath: "wikipedia.png" },
+					{ name: "http://www.airbnb.com", imagePath: "airbnb.png" },
+					{ name: "key", imagePath: "question.png" },
+					{ name: "http://judax.github.io/vrwebgl/tests/vrbrowser/event.html", imagePath: "question.png" },
+					{ name: "http://judax.github.io/vrwebgl/tests/lesson04/index.html", imagePath: "question.png" },
+					{ name: "https://webvr.info/samples/03-vr-presentation.html", imagePath: "question.png" },
+					{ name: "http://breakout.enclavegames.com/lesson10.html", imagePath: "question.png" }
+				];
+				var navigationButtonPosXOffset = webviewMesh.scale.x / navigationButtonsData.length;
+				var navigationButtonScale = webviewMesh.scale.x * 1 / navigationButtonsData.length * 0.7;
+				var navigationButtonPos = new THREE.Vector3().copy(webviewMesh.position).sub(new THREE.Vector3(webviewMesh.scale.x / 2.0 - navigationButtonPosXOffset / 2.0, webviewMesh.scale.y / 2.0 + navigationButtonScale / 2.0 + (webviewMesh.scale.y + navigationButtonScale) * 0.05, 0));
+				navigationButtonsPanel = new THREE.Object3D();
+				for (var i = 0; i < navigationButtonsData.length; i++) {
+					var texture = new THREE.TextureLoader().load( navigationButtonsData[i].imagePath );
+					var navigationButton = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1), new THREE.MeshBasicMaterial({transparent: true, map: texture}));
+					navigationButton.name = navigationButtonsData[i].name;
+					navigationButton.scale.set(navigationButtonScale, navigationButtonScale, 1);
+					navigationButton.position.copy(navigationButtonPos);
+					navigationButtonPos.x += navigationButtonPosXOffset;
+					navigationButtonsPanel.add(navigationButton);
+				}
+				scene.add(navigationButtonsPanel)
+
+				//
+
+				raycaster = new THREE.Raycaster();
+
+				//
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setClearColor( 0x505050 );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.sortObjects = false;
+				container.appendChild( renderer.domElement );
+
+				//
+
+				controls = new THREE.VRControls( camera );
+				effect = new THREE.VREffect( renderer );
+
+				if ( navigator.getVRDisplays ) {
+
+					navigator.getVRDisplays()
+						.then( function ( displays ) {
+							effect.setVRDisplay( displays[ 0 ] );
+							controls.setVRDisplay( displays[ 0 ] );
+						} )
+						.catch( function () {
+							// no displays
+						} );
+
+					document.body.appendChild( WEBVR.getButton( effect ) );
+
+				}
+
+				//
+
+				gamepad = new THREE.DaydreamController();
+				gamepad.position.set( 0.25, - 0.5, 0 );
+				scene.add( gamepad );
+
+				//
+
+				var gamepadHelper = new THREE.Mesh(new THREE.CylinderBufferGeometry(0.5, 0.5, 1), new THREE.MeshBasicMaterial( { color: 0x87cefa  } ) );
+				gamepadHelper.rotation.set(Math.PI / 2, 0, 0);
+				gamepadHelper.position.set(0, 0, -0.5);
+				gamepadHelper = new THREE.Object3D().add(gamepadHelper);
+				gamepadHelper.scale.set(0.01, 0.01, 5.0);
+				gamepad.add( gamepadHelper );
+
+
+				inputHandler = new IBIZA.InputHandler(gamepad);
+				var wv = new IBIZA.WebView();
+				var wvMesh = wv.getMesh();
+				wvMesh.scale.set(2.88, 1.92, 1);
+				wvMesh.position.set(1.6, 0, ANIMATION_Z_POS);
+				scene.add(wv.getMesh());
+				inputHandler.addInputElement(wv.getInputElement());
+				if (wv.getWebView()) wv.getWebView().src = "https://en.wikipedia.org/wiki/WebVR";
+
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				effect.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			//
+
+			function animate() {
+				render();
+				effect.requestAnimationFrame( animate );
+			}
+
+			function render() {
+
+				var delta = clock.getDelta() * 60;
+
+				gamepad.update();
+				controls.update();
+			    camera.updateMatrixWorld(true);
+			    TWEEN.update();
+			    inputHandler.update(clock.getElapsedTime());
+
+			    // This code is specific to VRWebGL. 
+				if (window.VRWebGLRenderingContext) {
+					// Pass the camera projection matrix so VRWebGL knows the near and far planes you want to use.
+					renderer.getContext().setCameraProjectionMatrix(camera.projectionMatrix.elements);
+					// Pass the camera world matrix so VRWebGL knows the position you want to use.
+					renderer.getContext().setCameraWorldMatrix(camera.matrixWorld.elements);
+				}
+
+				// Launch cubes if the gamepad has been pressed.
+				if ( useCubes && gamepad.getTouchPadState() ) {
+					respawnIndex++;
+					respawnIndex %= room.children.length;
+					var cube = room.children[ respawnIndex ];
+					// cube.position.set( 0, 0, - 0.75 );
+					cube.position.copy(gamepad.position);
+					// cube.position.applyQuaternion( gamepad.quaternion );
+					cube.userData.velocity.x = ( Math.random() - 0.5 ) * 0.01 * delta;
+					cube.userData.velocity.y = ( Math.random() - 0.5 ) * 0.01 * delta;
+					cube.userData.velocity.z = ( Math.random() * 0.01 - 0.05 ) * delta;
+					cube.userData.velocity.applyQuaternion( gamepad.quaternion );
+				}
+
+
+				// find intersections
+
+				raycaster.ray.origin.copy( gamepad.position );
+				raycaster.ray.direction.set( 0, 0, - 1 ).applyQuaternion( gamepad.quaternion );
+
+				// var intersects = raycaster.intersectObjects( room.children );
+
+				// if ( intersects.length > 0 ) {
+
+				// 	if ( INTERSECTED != intersects[ 0 ].object ) {
+
+				// 		if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+				// 		INTERSECTED = intersects[ 0 ].object;
+				// 		INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+				// 		INTERSECTED.material.emissive.setHex( 0xff0000 );
+
+				// 	}
+
+				// } else {
+
+				// 	if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+				// 	INTERSECTED = undefined;
+
+				// }
+
+				// Let's assume there won't be any collision.
+				gamepad.children[0].scale.z = 5.0;
+
+				// NOTE: this code needs to be refactored to try to get a more generic way of handling input. For now I am just trying to understand the input mechanisms. AFAIK the android webview is controlled forwarding touch events: touchstart, touchend, touchmove. The biggest problem is that the touchpad position is not the ray intersection position and thus, it cannot be used. The touchpad position can only be used to calculate the offset for movement (currentTouchpadPos - lastTouchpadPos) and add it to the interesected point that is the real position on the webview. In the Android webview there is a flingScroll method that seems not to work as advertised (actually there is not documentation) but it could be a great possibility. Another option could be to calculate the scroll mechanism internally in the webview but it seems to be a lot of work. How does the Hoverboard team resolve this issue? Also, is there a hover event in android so whenever the intersection point passes on top of an element that needs to be highlighted, it correctly highlights without meaning that is a touch event?
+				var realGamepad = gamepad.getGamepad();
+				if (realGamepad) {
+					// Handle the webview
+					var intersects = raycaster.intersectObject( webviewMesh );
+					var action = null;
+					var gamepadPressed = realGamepad.buttons[0].pressed;
+					var gamepadTouched = realGamepad.buttons[0].touched;
+					var actionCameFromPressed = false
+					var actionCameFromTouched = false;
+
+					// Does the ray collide with the webview?
+					if (webview && intersects.length > 0) {
+
+						// Calculate the intersection point
+						if (!webviewIntersectionPoint) {
+							webviewIntersectionPoint = new THREE.Vector3();
+						}
+						if (!lastWebviewIntersectionPoint) {
+							lastWebviewIntersectionPoint = new THREE.Vector3();
+						}
+						if (!touchpadPos) {
+							touchpadPos = new THREE.Vector3();
+						}
+						if (!webviewMeshInverseMatrixWorld) {
+							// NOTE: We will assume for now that the webviewMesh won't be dynamically transformed and so, we will calculate the inverse of its matrixWorld only once as it is an expensive calculation.
+							// With the inverse matrix we will normalize the intersection point (assuming that the webview mesh started with a normalized plane, check the createWebViewMesh function)
+							webviewMeshInverseMatrixWorld = new THREE.Matrix4();
+							webviewMesh.updateMatrixWorld(true);
+							webviewMeshInverseMatrixWorld.getInverse(webviewMesh.matrixWorld);
+						}
+						webviewIntersectionPoint.copy(intersects[0].point);
+						webviewIntersectionPoint.applyMatrix4(webviewMeshInverseMatrixWorld);
+						webviewIntersectionPoint.x += 0.5;
+						webviewIntersectionPoint.y += 0.5;
+
+						// Activate a simple animation to mark that the webview is the element to act upon
+						if (!intersectingWithWebView) {
+							intersectingWithWebView = true;
+							new TWEEN.Tween(webviewMesh.position)
+								.to({z: ANIMATION_OVER_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+							webview.cursorenter(webviewIntersectionPoint.x, 1.0 - webviewIntersectionPoint.y);
+						}
+						else {
+							webview.cursormove(webviewIntersectionPoint.x, 1.0 - webviewIntersectionPoint.y);
+						}
+
+						// Adjust the scale of the gamepadhelper to the size of the distance to the intersection point
+						gamepadPosToIntersectionPosVector.copy(intersects[0].point).sub(gamepad.position);
+						gamepad.children[0].scale.z = gamepadPosToIntersectionPosVector.length();
+
+						// Handle touchpad
+						if (useTouchpad) {
+							if (!lastGamepadTouchedOnWebView && gamepadTouched) {
+								action = VRWebGLWebView.prototype.touchstart;
+								lastGamepadTouchedOnWebView = true;
+								actionCameFromTouched = true;
+								// Store the intersection point when the touch starts as it will be the pivotal point where all the offsets are added.
+								lastWebviewIntersectionPoint.copy(webviewIntersectionPoint);
+								// Also store the touchpad pos so the initial offset is 0.
+								touchpadPos.set(realGamepad.axes[0], realGamepad.axes[1], 0);
+							}
+							else if (lastGamepadTouchedOnWebView && !gamepadTouched) {
+								action = VRWebGLWebView.prototype.touchend;
+								lastGamepadTouchedOnWebView = false;
+								actionCameFromTouched = true;
+							}
+							else if (lastGamepadTouchedOnWebView && gamepadTouched) {
+								action = VRWebGLWebView.prototype.touchmove;
+								actionCameFromTouched = true;
+							}
+						}
+
+						// Handle button press. It overrides touch events.
+						if (!lastGamepadPressedOnWebView && gamepadPressed) {
+							action = VRWebGLWebView.prototype.touchstart;
+							lastGamepadPressedOnWebView = true;
+							actionCameFromPressed = true;
+						}
+						else if (lastGamepadPressedOnWebView && !gamepadPressed) {
+							action = VRWebGLWebView.prototype.touchend;
+							lastGamepadPressedOnWebView = false;
+							actionCameFromPressed = true;
+						}
+						else if (lastGamepadPressedOnWebView && gamepadPressed) {
+							action = VRWebGLWebView.prototype.touchmove;
+							actionCameFromPressed = true;
+						}
+					}
+					else {
+						// If the gamepad was being pressed/touched when the webview is no longer interesected, trigger the touchend event
+						if (lastGamepadPressedOnWebView && !gamepadPressed) {
+							action = VRWebGLWebView.prototype.touchend;
+							lastGamepadPressedOnWebView = false;
+							actionCameFromPressed = true;
+						} 
+						if (lastGamepadTouchedOnWebView && !gamepadTouched) {
+							action = VRWebGLWebView.prototype.touchend;
+							lastGamepadTouchedOnWebView = false;
+							actionCameFromTouched = true;
+						}
+						// Activate an animation to mark that the webview is no longer acted upon
+						if (intersectingWithWebView) {
+							intersectingWithWebView = false;
+							new TWEEN.Tween(webviewMesh.position)
+								.to({z: ANIMATION_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+							webview.cursorexit();
+						}
+					}
+
+					// Is there any action to be executed upon the webview?
+					if (action) {
+						if (!actionCameFromPressed && actionCameFromTouched) {
+
+							// The touchpad ise used only to calculate the difference between touches and apply it to the last intersection point stored.
+							var offsetX = realGamepad.axes[0] - touchpadPos.x;
+							var offsetY = (realGamepad.axes[1] - touchpadPos.y) * -1.0;
+							webviewIntersectionPoint.x = lastWebviewIntersectionPoint.x + offsetX;
+							webviewIntersectionPoint.y = lastWebviewIntersectionPoint.y + offsetY;
+
+							// Only store last intersection points from touch events as press events handle them differently (1.0 - X).
+							lastWebviewIntersectionPoint.copy(webviewIntersectionPoint);
+						}
+
+						// Correct the Y value to match 2D intergaces where 0,0 is the upper left corner.
+						webviewIntersectionPoint.y = 1.0 - webviewIntersectionPoint.y;
+						// Call the actual action upon the webview
+						action.call(webview, webviewIntersectionPoint.x, webviewIntersectionPoint.y);
+						// Always store the last touchpadPos
+						touchpadPos.set(realGamepad.axes[0], realGamepad.axes[1], 0);
+					}
+
+					// Handle navigation buttons: just "click"
+					intersects = raycaster.intersectObject( navigationButtonsPanel, true );
+					if (intersects.length > 0) {
+
+						if (lastIntersectedNavigationButton !== null && lastIntersectedNavigationButton !== intersects[0].object) {
+							new TWEEN.Tween(intersects[0].object.position)
+								.to({z: ANIMATION_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+							intersectingWithNavigationButton = false;
+						}
+						if (!intersectingWithNavigationButton) {
+							intersectingWithNavigationButton = true;
+							new TWEEN.Tween(intersects[0].object.position)
+								.to({z: ANIMATION_OVER_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+							lastIntersectedNavigationButton = intersects[0].object;
+						}
+
+						// Adjust the scale of the gamepadhelper to the size of the distance to the intersection point
+						gamepadPosToIntersectionPosVector.copy(intersects[0].point).sub(gamepad.position);
+						gamepad.children[0].scale.z = gamepadPosToIntersectionPosVector.length();
+
+						var navigationButtonName = intersects[0].object.name;
+						if (!lastGamepadPressedOnNavigationPanel && gamepadPressed) {
+							lastGamepadPressedOnNavigationPanel = true;
+
+							if (navigationButtonName.indexOf("key") === 0) {
+								webview.keydown(20);
+								webview.keydown(65);
+							}
+
+							// Activate a smaller animation to mark that the button is pressed
+							new TWEEN.Tween(lastIntersectedNavigationButton.position)
+								.to({z: ANIMATION_PRESS_Z_POS}, ANIMATION_PRESS_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+						}
+						else if (lastGamepadPressedOnNavigationPanel && !gamepadPressed) {
+							lastGamepadPressedOnNavigationPanel = false;
+							// Use the name of the button to call the corresponding method in the webview or if it contains http at the beginning of the name, to load a url.
+							if (navigationButtonName.indexOf("http") === 0) {
+								webview.src = navigationButtonName;
+							}
+							else if (navigationButtonName.indexOf("key") === 0) {
+								webview.keyup(20);
+								webview.keyup(65);
+							}
+							else {
+								webview[navigationButtonName]();
+							}
+
+							// Cancel the small press animation
+							new TWEEN.Tween(lastIntersectedNavigationButton.position)
+								.to({z: ANIMATION_OVER_Z_POS}, ANIMATION_PRESS_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+						}
+					}
+					else {
+						lastGamepadPressedOnNavigationPanel = false;
+						if (lastIntersectedNavigationButton !== null) {
+							new TWEEN.Tween(lastIntersectedNavigationButton.position)
+								.to({z: ANIMATION_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+							lastIntersectedNavigationButton = null;
+						}
+						intersectingWithNavigationButton = false;
+					}
+
+				}
+
+
+				// keep cubes inside room
+
+				// room.frustumCulled = false;
+				for ( var i = 0; i < room.children.length; i ++ ) {
+
+					var cube = room.children[ i ];
+					// cube.frustumCulled = false;
+
+					cube.userData.velocity.multiplyScalar( 1 - ( 0.001 * delta ) );
+
+					cube.position.add( cube.userData.velocity );
+
+					if ( cube.position.x < - 3 || cube.position.x > 3 ) {
+
+						cube.position.x = THREE.Math.clamp( cube.position.x, - 3, 3 );
+						cube.userData.velocity.x = - cube.userData.velocity.x;
+
+					}
+
+					if ( cube.position.y < - 3 || cube.position.y > 3 ) {
+
+						cube.position.y = THREE.Math.clamp( cube.position.y, - 3, 3 );
+						cube.userData.velocity.y = - cube.userData.velocity.y;
+
+					}
+
+					if ( cube.position.z < - 3 || cube.position.z > 3 ) {
+
+						cube.position.z = THREE.Math.clamp( cube.position.z, - 3, 3 );
+						cube.userData.velocity.z = - cube.userData.velocity.z;
+
+					}
+
+					cube.rotation.x += cube.userData.velocity.x * 2 * delta;
+					cube.rotation.y += cube.userData.velocity.y * 2 * delta;
+					cube.rotation.z += cube.userData.velocity.z * 2 * delta;
+
+				}
+
+				effect.render( scene, camera );
+
+			}
+
+		</script>
+	</body>
+</html>
