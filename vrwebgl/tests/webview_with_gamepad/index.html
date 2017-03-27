@@ -225,7 +225,14 @@
 				webviewMesh = createWebViewMesh(webview);
 				webviewMesh.scale.set(2.88, 1.92, 1);
 				webviewMesh.position.set(0, 0, ANIMATION_Z_POS);
-				scene.add(webviewMesh);
+				scene.add(webviewMesh)
+
+				// Testing the communication between the webview and the vrbrowser by listening to events sent from the webview.
+				if (webview) {
+					webview.addEventListener("eventfrompage", function(ev) {
+						alert("Event from page received: " + ev);
+					});
+				}
 
 				// Create the navigation panel: Just change the initial arrays info and the buttons will automagically layout
 				var navigationButtonsData = [ 
@@ -236,10 +243,10 @@
 					{ name: "https://en.wikipedia.org/wiki/WebVR", imagePath: "wikipedia.png" },
 					{ name: "http://www.airbnb.com", imagePath: "airbnb.png" },
 					{ name: "key", imagePath: "question.png" },
-					// { name: "http://judax.github.io/vrwebgl/tests/vrbrowser/index01.html", imagePath: "question.png" },
-					// { name: "http://judax.github.io/vrwebgl/tests/lesson04/index.html", imagePath: "question.png" },
-					// { name: "https://webvr.info/samples/03-vr-presentation.html", imagePath: "question.png" },
-					// { name: "http://breakout.enclavegames.com/lesson10.html", imagePath: "question.png" }
+					{ name: "http://judax.github.io/vrwebgl/tests/vrbrowser/event.html", imagePath: "question.png" },
+					{ name: "http://judax.github.io/vrwebgl/tests/lesson04/index.html", imagePath: "question.png" },
+					{ name: "https://webvr.info/samples/03-vr-presentation.html", imagePath: "question.png" },
+					{ name: "http://breakout.enclavegames.com/lesson10.html", imagePath: "question.png" }
 				];
 				var navigationButtonPosXOffset = webviewMesh.scale.x / navigationButtonsData.length;
 				var navigationButtonScale = webviewMesh.scale.x * 1 / navigationButtonsData.length * 0.7;
@@ -402,15 +409,6 @@
 					// Does the ray collide with the webview?
 					if (webview && intersects.length > 0) {
 
-						// Activate a simple animation to mark that the webview is the element to act upon
-						if (!intersectingWithWebView) {
-							intersectingWithWebView = true;
-							new TWEEN.Tween(webviewMesh.position)
-								.to({z: ANIMATION_OVER_Z_POS}, ANIMATION_OVER_DURATION)
-								.easing(ANIMATION_TWEEN_TYPE)
-								.start();
-						}
-
 						// Calculate the intersection point
 						if (!webviewIntersectionPoint) {
 							webviewIntersectionPoint = new THREE.Vector3();
@@ -432,6 +430,19 @@
 						webviewIntersectionPoint.applyMatrix4(webviewMeshInverseMatrixWorld);
 						webviewIntersectionPoint.x += 0.5;
 						webviewIntersectionPoint.y += 0.5;
+
+						// Activate a simple animation to mark that the webview is the element to act upon
+						if (!intersectingWithWebView) {
+							intersectingWithWebView = true;
+							new TWEEN.Tween(webviewMesh.position)
+								.to({z: ANIMATION_OVER_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+							webview.cursorenter(webviewIntersectionPoint.x, 1.0 - webviewIntersectionPoint.y);
+						}
+						else {
+							webview.cursormove(webviewIntersectionPoint.x, 1.0 - webviewIntersectionPoint.y);
+						}
 
 						// Adjust the scale of the gamepadhelper to the size of the distance to the intersection point
 						gamepadPosToIntersectionPosVector.copy(intersects[0].point).sub(gamepad.position);
@@ -488,11 +499,14 @@
 							actionCameFromTouched = true;
 						}
 						// Activate an animation to mark that the webview is no longer acted upon
-						intersectingWithWebView = false;
-						new TWEEN.Tween(webviewMesh.position)
-							.to({z: ANIMATION_Z_POS}, ANIMATION_OVER_DURATION)
-							.easing(ANIMATION_TWEEN_TYPE)
-							.start();
+						if (intersectingWithWebView) {
+							intersectingWithWebView = false;
+							new TWEEN.Tween(webviewMesh.position)
+								.to({z: ANIMATION_Z_POS}, ANIMATION_OVER_DURATION)
+								.easing(ANIMATION_TWEEN_TYPE)
+								.start();
+							webview.cursorexit();
+						}
 					}
 
 					// Is there any action to be executed upon the webview?
@@ -546,7 +560,7 @@
 							lastGamepadPressedOnNavigationPanel = true;
 
 							if (navigationButtonName.indexOf("key") === 0) {
-								webview.keydown(16);
+								webview.keydown(20);
 								webview.keydown(65);
 							}
 
@@ -563,7 +577,7 @@
 								webview.src = navigationButtonName;
 							}
 							else if (navigationButtonName.indexOf("key") === 0) {
-								webview.keyup(16);
+								webview.keyup(20);
 								webview.keyup(65);
 							}
 							else {
