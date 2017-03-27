@@ -1196,12 +1196,9 @@
 		// Expose the vrbrowser API so webpages can call the VR browser to send events UI
 		window.vrbrowser = {
 			dispatchEvent: function(webviewId, eventName, event) {
-				console.log("JUDAX!!!!! 1");
 				webview = findWebViewById(webviewId);
-				console.log("JUDAX!!!!! 2");
 				if (webview) {
 					webview.callEventListeners(eventName, event);
-					console.log("JUDAX!!!!! 3");
 				}
 				return this;
 			}
