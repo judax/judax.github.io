@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<style>
+			* { margin: 0; padding: 0;}
 			.father {
 				position: relative;
 				background-color: grey;
@@ -18,6 +19,7 @@
 		</style>
 	</head>
 	<body bgcolor="white">
+<!--
 		<div class="father">
 			<div class="son">
 			</div>
@@ -64,33 +66,33 @@
 				elements[i].addEventListener("mousemove", mousemove);
 			}
 		</script>
-<!--
+-->
 		<script>
 			window.addEventListener("load", function() {
-				var x = window.innerWidth >> 1, y = window.innerHeight >> 1;
-				var div = document.getElementById("d");
-				var size = Math.abs(Math.max(window.innerWidth, window.innerHeight) * 0.05);
-				var halfSize = size >> 1;
-				div.style.width = size + "px";
-				div.style.height = size + "px";
+				// var x = window.innerWidth >> 1, y = window.innerHeight >> 1;
+				// var div = document.getElementById("d");
+				// var size = Math.abs(Math.max(window.innerWidth, window.innerHeight) * 0.05);
+				// var halfSize = size >> 1;
+				// div.style.width = size + "px";
+				// div.style.height = size + "px";
 
-				// var canvas = document.createElement("canvas");
+				var canvas = document.createElement("canvas");
 				// canvas.width = window.innerWidth;
 				// canvas.height = window.innerHeight;
-				// document.body.appendChild(canvas);
-				// var context = canvas.getContext("2d");
-				// var x = canvas.width >> 1, y = canvas.height >> 1;
+				document.body.appendChild(canvas);
+				var context = canvas.getContext("2d");
+				var x = canvas.width >> 1, y = canvas.height >> 1;
 				// alert("Hover example: " + canvas.width + ", " + canvas.height + ", " + x + ", " + y);
 				function raf() {
-					div.style.left = (x - halfSize) + "px";
-					div.style.top = (y - halfSize) + "px";
+					// div.style.left = (x - halfSize) + "px";
+					// div.style.top = (y - halfSize) + "px";
 
-					// context.fillStyle = "grey";
-					// context.fillRect(0, 0, canvas.width, canvas.height);
-					// context.fillStyle = "black";
-					// var size = Math.max(canvas.width, canvas.height) * 0.05;
-					// var halfSize = size >> 1;
-					// context.fillRect(x - halfSize, y - halfSize, size, size);
+					context.fillStyle = "grey";
+					context.fillRect(0, 0, canvas.width, canvas.height);
+					context.fillStyle = "black";
+					var size = Math.max(canvas.width, canvas.height) * 0.10;
+					var halfSize = size / 2;
+					context.fillRect(x - halfSize, y - halfSize, size, size);
 					requestAnimationFrame(raf);
 				}
 				window.addEventListener("touchstart", function(ev) {
@@ -105,9 +107,12 @@
 					x = ev.changedTouches[0].pageX;
 					y = ev.changedTouches[0].pageY;
 				});
+				window.addEventListener("mousemove", function(ev) {
+					x = ev.pageX;
+					y = ev.pageY;
+				});
 				requestAnimationFrame(raf);
 			});
 		</script>
--->
 	</body>
 </html>
