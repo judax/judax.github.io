@@ -68,7 +68,7 @@
 		</script>
 -->
 		<script>
-			window.addEventListener("load", function() {
+			// window.addEventListener("load", function() {
 				// var x = window.innerWidth >> 1, y = window.innerHeight >> 1;
 				// var div = document.getElementById("d");
 				// var size = Math.abs(Math.max(window.innerWidth, window.innerHeight) * 0.05);
@@ -104,15 +104,18 @@
 					y = ev.changedTouches[0].pageY;
 				});
 				window.addEventListener("touchmove", function(ev) {
-					x = ev.changedTouches[0].pageX;
+					x = ev.changedTouches[0].clientX;
 					y = ev.changedTouches[0].pageY;
 				});
 				window.addEventListener("mousemove", function(ev) {
-					x = ev.pageX;
-					y = ev.pageY;
+					x = ev.clientX;
+					y = ev.clientY;
 				});
 				requestAnimationFrame(raf);
-			});
+			// });
 		</script>
+		<p>
+			<a href="http://wikipedia.org">Wikipedia.org</a>
+		</p>
 	</body>
 </html>
