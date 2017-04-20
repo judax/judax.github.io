@@ -1,0 +1,36 @@
+<html>
+<body>
+<script>
+var speechRecognitionStarted = false;
+var speechRecognition = new window.webkitSpeechRecognition();
+// speechRecognition.continuous = true;
+// speechRecognition.interimResults = true;
+speechRecognition.onresult = function(event) {
+  for (var i = 0; i < event.results.length; i++) {
+    console.log(i + ": isFinal = " + event.results[i].isFinal + 
+      ", transcript = " + event.results[i][0].transcript + 
+      ", confidence = " + event.results[i][0].confidence);
+  }
+};
+speechRecognition.onend = function(event) {
+  speechRecognitionStarted = false;
+};
+speechRecognition.onerror = function(event) {
+  console.error(event.error);
+};
+speechRecognition.onstart = function(event) {
+  speechRecognitionStarted = true;
+};
+// speechRecognition.start();
+// console.log("start called!!!!!");
+
+window.addEventListener("click", function() {
+  if (speechRecognitionStarted) {
+    speechRecognition.stop();
+  }
+  speechRecognition.lang = "en-US";
+  speechRecognition.start();
+});
+</script>
+</body>
+</html>
