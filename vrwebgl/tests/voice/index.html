@@ -1,6 +1,18 @@
 <html>
 <body>
 <script>
+
+// Test permissions with geolocation
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      console.log("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
+    });
+} 
+else {
+  console.error("No geolocation API found!");
+}
+
+// Test the speech recognition API.
 var speechRecognitionStarted = false;
 var speechRecognition = new window.webkitSpeechRecognition();
 // speechRecognition.continuous = true;
