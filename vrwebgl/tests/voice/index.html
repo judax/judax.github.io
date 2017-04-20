@@ -14,11 +14,13 @@ speechRecognition.onresult = function(event) {
 };
 speechRecognition.onend = function(event) {
   speechRecognitionStarted = false;
+  console.log("onend");
 };
 speechRecognition.onerror = function(event) {
-  console.error(event.error);
+  console.error("onerror: " + event.error);
 };
 speechRecognition.onstart = function(event) {
+  console.log("onstart");
   speechRecognitionStarted = true;
 };
 // speechRecognition.start();
