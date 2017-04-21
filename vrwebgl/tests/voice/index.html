@@ -20,7 +20,7 @@ navigator.getUserMedia = navigator.getUserMedia ||
 
 if (navigator.getUserMedia) {
   console.log("Testing the user media API...");
-   navigator.getUserMedia({ audio: false, video: { width: 1280, height: 720 } },
+   navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
       function(stream) {
         console.log("Creating video feed...");
          var video = document.createElement('video');
