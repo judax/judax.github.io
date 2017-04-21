@@ -39,32 +39,34 @@ if (navigator.getUserMedia) {
    console.error("getUserMedia not supported");
 }
 
-// Test the speech recognition API.
-var speechRecognitionStarted = false;
-var speechRecognition = new window.webkitSpeechRecognition();
-// speechRecognition.continuous = true;
-// speechRecognition.interimResults = true;
-speechRecognition.onresult = function(event) {
-  for (var i = 0; i < event.results.length; i++) {
-    console.log(i + ": isFinal = " + event.results[i].isFinal + 
-      ", transcript = " + event.results[i][0].transcript + 
-      ", confidence = " + event.results[i][0].confidence);
-  }
-};
-speechRecognition.onend = function(event) {
-  speechRecognitionStarted = false;
-  console.log("onend");
-};
-speechRecognition.onerror = function(event) {
-  console.error("onerror: " + event.error);
-};
-speechRecognition.onstart = function(event) {
-  console.log("onstart");
-  speechRecognitionStarted = true;
-};
-
+  
 window.addEventListener("click", function() {
   console.log("Testing the speech API...");
+
+  // Test the speech recognition API.
+  var speechRecognitionStarted = false;
+  var speechRecognition = new window.webkitSpeechRecognition();
+  // speechRecognition.continuous = true;
+  // speechRecognition.interimResults = true;
+  speechRecognition.onresult = function(event) {
+    for (var i = 0; i < event.results.length; i++) {
+      console.log(i + ": isFinal = " + event.results[i].isFinal + 
+        ", transcript = " + event.results[i][0].transcript + 
+        ", confidence = " + event.results[i][0].confidence);
+    }
+  };
+  speechRecognition.onend = function(event) {
+    speechRecognitionStarted = false;
+    console.log("onend");
+  };
+  speechRecognition.onerror = function(event) {
+    console.error("onerror: " + event.error);
+  };
+  speechRecognition.onstart = function(event) {
+    console.log("onstart");
+    speechRecognitionStarted = true;
+  };
+
   if (speechRecognitionStarted) {
     speechRecognition.stop();
   }
