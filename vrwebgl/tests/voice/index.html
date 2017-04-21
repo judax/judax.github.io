@@ -12,6 +12,29 @@ else {
   console.error("No geolocation API found!");
 }
 
+// Text get user media
+navigator.getUserMedia = navigator.getUserMedia ||
+                         navigator.webkitGetUserMedia ||
+                         navigator.mozGetUserMedia;
+
+if (navigator.getUserMedia) {
+   navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
+      function(stream) {
+         var video = document.createElement('video');
+         document.body.appendChild(video);
+         video.srcObject = stream;
+         video.onloadedmetadata = function(e) {
+           video.play();
+         };
+      },
+      function(err) {
+         console.log("The following error occurred: " + err.name);
+      }
+   );
+} else {
+   console.log("getUserMedia not supported");
+}
+
 // Test the speech recognition API.
 var speechRecognitionStarted = false;
 var speechRecognition = new window.webkitSpeechRecognition();
@@ -38,14 +61,14 @@ speechRecognition.onstart = function(event) {
 // speechRecognition.start();
 // console.log("start called!!!!!");
 
-window.addEventListener("click", function() {
+// window.addEventListener("click", function() {
   if (speechRecognitionStarted) {
     speechRecognition.stop();
   }
   speechRecognition.lang = "en-US";
   speechRecognition.start();
   console.log("start!!!");
-});
+// });
 </script>
 </body>
 </html>
