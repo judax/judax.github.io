@@ -4,6 +4,7 @@
 
 // Test permissions with geolocation
 if (navigator.geolocation) {
+  console.log("Testing the geolocation API...");
     navigator.geolocation.getCurrentPosition(function(position) {
       console.log("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
     });
@@ -18,12 +19,15 @@ navigator.getUserMedia = navigator.getUserMedia ||
                          navigator.mozGetUserMedia;
 
 if (navigator.getUserMedia) {
+  console.log("Testing the user media API...");
    navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
       function(stream) {
+        console.log("Creating video feed...");
          var video = document.createElement('video');
          document.body.appendChild(video);
          video.srcObject = stream;
          video.onloadedmetadata = function(e) {
+          console.log("Playing video feed...");
            video.play();
          };
       },
@@ -36,6 +40,7 @@ if (navigator.getUserMedia) {
 }
 
 // Test the speech recognition API.
+console.log("Testing the speech API...");
 var speechRecognitionStarted = false;
 var speechRecognition = new window.webkitSpeechRecognition();
 // speechRecognition.continuous = true;
