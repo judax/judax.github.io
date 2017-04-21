@@ -20,7 +20,7 @@ navigator.getUserMedia = navigator.getUserMedia ||
 
 if (navigator.getUserMedia) {
   console.log("Testing the user media API...");
-   navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
+   navigator.getUserMedia({ audio: false, video: { width: 1280, height: 720 } },
       function(stream) {
         console.log("Creating video feed...");
          var video = document.createElement('video');
@@ -40,7 +40,6 @@ if (navigator.getUserMedia) {
 }
 
 // Test the speech recognition API.
-console.log("Testing the speech API...");
 var speechRecognitionStarted = false;
 var speechRecognition = new window.webkitSpeechRecognition();
 // speechRecognition.continuous = true;
@@ -63,17 +62,15 @@ speechRecognition.onstart = function(event) {
   console.log("onstart");
   speechRecognitionStarted = true;
 };
-// speechRecognition.start();
-// console.log("start called!!!!!");
 
-// window.addEventListener("click", function() {
+window.addEventListener("click", function() {
+  console.log("Testing the speech API...");
   if (speechRecognitionStarted) {
     speechRecognition.stop();
   }
   speechRecognition.lang = "en-US";
   speechRecognition.start();
-  console.log("start!!!");
-// });
+});
 </script>
 </body>
 </html>
