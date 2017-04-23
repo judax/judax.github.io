@@ -391,13 +391,13 @@ THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud = func
 	THREE.WebAR._normalZ.crossVectors(planeNormal, THREE.WebAR._normalY).normalize();
 	THREE.WebAR._normalY.crossVectors(THREE.WebAR._normalZ, planeNormal).normalize();
 	THREE.WebAR._rotationMatrix.elements[ 0] = planeNormal.x;
-	THREE.WebAR._rotationMatrix.elements[ 4] = planeNormal.y;
-	THREE.WebAR._rotationMatrix.elements[ 8] = planeNormal.z;
-	THREE.WebAR._rotationMatrix.elements[ 1] = THREE.WebAR._normalY.x;
+	THREE.WebAR._rotationMatrix.elements[ 1] = planeNormal.y;
+	THREE.WebAR._rotationMatrix.elements[ 2] = planeNormal.z;
+	THREE.WebAR._rotationMatrix.elements[ 4] = THREE.WebAR._normalY.x;
 	THREE.WebAR._rotationMatrix.elements[ 5] = THREE.WebAR._normalY.y;
-	THREE.WebAR._rotationMatrix.elements[ 9] = THREE.WebAR._normalY.z;
-	THREE.WebAR._rotationMatrix.elements[ 2] = THREE.WebAR._normalZ.x;
-	THREE.WebAR._rotationMatrix.elements[ 6] = THREE.WebAR._normalZ.y;
+	THREE.WebAR._rotationMatrix.elements[ 6] = THREE.WebAR._normalY.z;
+	THREE.WebAR._rotationMatrix.elements[ 8] = THREE.WebAR._normalZ.x;
+	THREE.WebAR._rotationMatrix.elements[ 9] = THREE.WebAR._normalZ.y;
 	THREE.WebAR._rotationMatrix.elements[10] = THREE.WebAR._normalZ.z;
 	object3d.quaternion.setFromRotationMatrix(THREE.WebAR._rotationMatrix);
 
