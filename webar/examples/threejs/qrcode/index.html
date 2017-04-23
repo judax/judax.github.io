@@ -165,7 +165,7 @@
 				});
 				var qrcodeGeometry = new THREE.PlaneBufferGeometry( 0.18, 0.18 );
 				qrcodeMesh = new THREE.Mesh( qrcodeGeometry, qrcodeMaterial );
-				qrcodeMesh.rotateX(THREE.Math.degToRad(-90));
+				qrcodeMesh.rotateY(THREE.Math.degToRad(-90));
 				qrcodeMesh = new THREE.Object3D().add(qrcodeMesh);
 				qrcodeMesh.position.set(0, 0, -1);
 				scene.add( qrcodeMesh );
