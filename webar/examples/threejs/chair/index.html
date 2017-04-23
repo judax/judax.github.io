@@ -231,7 +231,7 @@
 			        	var x = event.changedTouches[0].pageX;
 			        	var diffX = x - lastX;
 			        	lastX = x;
-			        	model.rotateZ(THREE.Math.degToRad(diffX));
+			        	model.rotateY(THREE.Math.degToRad(diffX));
 			        }
 			    });
 
