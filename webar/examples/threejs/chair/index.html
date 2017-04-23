@@ -131,7 +131,7 @@
 									loader.load( '../../resources/3dmodels/geometry_5.dae', function ( collada ) {
 										removeLoadSpinner();
 										var colladaScene = collada.scene;
-										colladaScene.rotateX(THREE.Math.degToRad(90));
+										// colladaScene.rotateX(THREE.Math.degToRad(90));
 										colladaScene.updateMatrix();
 										model = new THREE.Object3D();
 										model.add(colladaScene);
