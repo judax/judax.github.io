@@ -155,7 +155,7 @@ THREE.WebAR.getIndexFromOrientation = function(orientation) {
 */
 THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations = function(vrDisplay) {
 	var screenOrientation = screen.orientation.angle;
-	var seeThroughCameraOrientation = vrDisplay ? vrDisplay.getSeeThroughCamera().orientation : 0;
+	var seeThroughCameraOrientation = vrDisplay && vrDisplay.getSeeThroughCamera() ? vrDisplay.getSeeThroughCamera().orientation : 0;
     var seeThroughCameraOrientationIndex = THREE.WebAR.getIndexFromOrientation(seeThroughCameraOrientation);
     var screenOrientationIndex = THREE.WebAR.getIndexFromOrientation(screenOrientation);
     ret = screenOrientationIndex - seeThroughCameraOrientationIndex;
@@ -178,6 +178,9 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay, fallbackVideoPath
 	// The camera or video and the texture coordinates may vary depending if the vrDisplay has the see through camera.
 	if (vrDisplay) {
 		var seeThroughCamera = vrDisplay.getSeeThroughCamera();
+
+    if (!seeThroughCamera) throw "ERROR: Could not get the see through camera!";
+    
 		video = seeThroughCamera;
 		// HACK: Needed to tell the THREE.VideoTexture that the video is ready and that the texture needs update.
 		video.readyState = 2;
@@ -338,33 +341,35 @@ THREE.WebAR.resizeVRSeeThroughCamera = function(vrDisplay, camera) {
 	if (vrDisplay) {
 		var windowWidthBiggerThanHeight = window.innerWidth > window.innerHeight;
 		var seeThroughCamera = vrDisplay.getSeeThroughCamera();
-		var cameraWidthBiggerThanHeight = seeThroughCamera.width > seeThroughCamera.height;
-		var swapWidthAndHeight = !(windowWidthBiggerThanHeight && cameraWidthBiggerThanHeight);
+    if (seeThroughCamera) {
+      var cameraWidthBiggerThanHeight = seeThroughCamera.width > seeThroughCamera.height;
+      var swapWidthAndHeight = !(windowWidthBiggerThanHeight && cameraWidthBiggerThanHeight);
 
-		var width = swapWidthAndHeight ? seeThroughCamera.height : seeThroughCamera.width;
-		var height = swapWidthAndHeight ? seeThroughCamera.width : seeThroughCamera.height;
-		var fx = swapWidthAndHeight ? seeThroughCamera.focalLengthY : seeThroughCamera.focalLengthX;
-		var fy = swapWidthAndHeight ? seeThroughCamera.focalLengthX : seeThroughCamera.focalLengthY;
-		var cx = swapWidthAndHeight ? seeThroughCamera.pointY : seeThroughCamera.pointX;
-		var cy = swapWidthAndHeight ? seeThroughCamera.pointX : seeThroughCamera.pointY;
+      var width = swapWidthAndHeight ? seeThroughCamera.height : seeThroughCamera.width;
+      var height = swapWidthAndHeight ? seeThroughCamera.width : seeThroughCamera.height;
+      var fx = swapWidthAndHeight ? seeThroughCamera.focalLengthY : seeThroughCamera.focalLengthX;
+      var fy = swapWidthAndHeight ? seeThroughCamera.focalLengthX : seeThroughCamera.focalLengthY;
+      var cx = swapWidthAndHeight ? seeThroughCamera.pointY : seeThroughCamera.pointX;
+      var cy = swapWidthAndHeight ? seeThroughCamera.pointX : seeThroughCamera.pointY;
 
-        var xscale = camera.near / fx;
-        var yscale = camera.near / fy;
+      var xscale = camera.near / fx;
+      var yscale = camera.near / fy;
 
-        var xoffset = (cx - (width / 2.0)) * xscale;
-        // Color camera's coordinates has Y pointing downwards so we negate this term.
-        var yoffset = -(cy - (height / 2.0)) * yscale;
+      var xoffset = (cx - (width / 2.0)) * xscale;
+      // Color camera's coordinates has Y pointing downwards so we negate this term.
+      var yoffset = -(cy - (height / 2.0)) * yscale;
 
-		var left = xscale * -width / 2.0 - xoffset;
-		var right = xscale * width / 2.0 - xoffset;
-		var bottom = yscale * -height / 2.0 - yoffset;
-        var top = yscale * height / 2.0 - yoffset;
+      var left = xscale * -width / 2.0 - xoffset;
+      var right = xscale * width / 2.0 - xoffset;
+      var bottom = yscale * -height / 2.0 - yoffset;
+      var top = yscale * height / 2.0 - yoffset;
 
-        camera.projectionMatrix.makeFrustum(left, right, bottom, top, camera.near, camera.far);
+      camera.projectionMatrix.makeFrustum(left, right, bottom, top, camera.near, camera.far);
 
-        // Recalculate the fov as threejs is not doing it.
-        camera.fov = THREE.Math.radToDeg(Math.atan((top * camera.zoom) / camera.near)) * 2.0;
-	}
+      // Recalculate the fov as threejs is not doing it.
+      camera.fov = THREE.Math.radToDeg(Math.atan((top * camera.zoom) / camera.near)) * 2.0;
+    }
+  }
 	else {
 		camera.updateProjectionMatrix();
 	}
