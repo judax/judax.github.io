@@ -76,7 +76,7 @@ freely, subject to the following restrictions:
                 var Renderer = function (gl, canvas) {
                     this.camera = new Camera.OrbitCamera(canvas);
                     this.camera.setDistance(42);
-                    
+
                     this.projectionMat = mat4.create();
                     
                     gl.clearColor(0.0, 0.0, 0.1, 1.0);
@@ -100,6 +100,11 @@ freely, subject to the following restrictions:
                     var viewMat = this.camera.getViewMat();
                     var projectionMat = this.projectionMat;
                     
+                    if (window.VRWebGLRenderingContext) {
+                        gl.setCameraWorldMatrix(viewMat)
+                        gl.setCameraProjectionMatrix(projectionMat);
+                    }
+
                     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
                     var shader = this.cubeShader;
