@@ -1,0 +1,23 @@
+<html>
+<body>
+<script src="../../VRWebGL.js"></script>
+<script>
+var canvas = document.createElement("canvas");
+var gl = canvas.getContext("webgl");
+var ext = gl.getExtension("ANGLE_instanced_arrays");
+if (!ext) {
+  alert("The ANGLE_instanced_arrays extension is not present!");
+}
+else {
+  console.log(ext.vertexAttribDivisorANGLE);
+  console.log(ext.drawElementsInstancedANGLE);
+  function raf() {
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);  
+}
+
+</script>
+</body>
+</html>
