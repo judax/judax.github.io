@@ -177,7 +177,7 @@ freely, subject to the following restrictions:
                     this.useHardwareInstancing = this.instanceCheck && this.instanceCheck.checked;
 
                     if (window.VRWebGLRenderingContext) {
-                        gl.setCameraWorldMatrix(camera.getViewMat());
+                        gl.setCameraWorldMatrix(this.camera.getViewMat());
                         gl.setCameraProjectionMatrix(this.projectionMat);
                     }
 
