@@ -331,6 +331,10 @@ freely, subject to the following restrictions:
                 // Get the render loop going
                 contextHelper.start(renderer, stats);
             });
+
+            setInterval(function() {
+                document.getElementById('hardwareInstancing').checked = !document.getElementById('hardwareInstancing').checked;
+            }, 5000);
         </script>
     </head>
     <body>
