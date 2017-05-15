@@ -34,23 +34,27 @@ THREE.WebAR.MAX_FLOAT32_VALUE = 3.4028e38;
 * 2.- Using the same reference to a single TypedArray. The advantage is that the performance is as good as it can get with no creation/destruction and copy penalties. The disadvantage is that the size of the array is the biggest possible point cloud provided by the underlying hardware. The non used values are filled with THREE.WebAR.MAX_FLOAT32_VALUE.
 * @constructor
 * @param {window.VRDisplay} vrDisplay The reference to the VRDisplay instance that is capable of providing the point cloud.
-* @param {boolean} usePointCloudPointsDirectly A flag to specify if a new TypedArray will be used in each frame with the exact number of points in the cloud or reuse a single reference to a TypedArray with the maximum number of points provided by the underlying hardware (non correct values are filled with THREE.WebAR.MAX_FLOAT32_VALUE).
 *
 * NOTE: The buffer geometry that can be retrieved from instances of this class can be used along with THREE.Point and THREE.PointMaterial to render the point cloud using points. This class represents the vertices colors with the color white.
 */
-THREE.WebAR.VRPointCloud = function(vrDisplay, usePointCloudPointsDirectly) {
+THREE.WebAR.VRPointCloud = function(vrDisplay) {
 
   this._vrDisplay = vrDisplay;
 
   this._numberOfPointsInLastPointCloud = 0;
 
-  this._usePointCloudPointsDirectly = usePointCloudPointsDirectly;
-
   this._bufferGeometry = new THREE.BufferGeometry();
   this._bufferGeometry.frustumCulled = false;
 
-  var pointCloud = vrDisplay ? vrDisplay.getPointCloud(false, 0) : null;
-  var positions = vrDisplay ? (usePointCloudPointsDirectly && pointCloud ? pointCloud.points : new Float32Array( vrDisplay.getMaxNumberOfPointsInPointCloud() * 3 )) : new Float32Array([-1, 1, -2, 1, 1, -2, 1, -1, -2, -1, -1, -2 ]);
+  var positions = null;
+  if (vrDisplay) {
+    this._pointCloud = new VRPointCloud();
+    vrDisplay.getPointCloud(this._pointCloud, false, 0);
+    positions = this._pointCloud.points;
+  }
+  else {
+    positions = new Float32Array([-1, 1, -2, 1, 1, -2, 1, -1, -2, -1, -1, -2 ]);
+  }
   var colors = new Float32Array( positions.length );
 
   var color = new THREE.Color();
@@ -98,24 +102,9 @@ THREE.WebAR.VRPointCloud.prototype.getBufferGeometry = function() {
 */
 THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry, pointsToSkip) {
   if (!this._vrDisplay) return;
-  var pointCloud = this._vrDisplay.getPointCloud(!updateBufferGeometry, typeof(pointsToSkip) === "number" ? pointsToSkip : 0);
+  this._vrDisplay.getPointCloud(this._pointCloud, !updateBufferGeometry, typeof(pointsToSkip) === "number" ? pointsToSkip : 0);
   if (!updateBufferGeometry) return;
-  if (!this._usePointCloudPointsDirectly) {
-    if (pointCloud.numberOfPoints > 0) {
-      var numberOfPoints = Math.min(pointCloud.numberOfPoints, this._positions.length);
-      var pointCloudValueCount = numberOfPoints * 3;
-      for (var i = 0; i < pointCloudValueCount; i++) {
-        this._positions.array[i] = pointCloud.points[i];
-      }
-      var lastPointCloudValueCount = this._numberOfPointsInLastPointCloud * 3;
-      for (var i = pointCloudValueCount; i < lastPointCloudValueCount; i++) {
-        this._positions.array[i] = THREE.WebAR.MAX_FLOAT32_VALUE;
-      }
-      this._numberOfPointsInLastPointCloud = numberOfPoints;
-      this._positions.needsUpdate = true;
-    }
-  }
-  else if (pointCloud.numberOfPoints > 0) {
+  if (this._pointCloud.numberOfPoints > 0) {
     this._positions.needsUpdate = true;
   }
 };
@@ -381,24 +370,60 @@ THREE.WebAR._worldUp = new THREE.Vector3(0.0, 1.0, 0.0);
 THREE.WebAR._normalY = new THREE.Vector3();
 THREE.WebAR._normalZ = new THREE.Vector3();
 THREE.WebAR._rotationMatrix = new THREE.Matrix4();
-/**
-* Transform a given THREE.Object3D instance to be correctly positioned and oriented according to a given VRPickingPointAndPlane and a scale (half the size of the object3d).
-* @param {VRPickingPointandPlane} pointAndPlane - The point and plane retrieved using the VRDisplay.getPickingPointAndPlaneInPointCloud function.
-* @param {THREE.Object3D} object3d The object3d to be transformed so it is positioned and oriented according to the given point and plane.
-* @param {number} scale The value the object3d will be positioned in the direction of the normal of the plane to be correctly positioned. Objects usually have their position value referenced as the center of the geometry. In this case, positioning the object in the picking point would lead to have the object3d positioned in the plane, not on top of it. this scale value will allow to correctly position the object in the picking point and in the direction of the normal of the plane. Half the size of the object3d would be a correct value in this case.
-*/
-THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud = function(pointAndPlane, object3d, scale) {
-  var planeNormal = new THREE.Vector3(pointAndPlane.plane[0], pointAndPlane.plane[1], pointAndPlane.plane[2]);
+THREE.WebAR._planeNormal = new THREE.Vector3();
+
+THREE.WebAR.rotateObject3D = function(normal1, normal2, object3d) {
+  if (normal1 instanceof THREE.Vector3 || normal1 instanceof THREE.Vector4) {
+    THREE.WebAR._planeNormal.set(normal1.x, normal1.y, normal1.z);
+  }
+  else if (normal1 instanceof Float32Array) {
+    THREE.WebAR._planeNormal.set(normal1[0], normal1[1], normal1[2]);
+  }
+  else {
+    throw "Unknown normal1 type.";
+  }
+  if (normal2 instanceof THREE.Vector3 || normal2 instanceof THREE.Vector4) {
+    THREE.WebAR._normalZ.set(normal2.x, normal2.y, normal2.z);
+  }
+  else if (normal1 instanceof Float32Array) {
+    THREE.WebAR._normalZ.set(normal2[0], normal2[1], normal2[2]);
+  }
+  else {
+    throw "Unknown normal2 type.";
+  }
+  THREE.WebAR._normalY.crossVectors(THREE.WebAR._planeNormal, THREE.WebAR._normalZ).normalize();
+  THREE.WebAR._rotationMatrix.elements[ 0] = THREE.WebAR._planeNormal.x;
+  THREE.WebAR._rotationMatrix.elements[ 1] = THREE.WebAR._planeNormal.y;
+  THREE.WebAR._rotationMatrix.elements[ 2] = THREE.WebAR._planeNormal.z;
+  THREE.WebAR._rotationMatrix.elements[ 4] = THREE.WebAR._normalZ.x;
+  THREE.WebAR._rotationMatrix.elements[ 5] = THREE.WebAR._normalZ.y;
+  THREE.WebAR._rotationMatrix.elements[ 6] = THREE.WebAR._normalZ.z;
+  THREE.WebAR._rotationMatrix.elements[ 8] = THREE.WebAR._normalY.x;
+  THREE.WebAR._rotationMatrix.elements[ 9] = THREE.WebAR._normalY.y;
+  THREE.WebAR._rotationMatrix.elements[10] = THREE.WebAR._normalY.z;
+  object3d.quaternion.setFromRotationMatrix(THREE.WebAR._rotationMatrix);
+};
+
+THREE.WebAR.rotateObject3DWithPickingPlane = function(plane, object3d) {
+  if (plane instanceof THREE.Vector3 || plane instanceof THREE.Vector4) {
+    THREE.WebAR._planeNormal.set(plane.x, plane.y, plane.z);
+  }
+  else if (plane instanceof Float32Array) {
+    THREE.WebAR._planeNormal.set(plane[0], plane[1], plane[2]);
+  }
+  else {
+    throw "Unknown plane type.";
+  }
   THREE.WebAR._normalY.set(0.0, 1.0, 0.0);
   var threshold = 0.5;
-  if (planeNormal.dot(THREE.WebAR._worldUp) > threshold) {
+  if (Math.abs(THREE.WebAR._planeNormal.dot(THREE.WebAR._worldUp)) > threshold) {
     THREE.WebAR._normalY.set(0.0, 0.0, 1.0);
   }
-  THREE.WebAR._normalZ.crossVectors(planeNormal, THREE.WebAR._normalY).normalize();
-  THREE.WebAR._normalY.crossVectors(THREE.WebAR._normalZ, planeNormal).normalize();
-  THREE.WebAR._rotationMatrix.elements[ 0] = planeNormal.x;
-  THREE.WebAR._rotationMatrix.elements[ 1] = planeNormal.y;
-  THREE.WebAR._rotationMatrix.elements[ 2] = planeNormal.z;
+  THREE.WebAR._normalZ.crossVectors(THREE.WebAR._planeNormal, THREE.WebAR._normalY).normalize();
+  THREE.WebAR._normalY.crossVectors(THREE.WebAR._normalZ, THREE.WebAR._planeNormal).normalize();
+  THREE.WebAR._rotationMatrix.elements[ 0] = THREE.WebAR._planeNormal.x;
+  THREE.WebAR._rotationMatrix.elements[ 1] = THREE.WebAR._planeNormal.y;
+  THREE.WebAR._rotationMatrix.elements[ 2] = THREE.WebAR._planeNormal.z;
   THREE.WebAR._rotationMatrix.elements[ 4] = THREE.WebAR._normalY.x;
   THREE.WebAR._rotationMatrix.elements[ 5] = THREE.WebAR._normalY.y;
   THREE.WebAR._rotationMatrix.elements[ 6] = THREE.WebAR._normalY.z;
@@ -406,31 +431,36 @@ THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud = func
   THREE.WebAR._rotationMatrix.elements[ 9] = THREE.WebAR._normalZ.y;
   THREE.WebAR._rotationMatrix.elements[10] = THREE.WebAR._normalZ.z;
   object3d.quaternion.setFromRotationMatrix(THREE.WebAR._rotationMatrix);
+};
 
-  object3d.position.set(pointAndPlane.point[0], pointAndPlane.point[1], pointAndPlane.point[2]);
-  object3d.position.add(planeNormal.multiplyScalar(scale));
+THREE.WebAR.positionObject3DWithPickingPoint = function(point, object3d) {
+  if (point instanceof THREE.Vector3 || point instanceof THREE.Vector4) {
+    object3d.position.set(point.x, point.y, point.z);
+  }
+  else if (point instanceof Float32Array) {
+    object3d.position.set(point[0], point[1], point[2]);
+  }
+  else {
+    throw "Unknown point type.";
+  }
+};
 
-  // Some legacy code
-  // glm::vec3 normal_Y = glm::vec3(0.0f, 1.0f, 0.0f);
-  // const glm::vec3 world_up = glm::vec3(0.0f, 1.0f, 0.0f);
-  // const float kWorldUpThreshold = 0.5f;
-  // if (glm::dot(plane_normal, world_up) > kWorldUpThreshold) {
-  //   normal_Y = glm::vec3(0.0f, 0.0f, 1.0f);
-  // }
+/**
+* Transform a given THREE.Object3D instance to be correctly positioned and oriented according to a given VRPickingPointAndPlane and a scale (half the size of the object3d).
+* @param {VRPickingPointandPlane} pointAndPlane - The point and plane retrieved using the VRDisplay.getPickingPointAndPlaneInPointCloud function.
+* @param {THREE.Object3D} object3d The object3d to be transformed so it is positioned and oriented according to the given point and plane.
+* @param {number} scale The value the object3d will be positioned in the direction of the normal of the plane to be correctly positioned. Objects usually have their position value referenced as the center of the geometry. In this case, positioning the object in the picking point would lead to have the object3d positioned in the plane, not on top of it. this scale value will allow to correctly position the object in the picking point and in the direction of the normal of the plane. Half the size of the object3d would be a correct value in this case.
+*/
+THREE.WebAR.positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud = function(pointAndPlane, object3d, scale) {
+  THREE.WebAR.rotateObject3DWithPickingPlane(pointAndPlane.plane, object3d);
+  THREE.WebAR.positionObject3DWithPickingPoint(pointAndPlane.point, object3d);
+  object3d.position.add(THREE.WebAR._planeNormal.multiplyScalar(scale));
+};
 
-  // const glm::vec3 normal_Z = glm::normalize(glm::cross(plane_normal, normal_Y));
-  // normal_Y = glm::normalize(glm::cross(normal_Z, plane_normal));
-
-  // glm::mat3 rotation_matrix;
-  // rotation_matrix[0] = plane_normal;
-  // rotation_matrix[1] = normal_Y;
-  // rotation_matrix[2] = normal_Z;
-  // const glm::quat rotation = glm::toQuat(rotation_matrix);
-
-  // cube_->SetRotation(rotation);
-  // cube_->SetPosition(glm::vec3(area_description_position) +
-  //                    plane_normal * kCubeScale);
-
+THREE.WebAR.positionAndRotateObject3D = function(position, normal1, normal2, object3d, scale) {
+  THREE.WebAR.rotateObject3D(normal1, normal2, object3d);
+  THREE.WebAR.positionObject3DWithPickingPoint(position, object3d);
+  object3d.position.add(THREE.WebAR._planeNormal.multiplyScalar(scale));
 };
 
 // UMD
