@@ -444,6 +444,9 @@
     function raf() {
         stats.update();
 
+        if (vrDisplay)
+            vrDisplay.getPose();
+
         videoQuad.update(gl);
 
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);

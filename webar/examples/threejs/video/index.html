@@ -124,7 +124,9 @@
 
 				stats.update();
 
-				vrDisplay.getPose();
+				// Because of the current native implementation of the WebAR/Tango VRDisplay, in order to get the camera to correctly render, the pose needs to be requested in every frame :(.
+				if (vrDisplay)
+					vrDisplay.getPose();
 
 				// Required so the correct UVs are used at all times (changes happen when there is an orientation change or window resize)
 				THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
