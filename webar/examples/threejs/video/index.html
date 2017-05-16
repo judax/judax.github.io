@@ -17,134 +17,137 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  <script>
-    // Catch any possible error and show an alert. 
-    // Useful for "hacky" debugging.
-     window.addEventListener('error', function(event) {
-      var errorMessage = event.message;
-      var url = event.filename;
-      var lineNumber = event.lineno;
-      var columnNumber = event.colno;
-      alert("ERROR: " + errorMessage + " at " + url + " : " + lineNumber + 
-        " : " + columnNumber);
-    });
-  </script>
-  <title>WebAR (Tango) Video Camera ThreeJS Example</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no,
-    minimum-scale=1.0, maximum-scale=1.0">
-  <style>
-    body {
-      font-family: Monospace;
-      background-color: #000000;
-      margin: 0px;
-      overflow: hidden;
-    }
+    <script>
+      // Catch any possible error and show an alert. 
+      // Useful for "hacky" debugging.
+       window.addEventListener('error', function(event) {
+        var errorMessage = event.message;
+        var url = event.filename;
+        var lineNumber = event.lineno;
+        var columnNumber = event.colno;
+        alert("ERROR: " + errorMessage + " at " + url + " : " + lineNumber + 
+          " : " + columnNumber);
+      });
+    </script>
+    <title>WebAR (Tango) Video Camera ThreeJS Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no,
+      minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        font-family: Monospace;
+        background-color: #000000;
+        margin: 0px;
+        overflow: hidden;
+      }
 
-    #info {
-      color: #fff;
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
-      text-align: center;
-      z-index: 100;
-      display:block;
-    }
+      #info {
+        color: #fff;
+        position: absolute;
+        bottom: 10px;
+        width: 100%;
+        text-align: center;
+        z-index: 100;
+        display:block;
+      }
 
-    a { color: skyblue }
-  </style>
+      a { color: skyblue }
+    </style>
   </head>
   <body>
+    <div id="info">
+      <a href="http://threejs.org" target="_blank">three.js</a> 
+      WebAR (Tango) Video Camera ThreeJS Example 
+      <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
+    </div>
 
-  <div id="info">
-    <a href="http://threejs.org" target="_blank">three.js</a> 
-    WebAR (Tango) Video Camera ThreeJS Example 
-    <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
-  </div>
+    <script src="../../libs/third_party/three.js"></script>
+    <script src="../../libs/third_party/Detector.js"></script>
+    <script src="../../libs/third_party/stats.min.js"></script>
 
-  <script src="../../libs/third_party/three.js"></script>
-  <script src="../../libs/third_party/Detector.js"></script>
-  <script src="../../libs/third_party/stats.min.js"></script>
+    <script src="../../libs/THREE.WebAR.js"></script>
 
-  <script src="../../libs/THREE.WebAR.js"></script>
+    <script>
 
-  <script>
+      if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-    if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+      // Global variables
+      var stats;
+      var cameraOrtho, cameraScene, renderer, cameraMesh;
+      var vrDisplay = null;
 
-    // Global variables
-    var stats;
-    var cameraOrtho, cameraScene, renderer, cameraMesh;
-    var vrDisplay = null;
-
-    // WebAR is currently based on the WebVR API so try to find the right
-    // VRDisplay instance.
-    if (navigator.getVRDisplays) {
-      navigator.getVRDisplays().then(function(vrDisplays) {
-        if (vrDisplays && vrDisplays.length > 0) {
-          for (var i = 0; !vrDisplay && i < vrDisplays.length; i++) {
-            vrDisplay = vrDisplays[i];
-            if (vrDisplay.displayName !== "Tango VR Device") {
-              vrDisplay = null;
+      // WebAR is currently based on the WebVR API so try to find the right
+      // VRDisplay instance.
+      if (navigator.getVRDisplays) {
+        navigator.getVRDisplays().then(function(vrDisplays) {
+          if (vrDisplays && vrDisplays.length > 0) {
+            for (var i = 0; !vrDisplay && i < vrDisplays.length; i++) {
+              vrDisplay = vrDisplays[i];
+              if (vrDisplay.displayName !== "Tango VR Device") {
+                vrDisplay = null;
+              }
             }
           }
-        }
-        if (!vrDisplay) {
-          alert("No Tango WebAR VRDisplay found. Falling back to a video.");
-        }
-        init(vrDisplay);
-        updateAndRender();  
-      });
-    }
-    else {
-      alert("No navigator.getVRDisplays. Falling back to a video.");
-      init();
-      updateAndRender();
-    }
+          if (!vrDisplay) {
+            alert("No Tango WebAR VRDisplay found. Falling back to a video.");
+          }
+          init(vrDisplay);
+          updateAndRender();  
+        });
+      }
+      else {
+        alert("No navigator.getVRDisplays. Falling back to a video.");
+        init();
+        updateAndRender();
+      }
 
-    function init(vrDisplay) {
-      // Create the scene
-      cameraScene = new THREE.Scene();
-      // Use an orthographic camera to render the video quad
-      cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
-      // Use the THREE.WebAR helper function to create a quad mesh for the
-      // camera with the right geometry and material.
-      cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
-      cameraScene.add(cameraMesh);
+      function init(vrDisplay) {
+        // Create the scene
+        cameraScene = new THREE.Scene();
+        // Use an orthographic camera to render the video quad
+        cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
+        // Use the THREE.WebAR helper function to create a quad mesh for the
+        // camera with the right geometry and material.
+        cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
+        cameraScene.add(cameraMesh);
 
-      // Create a WebGL renderer
-      renderer = new THREE.WebGLRenderer();
-      renderer.setPixelRatio( window.devicePixelRatio );
-      renderer.setSize( window.innerWidth, window.innerHeight );
-      renderer.autoClear = false;
-      document.body.appendChild( renderer.domElement );
+        // Create a WebGL renderer
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.autoClear = false;
+        document.body.appendChild( renderer.domElement );
 
-      // Show some stats (FPS)
-      stats = new Stats();
-      document.body.appendChild( stats.dom );
+        // Show some stats (FPS)
+        stats = new Stats();
+        document.body.appendChild( stats.dom );
 
-      // Correctly handle window resize events
-      window.addEventListener( 'resize', onWindowResize, false );
-    }
+        // Correctly handle window resize events
+        window.addEventListener( 'resize', onWindowResize, false );
+      }
 
-    function onWindowResize() {
-      renderer.setSize( window.innerWidth, window.innerHeight );
-    }
+      function onWindowResize() {
+        renderer.setSize( window.innerWidth, window.innerHeight );
+      }
 
-    function updateAndRender() {
-      stats.update();
+      function updateAndRender() {
+        // UPDATE
 
-      // Make sure that the camera is correctly displayed depending on the
-      // device and camera orientations.
-      THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
+        stats.update();
 
-      // Render the see through camera scene
-      renderer.clear();
-      renderer.render( cameraScene, cameraOrtho );
+        // Make sure that the camera is correctly displayed depending on the
+        // device and camera orientations.
+        THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
 
-      requestAnimationFrame( updateAndRender );
-    }
+        // RENDER
+        
+        // Render the see through camera scene
+        renderer.clear();
+        renderer.render( cameraScene, cameraOrtho );
 
-  </script>
+        requestAnimationFrame( updateAndRender );
+      }
+
+    </script>
   </body>
 </html>
