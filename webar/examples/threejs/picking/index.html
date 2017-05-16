@@ -88,7 +88,7 @@
       var gui;
       var pos = new THREE.Vector3(); // Avoid GC.
 
-      var CUBE_SIZE_IN_METERS = 0.1;
+      var MODEL_SIZE_IN_METERS = 0.1;
 
       // WebAR is currently based on the WebVR API so try to find the right
       // VRDisplay instance.
@@ -147,8 +147,8 @@
         cameraPersp = 
           THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.01, 100);
         // Create a cube model of 10 cm size.
-        model = new THREE.Mesh(new THREE.BoxBufferGeometry(
-          CUBE_SIZE_IN_METERS, CUBE_SIZE_IN_METERS, CUBE_SIZE_IN_METERS), 
+        model = new THREE.Mesh(new THREE.ConeBufferGeometry(
+          MODEL_SIZE_IN_METERS / 2, MODEL_SIZE_IN_METERS), 
           new THREE.MeshLambertMaterial( {color: 0x888888 } ));
         model.position.set(0, 0, 2);
         scene.add(model);
@@ -200,7 +200,7 @@
               // to the picking plane. The offset is half of the cube size.
               THREE.WebAR.
                 positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(
-                  pointAndPlane, model, CUBE_SIZE_IN_METERS / 2);
+                  pointAndPlane, model, MODEL_SIZE_IN_METERS / 2);
             }
             else {
               console.warn("Could not retrieve the correct point and plane.");
