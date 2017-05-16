@@ -308,6 +308,7 @@
       this.combinedOrientation], gl.STATIC_DRAW);
     this.textureCoordBuffer.itemSize = 2;
     this.textureCoordBuffer.numItems = 8;
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
     this.indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
@@ -318,8 +319,13 @@
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, ui16Indices, gl.STATIC_DRAW);
     this.indexBuffer.itemSize = 1;
     this.indexBuffer.numItems = 6;
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
     this.texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.bindTexture(gl.TEXTURE_2D, null);
 
     gl.useProgram(null);
 
@@ -332,25 +338,8 @@
     return this;
   }
 
-  /**
-  * Update the video texture.
-  */
-  VideoQuad.prototype.update = function(gl) {
-    gl.bindTexture(gl.TEXTURE_2D, this.texture);
-
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-
-    // This call updates the VRSeeThorughCamera texture to render a new frame.
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, 
-      this.seeThroughCamera );
-    gl.bindTexture(gl.TEXTURE_2D, null);
-
-    return this;
-  };
-
   /** 
-  * Render the video texture.
+  * Render the video quad/texture.
   */
   VideoQuad.prototype.render = function(gl) {
     gl.useProgram(this.program);
@@ -365,7 +354,7 @@
     // Check the current orientation of the device combined with the
     // orientation of the VRSeeThroughCamera to determine the correct UV
     // coordinates to be used.
-    var combinedOrientation =   combineOrientations(screen.orientation.angle,
+    var combinedOrientation = combineOrientations(screen.orientation.angle,
       this.seeThroughCamera.orientation);
     if (combinedOrientation !== this.combinedOrientation) {
       this.combinedOrientation = combinedOrientation;
@@ -378,6 +367,9 @@
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    // Update the content of the texture in every frame.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, 
+      this.seeThroughCamera );
     gl.uniform1i(this.samplerUniform, 0);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
@@ -397,6 +389,9 @@
     return this;
   };
 
+  /**
+  * Retrieves a reference to the WebGL context.
+  */
   function getGL(canvas) {
     var gl;
     try {
@@ -412,6 +407,9 @@
     return gl;
   }
 
+  /** 
+  * Creates and load a shader.
+  */
   function getShader(gl, id) {
     var shaderScript = document.getElementById(id);
     if (!shaderScript) {
@@ -469,6 +467,9 @@
     return shaderProgram;
   }
 
+  /**
+  * Initialize the video quad.
+  */
   function initVideoQuad(gl, readyCallback) {
     // WebAR is currently based on the WebVR API so try to find the right
     // VRDisplay instance.
@@ -501,17 +502,39 @@
   function raf() {
     stats.update();
 
-    if (vrDisplay)
-      vrDisplay.getPose();
-
-    videoQuad.update(gl);
-
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     videoQuad.render(gl);
 
     requestAnimationFrame(raf);
+  }
+
+  /** 
+  * The starting point once the page is loaded.
+  */
+  function webGLStart() {
+    var canvas = document.createElement("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
+
+    stats = new Stats();
+    document.body.appendChild( stats.dom );
+
+    gl = getGL(canvas);
+    gl.clearColor(0.2, 0.2, 0.2, 1.0);
+
+    initVideoQuad(gl, function() {
+      // The real start of the example. Check for resize events and start 
+      // the render loop.
+      window.addEventListener("resize", function(event) {
+        gl.viewportWidth = canvas.width = window.innerWidth;
+        gl.viewportHeight = canvas.height = window.innerHeight;
+      });
+      requestAnimationFrame(raf);
+    });      
+
   }
 
 </script>
@@ -525,31 +548,6 @@
   <div id="info">
     WebAR (Tango) Video Camera WebGL Example <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
   </div>
-
-  <script>
-    function webGLStart() {
-      var canvas = document.createElement("canvas");
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      document.body.appendChild(canvas);
-
-      stats = new Stats();
-      document.body.appendChild( stats.dom );
-
-      gl = getGL(canvas);
-      gl.clearColor(0.2, 0.2, 0.2, 1.0);
-
-      initVideoQuad(gl, function() {
-        window.addEventListener("resize", function(event) {
-          gl.viewportWidth = canvas.width = window.innerWidth;
-          gl.viewportHeight = canvas.height = window.innerHeight;
-        });
-
-        requestAnimationFrame(raf);
-      });      
-
-    }
-  </script>
 </body>
 
 </html>
