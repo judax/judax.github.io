@@ -72,6 +72,7 @@
 
     <script>
       function GUI() {
+        this.continuousPicking = false;
         this.showPointCloud = true;
         this.showSeeThroughCamera = true;
         this.pointsToSkip = 0;
@@ -119,6 +120,7 @@
         // Initialize the dat.GUI.
         var datGUI = new dat.GUI();
         gui = new GUI();
+        datGUI.add(gui, "continuousPicking").name("Continuous picking");
         datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
           if (value) {
             scene.add(points)
@@ -126,9 +128,9 @@
           else {
             scene.remove(points);
           }
-        });
-        datGUI.add(gui, "showSeeThroughCamera");
-        datGUI.add(gui, "pointsToSkip", 0, 10);
+        }).name("Show Point Cloud");
+        datGUI.add(gui, "showSeeThroughCamera").name("Show seethrough camera");
+        datGUI.add(gui, "pointsToSkip", 0, 10).name("Points to kip");
 
         // Initialize everything related to ThreeJS.
         container = document.createElement( 'div' );
@@ -193,24 +195,27 @@
 
         // Wherever the user clicks in the screen, place the model.
         renderer.domElement.addEventListener("click", function(event) {
-          if (vrDisplay) {
-            pos.x = event.pageX / window.innerWidth;
-            pos.y = event.pageY / window.innerHeight;
-
-            var pointAndPlane = 
-              vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
-            if (pointAndPlane) {
-              // Orient and position the model in the picking point according
-              // to the picking plane. The offset is half of the cube size.
-              THREE.WebAR.
-                positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(
-                  pointAndPlane, model, MODEL_SIZE_IN_METERS / 2);
-            }
-            else {
-              console.warn("Could not retrieve the correct point and plane.");
-            }
-          }
+          pos.x = event.pageX / window.innerWidth;
+          pos.y = event.pageY / window.innerHeight;
+          picking();
         });
+      }
+
+      function picking() {
+        if (vrDisplay) {
+          var pointAndPlane = 
+            vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
+          if (pointAndPlane) {
+            // Orient and position the model in the picking point according
+            // to the picking plane. The offset is half of the cube size.
+            THREE.WebAR.
+              positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(
+                pointAndPlane, model, MODEL_SIZE_IN_METERS / 2);
+          }
+          else {
+            console.warn("Could not retrieve the correct point and plane.");
+          }
+        }
       }
 
       function onWindowResize() {
@@ -229,6 +234,12 @@
         // Update the point cloud. Only if the point cloud will be shown the
         // geometry is also updated.
         pointCloud.update(gui.showPointCloud, gui.pointsToSkip);
+
+        if (gui.continuousPicking) {
+          pos.x = 0.5;
+          pos.y = 0.5;
+          picking();
+        }
 
         // Make sure that the camera is correctly displayed depending on the
         // device and camera orientations.
