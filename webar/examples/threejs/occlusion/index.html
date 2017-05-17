@@ -116,7 +116,7 @@
 
       var container, stats;
       var cameraOrtho, cameraPersp, cameraScene, scene, renderer, cameraMesh;
-      var pointsScene, pointCloud;
+      var pointsScene, pointCloud, points;
       var vrDisplay;
       var model;
       var gui;
@@ -245,6 +245,10 @@
             THREE.WebAR.
               positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(
                 pointAndPlane, model, MODEL_SIZE_IN_METERS / 2);
+            // Provide the point material with the plane so it can discard 
+            // the points that are considered to be in the plane.
+            points.material.uniforms.plane.value.fromArray(
+              pointAndPlane.plane);
           }
           else {
             console.warn("Could not retrieve the correct point and plane.");
