@@ -153,7 +153,7 @@
         // Apply a rotation to the model so it faces in the direction of the
         // normal of the plane when the picking based reorientation is done
         model.geometry.applyMatrix(
-          new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(90)));
+          new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-90)));
         model.position.set(0, 0, 2);
         scene.add(model);
         var pointsMaterial = new THREE.PointsMaterial( 
