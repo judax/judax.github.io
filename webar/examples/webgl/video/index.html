@@ -322,10 +322,10 @@
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
     this.texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindTexture(this.vrDisplay ? gl.TEXTURE_EXTERNAL_OES : gl.TEXTURE_2D, this.texture);
+    gl.texParameteri(this.vrDisplay ? gl.TEXTURE_EXTERNAL_OES : gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(this.vrDisplay ? gl.TEXTURE_EXTERNAL_OES : gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.bindTexture(this.vrDisplay ? gl.TEXTURE_EXTERNAL_OES : gl.TEXTURE_2D, null);
 
     gl.useProgram(null);
 
@@ -366,9 +366,9 @@
       this.textureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.bindTexture(this.vrDisplay ? gl.TEXTURE_EXTERNAL_OES : gl.TEXTURE_2D, this.texture);
     // Update the content of the texture in every frame.
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, 
+    gl.texImage2D(this.vrDisplay ? gl.TEXTURE_EXTERNAL_OES : gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, 
       this.seeThroughCamera );
     gl.uniform1i(this.samplerUniform, 0);
 
