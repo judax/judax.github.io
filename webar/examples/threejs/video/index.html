@@ -115,6 +115,9 @@
         renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
+        // It is important to specify that the color buffer should not be
+        // automatically cleared. The see through camera will render the whole
+        // background.
         renderer.autoClear = false;
         document.body.appendChild( renderer.domElement );
 

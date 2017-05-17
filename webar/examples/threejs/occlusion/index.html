@@ -29,7 +29,7 @@
         " : " + columnNumber);
     });
   </script>
-  <title>WebAR (Tango) Picking ThreeJS Example</title>
+  <title>WebAR (Tango) Occlusion ThreeJS Example</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no,
     minimum-scale=1.0, maximum-scale=1.0">
@@ -58,7 +58,7 @@
   <body>
     <div id="info">
       <a href="http://threejs.org" target="_blank">three.js</a>
-      WebAR (Tango) Picking ThreeJS Example
+      WebAR (Tango) Occlusion ThreeJS Example
       <a href="https://github.com/judax" target="_blank">Iker Jamardo</a>
     </div>
 
@@ -66,6 +66,7 @@
     <script src="../../libs/third_party/Detector.js"></script>
     <script src="../../libs/third_party/stats.min.js"></script>
     <script src="../../libs/third_party/VRControls.js"></script>
+    <script src="../../libs/third_party/TeapotBufferGeometry.js"></script>
     <script src="../../libs/third_party/dat.gui.min.js"></script>
 
     <script src="../../libs/THREE.WebAR.js"></script>
@@ -73,9 +74,7 @@
     <script>
       function GUI() {
         this.showSeeThroughCamera = true;
-        this.continuousPicking = false;
-        this.showPointCloud = true;
-        this.pointsToSkip = 0;
+        this.usePointCloudForDepth = true;
         return this;
       }
 
@@ -83,7 +82,7 @@
 
       var container, stats;
       var cameraOrtho, cameraPersp, cameraScene, scene, renderer, cameraMesh;
-      var pointCloud;
+      var pointsScene, pointCloud;
       var vrDisplay;
       var model;
       var gui;
@@ -121,16 +120,7 @@
         var datGUI = new dat.GUI();
         gui = new GUI();
         datGUI.add(gui, "showSeeThroughCamera").name("Show seethrough camera");
-        datGUI.add(gui, "continuousPicking").name("Continuous picking");
-        datGUI.add(gui, "showPointCloud").onFinishChange(function(value) {
-          if (value) {
-            scene.add(points)
-          }
-          else {
-            scene.remove(points);
-          }
-        }).name("Show Point Cloud");
-        datGUI.add(gui, "pointsToSkip", 0, 10).name("Points to kip");
+        datGUI.add(gui, "usePointCloudForDepth").name("Use point cloud for depth");
 
         // Initialize everything related to ThreeJS.
         container = document.createElement( 'div' );
@@ -149,8 +139,7 @@
         cameraPersp = 
           THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.01, 100);
         // Create a cube model of 10 cm size.
-        model = new THREE.Mesh(new THREE.ConeBufferGeometry(
-          MODEL_SIZE_IN_METERS / 2, MODEL_SIZE_IN_METERS), 
+        model = new THREE.Mesh(new THREE.TeapotBufferGeometry(MODEL_SIZE_IN_METERS, 15), 
           new THREE.MeshLambertMaterial( {color: 0x888888 } ));
         // Apply a rotation to the model so it faces in the direction of the
         // normal of the plane when the picking based reorientation is done
@@ -158,18 +147,21 @@
           new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-90)));
         model.position.set(0, 0, 2);
         scene.add(model);
+
+        pointsScene = new THREE.Scene();
         var pointsMaterial = new THREE.PointsMaterial( 
-          { size: 0.01, vertexColors: THREE.VertexColors } );
-        pointsMaterial.depthWrite = false;
+          { 
+            size: 20, 
+            vertexColors: THREE.VertexColors, 
+            sizeAttenuation: false 
+          });
         pointCloud = new THREE.WebAR.VRPointCloud(vrDisplay, true);
         points = new THREE.Points(pointCloud.getBufferGeometry(),
           pointsMaterial);
         // Points are changing all the time so calculating the frustum culling
         // volume is not very convenient.
         points.frustumCulled = false;
-        points.renderDepth = 0;
-        if (gui.showPointCloud)
-          scene.add(points);
+        pointsScene.add(points);
 
         // Control the perspective camera using the VR pose.
         vrControls = new THREE.VRControls(cameraPersp);
@@ -236,7 +228,7 @@
 
         // Update the point cloud. Only if the point cloud will be shown the
         // geometry is also updated.
-        pointCloud.update(gui.showPointCloud, gui.pointsToSkip);
+        pointCloud.update(gui.usePointCloudForDepth, 0);
 
         // If continuous picking is enabled, use the center of the screen
         // to continuously pick.
@@ -260,6 +252,13 @@
 
         // Render the perspective scene
         renderer.clearDepth();
+
+        // Render the point cloud
+        if (this.gui.usePointCloudForDepth) {
+          this.renderer.context.colorMask( false, false, false, false );
+          this.renderer.render(pointsScene, cameraPersp);
+          this.renderer.context.colorMask( true, true, true, true );
+        }
 
         renderer.render( scene, cameraPersp );
 
