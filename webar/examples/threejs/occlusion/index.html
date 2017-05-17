@@ -122,7 +122,7 @@
       var gui;
       var pos = new THREE.Vector3(); // Avoid GC.
 
-      var MODEL_SIZE_IN_METERS = 0.4;
+      var MODEL_SIZE_IN_METERS = 0.2;
 
       // WebAR is currently based on the WebVR API so try to find the right
       // VRDisplay instance.
@@ -233,6 +233,22 @@
           pos.y = event.pageY / window.innerHeight;
           picking();
         });
+
+        // Control the rotation of the model
+        var lastX = 0;
+        renderer.domElement.addEventListener("touchstart", function(event) {
+          if (event.changedTouches.length > 0)
+            lastX = event.changedTouches[0].pageX;
+        });
+        renderer.domElement.addEventListener("touchmove", function(event) {
+            if (event.changedTouches.length > 0 && vrDisplay) {
+              var x = event.changedTouches[0].pageX;
+              var diffX = x - lastX;
+              lastX = x;
+              model.rotateX(THREE.Math.degToRad(diffX));
+            }
+        });
+
       }
 
       function picking() {
