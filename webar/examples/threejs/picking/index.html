@@ -156,7 +156,7 @@
         // normal of the plane when the picking based reorientation is done
         model.geometry.applyMatrix(
           new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-90)));
-        model.position.set(0, 0, 2);
+        model.position.set(0, 0, -2);
         scene.add(model);
         var pointsMaterial = new THREE.PointsMaterial( 
           { size: 0.01, vertexColors: THREE.VertexColors } );
