@@ -138,7 +138,7 @@
 
         // Create the see through camera scene and camera
         cameraScene = new THREE.Scene();
-        cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1000 );
+        cameraOrtho = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 100 );
         cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
         cameraScene.add(cameraMesh);
 
@@ -235,6 +235,8 @@
         // geometry is also updated.
         pointCloud.update(gui.showPointCloud, gui.pointsToSkip);
 
+        // If continuous picking is enabled, use the center of the screen
+        // to continuously pick.
         if (gui.continuousPicking) {
           pos.x = 0.5;
           pos.y = 0.5;
