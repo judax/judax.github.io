@@ -210,7 +210,7 @@
             vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
           if (pointAndPlane) {
             // Orient and position the model in the picking point according
-            // to the picking plane. The offset is half of the cube size.
+            // to the picking plane. The offset is half of the model size.
             THREE.WebAR.
               positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(
                 pointAndPlane, model, MODEL_SIZE_IN_METERS / 2);

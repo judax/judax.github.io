@@ -72,6 +72,40 @@
     <script src="../../libs/THREE.WebAR.js"></script>
 
     <script>
+
+      // These shaders allow to only render the points that are not in the
+      // same plane as the picking plane.
+      // The distance uniform is a threshold to determine a marging to consider
+      // a point in the picking plane or not.
+      // The varying v_discard is used to let the fragment shader what points
+      // should be avoided and which not.
+      var points_vertexShader =
+        "attribute vec3 position;\n" +
+        "uniform float size;\n" +
+        "uniform mat4 modelViewMatrix;\n" +
+        "uniform mat4 projectionMatrix;\n" +
+        "uniform vec4 plane;\n" +
+        "uniform float distance;\n" +
+        "varying float v_discard;\n" +
+        "void main(void) {\n" +
+        "  vec4 v4Position = vec4(position, 1.0);\n" +
+        "  float d = dot(plane, v4Position);\n" +
+        "  v_discard = 0.0;\n" +
+        "  if (abs(d) < distance) v_discard = 1.0;\n" +
+        "  gl_PointSize = size;\n" +
+        "  gl_Position = projectionMatrix * modelViewMatrix * v4Position;\n" +
+        "}";
+
+      var points_fragmentShader =
+        "precision mediump float;\n" +
+        "uniform vec3 color;\n" +
+        "uniform float opacity;\n" +
+        "varying float v_discard;\n" +
+        "void main(void) {\n" +
+        "  if (v_discard > 0.0) discard;\n" +
+        "  gl_FragColor = vec4( color, opacity );\n" +
+        "}";
+
       function GUI() {
         this.showSeeThroughCamera = true;
         this.usePointCloudForDepth = true;
@@ -88,7 +122,7 @@
       var gui;
       var pos = new THREE.Vector3(); // Avoid GC.
 
-      var MODEL_SIZE_IN_METERS = 0.1;
+      var MODEL_SIZE_IN_METERS = 0.4;
 
       // WebAR is currently based on the WebVR API so try to find the right
       // VRDisplay instance.
@@ -149,12 +183,17 @@
         scene.add(model);
 
         pointsScene = new THREE.Scene();
-        var pointsMaterial = new THREE.PointsMaterial( 
-          { 
-            size: 20, 
-            vertexColors: THREE.VertexColors, 
-            sizeAttenuation: false 
-          });
+        var pointsMaterial = new THREE.RawShaderMaterial({
+          uniforms: {
+            size: { value: 30 },
+            opacity: { value: 0.1 },
+            color: { value: new THREE.Color(0xffffff) },
+            plane: { value: new THREE.Vector4() },
+            distance: { value: 0.05 }
+          },
+          vertexShader: points_vertexShader,
+          fragmentShader: points_fragmentShader
+        });
         pointCloud = new THREE.WebAR.VRPointCloud(vrDisplay, true);
         points = new THREE.Points(pointCloud.getBufferGeometry(),
           pointsMaterial);
@@ -202,7 +241,7 @@
             vrDisplay.getPickingPointAndPlaneInPointCloud(pos.x, pos.y);
           if (pointAndPlane) {
             // Orient and position the model in the picking point according
-            // to the picking plane. The offset is half of the cube size.
+            // to the picking plane. The offset is half of the model size.
             THREE.WebAR.
               positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud(
                 pointAndPlane, model, MODEL_SIZE_IN_METERS / 2);
