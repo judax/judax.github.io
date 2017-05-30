@@ -179,7 +179,7 @@
         distanceTextDiv = document.getElementById("distanceText");
         var youtubeDiv = document.getElementById("youtube");
         model = new THREE.CSS3DObject(youtubeDiv);
-        model.rotateZ(THREE.Math.degToRad(-90));
+        model.rotateX(THREE.Math.degToRad(-90));
         model.scale.set(0.001, 0.001, 0.001);
         model = new THREE.Object3D().add(model);
         model.position.set(0, 0, 0.3);
@@ -212,7 +212,7 @@
 
         // Create a way to measure performance
         stats = new Stats();
-        // rendererCSS.domElement.appendChild( stats.dom );
+        rendererCSS.domElement.appendChild( stats.dom );
 
         // Control the resizing of the window to correctly display the sceneWebGL.
         window.addEventListener( 'resize', onWindowResize, false );
@@ -227,7 +227,7 @@
               var x = event.changedTouches[0].pageX;
               var diffX = x - lastX;
               lastX = x;
-              model.rotateX(THREE.Math.degToRad(diffX));
+              model.rotateZ(THREE.Math.degToRad(diffX));
             }
         });
 
@@ -249,7 +249,7 @@
 
         rendererCSS.domElement.addEventListener("dblclick", function() {
           if (videoIsReady) {
-          player.playVideo();
+            player.playVideo();
           }
         });
 
