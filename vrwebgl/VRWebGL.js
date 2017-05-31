@@ -918,7 +918,11 @@
 
 		var originalNavigatorGetGamepads = navigator.getGamepads;
 		navigator.getGamepads = function() {
-			var argumentsArray = Array.prototype.slice.apply(arguments);
+			// var argumentsArray = Array.prototype.slice.apply(arguments);
+			var argumentsArray = new Array(arguments.length);
+			for (var i = 0; i < arguments.length; i++) {
+				argumentsArray[i] = arguments[i];
+			}
 			var originalGamepads = originalNavigatorGetGamepads.apply(navigator, argumentsArray);
 
 			// TODO: Maybe even remove/replace the DD controller if it exists.
@@ -961,27 +965,13 @@
 		var vrWebGLRenderingContexts = [];
 		var vrWebGLVideos = [];
 		var vrWebGLWebViews = [];
+		var vrWebGLSpeechRecognitions = [];
+		var vrWebGLArrays = [ 
+			vrWebGLVideos, 
+			vrWebGLWebViews, 
+			vrWebGLSpeechRecognitions ];
 
-		function vrWebGLequestAnimationFrame() {
-			// Process VRWebGLVideo events
-			for (var i = 0; i < vrWebGLVideos.length; i++) {
-				var vrWebGLVideo = vrWebGLVideos[i];
-				if (!vrWebGLVideo.prepared && vrWebGLVideo.checkPrepared()) {
-					vrWebGLVideo.callEventListeners("canplaythrough");
-				}
-				if (!vrWebGLVideo.ended && vrWebGLVideo.checkEnded()) {
-					vrWebGLVideo.callEventListeners("ended");
-				}
-			}
-
-			// Process VRWebGLWebView events
-			for (var i = 0; i < vrWebGLWebViews.length; i++) {
-				var vrWebGLWebView = vrWebGLWebViews[i];
-				if (!vrWebGLWebView.loaded && vrWebGLWebView.checkLoaded()) {
-					vrWebGLWebView.callEventListeners("load");
-				}
-			}
-
+		function vrWebGLRequestAnimationFrame() {
 			// Update the gamepad if the VRWebGLRenderingContext has one by simply retrieving it
 			if (vrWebGLRenderingContexts.length > 0) {
 				vrWebGLRenderingContexts[0].getGamepad();
@@ -993,7 +983,12 @@
 			}
 
 			// Call the original raf callbacks
-			var argumentsArray = Array.prototype.slice.apply(arguments);
+			// var argumentsArray = Array.prototype.slice.apply(arguments);
+			var argumentsArray = new Array(arguments.length);
+			for (var i = 0; i < arguments.length; i++) {
+				argumentsArray[i] = arguments[i];
+			}
+
 			requestAnimationFrameCallbacks[0].apply(this, argumentsArray);
 			requestAnimationFrameCallbacks.splice(0, 1);
 
@@ -1005,7 +1000,7 @@
 
 		window.requestAnimationFrame = function(callback) {
 			requestAnimationFrameCallbacks.push(callback);
-			originalRequestAnimationFrame.call(this, vrWebGLequestAnimationFrame);
+			originalRequestAnimationFrame.call(this, vrWebGLRequestAnimationFrame);
 		};
 
 		// Replace the original WebGLRenderingContext for the VRWebGLRenderingContext
@@ -1015,7 +1010,12 @@
 		// Store the original VRWebGL texImage2D function prototype as we will slightly change it but still call it.
 		var originalVRWebGLTexImage2D = window.VRWebGLRenderingContext.prototype.texImage2D;
 		window.VRWebGLRenderingContext.prototype.texImage2D = function() {
-			var argumentsArray = Array.prototype.slice.apply(arguments);
+			// var argumentsArray = Array.prototype.slice.apply(arguments);
+			var argumentsArray = new Array(arguments.length);
+			for (var i = 0; i < arguments.length; i++) {
+				argumentsArray[i] = arguments[i];
+			}
+
 			var result = undefined;
 			// These are all the possible call options according to the WebGL spec
 			// 1.- void gl.texImage2D(target, level, internalformat, width, height, border, format, type, ArrayBufferView? pixels);
@@ -1063,7 +1063,12 @@
 		var originalHTMLCanvasElementPrototypeGetContextFunction = HTMLCanvasElement.prototype.getContext;
 		// Replace the HTMLCanvasElement getContext function with out own version
 		HTMLCanvasElement.prototype.getContext = function() {
-			var argumentsArray = Array.prototype.slice.apply(arguments);
+			// var argumentsArray = Array.prototype.slice.apply(arguments);
+			var argumentsArray = new Array(arguments.length);
+			for (var i = 0; i < arguments.length; i++) {
+				argumentsArray[i] = arguments[i];
+			}
+
 			if (typeof(argumentsArray[0]) === "string" && (argumentsArray[0] === "webgl" || argumentsArray[0] === "experimental-webgl")) {
 				if (vrWebGLRenderingContexts.length == 0) {
 					vrWebGLRenderingContexts.push(new VRWebGLRenderingContext());
@@ -1076,9 +1081,10 @@
 			}
 		};
 
-		function addListeners(object) {
+		function addEventHandlingToObject(object) {
 			object.listeners = { };
 			object.addEventListener = function(eventType, callback) {
+				if (!callback) return this;
 				var listeners = this.listeners[eventType];
 				if (!listeners) {
 					listeners = [];
@@ -1090,6 +1096,7 @@
 				return this;
 			};
 			object.removeEventListener = function(eventType, callback) {
+				if (!callback) return this;
 				var listeners = this.listeners[eventType];
 				if (listeners) {
 					var i = listeners.indexOf(callback);
@@ -1099,106 +1106,128 @@
 				}
 				return this;
 			};
-		   object.callEventListeners = function(eventType, event) {
-		    	if (!event) event = { target : this };
-		    	if (!event.target) event.target = this;
-		    	var onEventType = 'on' + eventType;
-		    	if (typeof(this[onEventType]) === 'function') {
-		    		this[onEventType](event)
-		    	}
+			object.callEventListeners = function(eventType, event) {
+				if (!event) event = { target : this };
+				if (!event.target) event.target = this;
+				event.type = eventType;
+				var onEventType = 'on' + eventType;
+				if (typeof(this[onEventType]) === 'function') {
+					this[onEventType](event)
+				}
 				var listeners = this.listeners[eventType];
 				if (listeners) {
 					for (var i = 0; i < listeners.length; i++) {
-						listeners[i](event);
+						var typeofListener = typeof(listeners[i]);
+						if (typeofListener === "object") {
+							listeners[i].handleEvent(event);
+						}
+						else if (typeofListener === "function") {
+							listeners[i](event);
+						}
 					}
 				}
 				return this;
-		    };
+			};
 		}	
 			
-		// Setup to be able to create VRWebGLVideos using docujment.createElement("video") if the URL requieres it.
-		if (location.search.includes("vrwebglvideo")) {
-			(function() { 
-				// Replace the original document.createElement function with our own to be able to create the correct video element for VRWebGL
-				var originalDocumentCreateElementFunction = document.createElement;
-				document.createElement = function() {
-					var argumentsArray = Array.prototype.slice.apply(arguments);
-					if (typeof(argumentsArray[0]) === "string" && argumentsArray[0] === "video") {
-						var vrWebGLVideo = new VRWebGLVideo();
-						vrWebGLVideos.push(vrWebGLVideo);
-						addListeners(vrWebGLVideo);
-						return vrWebGLVideo;
-					}
-					else {
-						return originalDocumentCreateElementFunction.apply(this, argumentsArray);
-					}
-				};
+		// Setup to be able to create VRWebGLVideo or VRWebGLWebView using
+		// document.createElement("video"/"webview").
+		// Replace the original document.createElement function with our own to be able to create the correct video element for VRWebGL
+		var originalDocumentCreateElementFunction = document.createElement;
+		document.createElement = function() {
+			// var argumentsArray = Array.prototype.slice.apply(arguments);
+			var argumentsArray = new Array(arguments.length);
+			for (var i = 0; i < arguments.length; i++) {
+				argumentsArray[i] = arguments[i];
+			}
 
-				var originalDocumentDeleteElement = document.deleteElement;
-				document.deleteElement = function(obj) {
-					var argumentsArray = Array.prototype.slice.apply(arguments);
-					var found = false;
-					for (var i =0; i < vrWebGLVideos.length; i++) {
-						if (vrWebGLVideos[i] === obj) {
-							vrWebGLVideos.splice(i, 1);
-							found = true;
-							break;
-						}
-					}
-					return found ? this : originalDocumentDeleteElement.apply(this, argumentsArray);
-				};
-			})();
-		}
+			// VRWebGLVideo instance can only be created if a URL parameter
+			// is passed.
+			if (location.search.includes("vrwebglvideo") && 
+					typeof(argumentsArray[0]) === "string" && 
+					argumentsArray[0] === "video") {
+				var vrWebGLVideo = new VRWebGLVideo();
+				vrWebGLVideos.push(vrWebGLVideo);
+				addEventHandlingToObject(vrWebGLVideo);
+				return vrWebGLVideo;
+			}
+			else if (typeof(argumentsArray[0]) === "string" && 
+					argumentsArray[0] === "webview") {
+				var vrWebGLWebView = new VRWebGLWebView();
+				vrWebGLWebViews.push(vrWebGLWebView);
+				addEventHandlingToObject(vrWebGLWebView);
+				return vrWebGLWebView;
+			}
+			else {
+				return originalDocumentCreateElementFunction.apply(this, argumentsArray);
+			}
+		};
 
-		// Setup to be able to create VRWebGLWebView instances using document.createElement("webview");
-		(function() { 
-			// Replace the original document.createElement function with our own to be able to create VRWebGLWebView instances
-			var originalDocumentCreateElementFunction = document.createElement;
-			document.createElement = function() {
-				var argumentsArray = Array.prototype.slice.apply(arguments);
-				if (typeof(argumentsArray[0]) === "string" && argumentsArray[0] === "webview") {
-					var vrWebGLWebView = new VRWebGLWebView();
-					vrWebGLWebViews.push(vrWebGLWebView);
-					addListeners(vrWebGLWebView);
-					return vrWebGLWebView;
-				}
-				else {
-					return originalDocumentCreateElementFunction.apply(this, argumentsArray);
-				}
-			};
-
-			var originalDocumentDeleteElement = document.deleteElement;
-			document.deleteElement = function(obj) {
-				var argumentsArray = Array.prototype.slice.apply(arguments);
-				var found = false;
-				for (var i =0; i < vrWebGLWebViews.length; i++) {
-					if (vrWebGLWebViews[i] === obj) {
-						vrWebGLWebViews.splice(i, 1);
+		// A new function in the document to be able to make sure that
+		// an element is correctly destroyed. In our case, VRWebGLVideo,
+		// VRWebGLWebView and even VRWebGLSpeechRecognition instances 
+		// that are kept in their corresponding arrays.
+		document.deleteElement = function(obj) {
+			// Look for the video or the webview to correctly remove it from
+			// the corresponding array.
+			var found = false;
+			for (var j = 0; !found && j < vrWebGLArrays.length; j++) {
+				var vrWebGLArray = vrWebGLArrays[j];
+				for (var i =0; !found && i < vrWebGLArray.length; i++) {
+					if (vrWebGLArray[i] === obj) {
+						vrWebGLArray.splice(i, 1);
 						found = true;
-						break;
 					}
-				}
-				return found ? this : originalDocumentDeleteElement.apply(this, argumentsArray);
-			};
-		})();
-
-		function findWebViewById(id) {
-			var vrWebGLWebView = null;
-			for (var i = 0; !vrWebGLWebView && i < vrWebGLWebViews.length; i++) {
-				vrWebGLWebView = vrWebGLWebViews[i];
-				if (vrWebGLWebView.id !== id) {
-					vrWebGLWebView = null;
 				}
 			}
-			return vrWebGLWebView;
+			return this;
+		};
+
+		// Return any of the instances in the arrays by id.
+		function findById(index, id) {
+			if (index < 0 || index >= vrWebGLArrays.length) 
+				throw "ERROR: The provided index '" + index + "' is out of scope.";
+			var obj = null;
+			var vrWebGLArray = vrWebGLArrays[index];
+			for (var i =0; !obj && i < vrWebGLArray.length; i++) {
+				obj = vrWebGLArray[i];
+				if (obj.id !== id) {
+					obj = null;
+				}
+			}
+			return obj;
 		}
 
-		// Expose the vrbrowser API so webpages can call the VR browser to send events UI
-		window.vrbrowser = {
-			dispatchEvent: function(webviewId, eventName, event) {
-				webview = findWebViewById(webviewId);
-				if (webview) {
-					webview.callEventListeners(eventName, event);
+		// Setup the webkitSpeechRecognition API to be able to use the
+		// underlying VRWebGLSpeechRecognition instances, but only, if
+		// requested by a URL parameter. Add the created instance to be able to
+		// use them afterward when events are dispatched.
+		if (location.search.includes("vrwebglspeechrecognition")) {
+			var originalWindowWebkitSpeechRecognition = 
+				window.webkitSpeechRecognition;
+			window.webkitSpeechRecognition = function() {
+				var vrWebGLSpeechRecognition = new VRWebGLSpeechRecognition();
+				addEventHandlingToObject(vrWebGLSpeechRecognition);
+				vrWebGLSpeechRecognitions.push(vrWebGLSpeechRecognition);
+				return vrWebGLSpeechRecognition;
+			}
+		}
+
+		// Expose a way so the native side can dispatch events to the event handling objects in the arrays.
+		window.vrwebgl = {
+			dispatchEvent: function(index, id, eventName, event) {
+				var obj = findById(index, id);
+				if (obj) {
+					// NOTE: Very specific handling for the video ended event.
+					if (obj instanceof VRWebGLVideo) {
+						if (eventName === "ended") {
+							obj.ended = true;
+						}
+						else if (eventName === "canplaythrough") {
+							obj.readyState = 2;
+						}
+					}
+					obj.callEventListeners(eventName, event);
 				}
 				return this;
 			}
