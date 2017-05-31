@@ -1,0 +1,423 @@
+<html>
+
+<head>
+    
+    <!-- Error handling -->
+    <script>
+        // window.addEventListener('error', function(event) {
+        //     var errorMessage = event.message;
+        //     var url = event.filename;
+        //     var lineNumber = event.lineno;
+        //     var columnNumber = event.colno;
+        //     alert("ERROR: " + errorMessage + " at " + url + " : " + lineNumber + " : " + columnNumber);
+        // });
+    </script>
+
+<title>Learning WebGL &mdash; lesson 1</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<!-- <meta name="viewport" content="initial-scale=1.0, user-scalable=no"> -->
+
+<script type="text/javascript" src="../../VRWebGL.js"></script>
+<script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+
+<script id="shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+
+    varying vec2 vTextureCoord;
+
+    uniform sampler2D uSampler;
+
+    void main(void) {
+        gl_FragColor = texture2D(uSampler, vTextureCoord);
+    }
+</script>
+
+<script id="shader-fs-vrwebgl" type="x-shader/x-fragment">
+    #extension GL_OES_EGL_image_external : require
+    uniform samplerExternalOES uSampler;
+    // uniform sampler2D uSampler;
+
+    precision mediump float;
+
+    varying vec2 vTextureCoord;
+
+    void main(void) {
+        gl_FragColor = texture2D(uSampler, vTextureCoord);
+    }
+</script>
+
+<script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec2 aTextureCoord;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+
+    varying vec2 vTextureCoord;
+
+
+    void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        vTextureCoord = aTextureCoord;
+    }
+</script>
+
+
+
+<script type="text/javascript">
+
+    function VideoQuad(gl, src, program, readyCallback) {
+
+        this.program = program;
+
+        gl.useProgram(program);
+
+        this.vertexPositionAttribute = gl.getAttribLocation(program, "aVertexPosition");
+        this.textureCoordAttribute = gl.getAttribLocation(program, "aTextureCoord");
+        this.projectionMatrixUniform = gl.getUniformLocation(program, "uPMatrix");
+        this.mvMatrixUniform = gl.getUniformLocation(program, "uMVMatrix");
+        this.samplerUniform = gl.getUniformLocation(program, "uSampler");
+
+        this.vertexPositionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
+        var vertices = [
+            -10.0,  10.0,  0.0,
+             10.0,  10.0,  0.0,
+             10.0, -10.0,  0.0,
+            -10.0, -10.0,  0.0
+        ];
+        var f32Vertices = new Float32Array(vertices);
+        gl.bufferData(gl.ARRAY_BUFFER, f32Vertices, gl.STATIC_DRAW);
+        this.vertexPositionBuffer.itemSize = 3;
+        this.vertexPositionBuffer.numItems = 12;
+
+        this.textureCoordBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+        var textureCoords = [
+            0.0, 0.0,
+            1.0, 0.0, 
+            1.0, 1.0,
+            0.0, 1.0
+        ];
+        var f32TextureCoords = new Float32Array(textureCoords);
+        gl.bufferData(gl.ARRAY_BUFFER, f32TextureCoords, gl.STATIC_DRAW);
+        this.textureCoordBuffer.itemSize = 2;
+        this.textureCoordBuffer.numItems = 8;
+
+        this.indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        var indices = [
+            0, 1, 2, 0, 2, 3
+        ];
+        var ui16Indices = new Uint16Array(indices);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, ui16Indices, gl.STATIC_DRAW);
+        this.indexBuffer.itemSize = 1;
+        this.indexBuffer.numItems = 6;
+
+        this.texture = gl.createTexture();
+
+        var webview = src === "webview";
+
+        this.video = document.createElement(webview ? "webview" : "video");
+        // this.video.play = function() {};
+        this.video.addEventListener("canplaythrough", function(event) {
+            console.warn(event.target.src + " prepared!");
+        });
+        this.video.addEventListener("ended", function(event) {
+            console.warn(event.target.src + " ended!");
+        });
+        this.video.src = webview ? "https://en.wikipedia.org/wiki/Main_Page" : src;
+        this.video.addEventListener("canplaythrough", readyCallback);
+        if (webview) {
+            this.video.play = function() {}
+            setTimeout(readyCallback, 100);
+        }
+
+        gl.useProgram(null);
+
+        this.projectionMatrix = mat4.create();
+        this.mvMatrix = mat4.create();
+
+        this.filter = WebGLRenderingContext.LINEAR;
+
+        return this;
+    }
+
+    VideoQuad.prototype.update = function(gl) {
+
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, this.projectionMatrix);
+
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.video);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.filter);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.filter);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        // console.log("Video '" + this.video.src + "' currentTime = " + this.video.currentTime);
+
+        return this;
+    };
+
+    VideoQuad.prototype.render = function(gl) {
+        gl.useProgram(this.program);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
+        gl.enableVertexAttribArray(this.vertexPositionAttribute);
+        gl.vertexAttribPointer(this.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+        gl.enableVertexAttribArray(this.textureCoordAttribute);
+        gl.vertexAttribPointer(this.textureCoordAttribute, this.textureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        gl.uniform1i(this.samplerUniform, 0);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+        gl.uniformMatrix4fv(this.projectionMatrixUniform, false, this.projectionMatrix);
+        gl.uniformMatrix4fv(this.mvMatrixUniform, false, this.mvMatrix);
+
+        gl.drawElements(gl.TRIANGLES, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
+        // Disable enabled states to forbid other draw calls 
+        gl.disableVertexAttribArray(this.vertexPositionAttribute);
+        gl.disableVertexAttribArray(this.textureCoordAttribute);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+        gl.useProgram(null);
+        return this;
+    };
+
+    VideoQuad.prototype.changeFilter = function() {
+        if (this.filter === WebGLRenderingContext.NEAREST) {
+            this.filter = WebGLRenderingContext.LINEAR;
+        }
+        else {
+            this.filter = WebGLRenderingContext.NEAREST;
+        }
+        console.log("filter = " + this.filter);
+    };
+
+    window.addEventListener("dblclick", function() {
+        videoQuads[0].changeFilter();
+    });
+
+    function getGL(canvas) {
+        var gl;
+        try {
+            gl = canvas.getContext("experimental-webgl");
+            gl.viewportWidth = canvas.width;
+            gl.viewportHeight = canvas.height;
+        } catch (e) {
+            alert(e);
+        }
+        if (!gl) {
+            alert("Could not initialise WebGL, sorry :-(");
+        }
+        return gl;
+    }
+
+    function getShader(gl, id) {
+        var shaderScript = document.getElementById(id);
+        if (!shaderScript) {
+            return null;
+        }
+
+        var str = "";
+        var k = shaderScript.firstChild;
+        while (k) {
+            if (k.nodeType == 3) {
+                str += k.textContent;
+            }
+            k = k.nextSibling;
+        }
+
+        var shader;
+        if (shaderScript.type == "x-shader/x-fragment") {
+            shader = gl.createShader(gl.FRAGMENT_SHADER);
+        } else if (shaderScript.type == "x-shader/x-vertex") {
+            shader = gl.createShader(gl.VERTEX_SHADER);
+        } else {
+            return null;
+        }
+
+        gl.shaderSource(shader, str);
+        gl.compileShader(shader);
+
+        var result = gl.getShaderParameter(shader, gl.COMPILE_STATUS)
+        // alert("getShaderParameter result = " + result);
+        if (!result) {
+            alert(gl.getShaderInfoLog(shader));
+            return null;
+        }
+
+        return shader;
+    }
+
+    function getProgram(gl) {
+        var fragmentShader = getShader(gl, window.VRWebGLVideo ? "shader-fs-vrwebgl" : "shader-fs");
+        var vertexShader = getShader(gl, "shader-vs");
+
+        var shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        var result = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
+        // alert("getProgramParameter result = " + result);
+        if (!result) {
+            alert("Could not initialise shaders");
+        }
+
+        return shaderProgram;
+    }
+
+    var videoURLs = [
+        window.VRWebGLWebView ? "webview" : "firefox_trimmed.ogv",
+        // window.VRWebGLVideo ? "https://krpano.com/ios/bugs/ios8-webgl-video/video.mp4" : "firefox_trimmed.ogv",
+        // window.VRWebGLVideo ? "http://flimshaw.github.io/Valiant360/videos/overpass-2k.mp4" : "firefox_trimmed.ogv",
+        // window.VRWebGLVideo ? "http://vids.slawrence.io/bears.mp4" : "firefox_trimmed.ogv"
+    ];
+    var videoQuads = [];
+
+    function initVideoQuads(gl, program, readyCallback) {
+        var readyVideoQuadCount = 0;
+        function rc() {
+            readyVideoQuadCount++;
+            if (readyVideoQuadCount == videoQuads.length) {
+                readyCallback();
+            }
+        }
+        videoQuads.length = videoURLs.length;
+        var x = -(videoURLs.length / 2) * 21;
+        if (x !== 0) x += 10;
+        for (var i = 0; i < videoURLs.length; i++, x += 21) {
+            videoQuads[i] = new VideoQuad(gl, videoURLs[i], program, rc);
+            mat4.identity(videoQuads[i].mvMatrix);
+            videoQuads[i].mvMatrix[12] = x;
+            videoQuads[i].mvMatrix[14] = -20;
+            // mat4.translate(videoQuads[i].mvMatrix, videoQuads[i].mvMatrix, [x, 0.0, -15.0]);
+        }
+    }
+
+    function getGamepad() {
+      var gamepad = null;
+      var gamepads = navigator.getGamepads();
+      for (var i = 0; !gamepad && i < gamepads.length; i++) {
+        gamepad = gamepads[i];
+      }
+      return gamepad;
+    }        
+
+    var appButtonPressed = false;
+
+    function raf() {
+
+        var gamepad = getGamepad();
+        if (gamepad) {
+            var appButton = gamepad.buttons.length > 1 ? gamepad.buttons[1] : null;
+            if (appButton) {
+              if (appButtonPressed && !appButton.pressed) {
+                videoQuads[0].changeFilter();
+              }
+              appButtonPressed = appButton.pressed;
+            }
+        }
+
+        for (var i = 0; i < videoQuads.length; i++) {
+            videoQuads[i].update(gl);
+        }
+
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        for (var i = 0; i < videoQuads.length; i++) {
+            videoQuads[i].render(gl);
+        }
+
+        requestAnimationFrame(raf);
+    }
+
+    window.addEventListener("click", function() {
+        for (var i = 0; i < videoQuads.length; i++) {
+            var videoQuad = videoQuads[i];
+            if (videoQuad.video) {
+                if (videoQuad.video.paused) {
+                    videoQuad.video.play();
+                }
+                else {
+                    videoQuad.video.pause();
+                }
+            }
+        }
+    });
+
+    function setVideoVolumeAccordingToY(y) {
+        var volume =  1 - y / window.innerHeight;
+        if (volume > 1) volume = 1;
+        else if (volume < 0) volume = 0;
+        for (var i = 0; i < videoQuads.length; i++) {
+            if (videoQuads[i].video !== null) {
+                videoQuads[i].video.volume = volume;
+            }
+        }
+    }
+
+    function setVideoCurrentTimeAccordingToX(x) {
+        var currentTime = x / window.innerWidth;
+        for (var i = 0; i < videoQuads.length; i++) {
+            if (videoQuads[i].video !== null) {
+                var videoCurrentTime = currentTime * videoQuads[i].video.duration;
+                if (!isNaN(videoCurrentTime))
+                    videoQuads[i].video.currentTime = videoCurrentTime >> 0;
+            }
+        }
+    }
+
+    if (typeof(window.ontouchstart) !== "undefined") {
+        window.addEventListener("touchmove", function(event) {
+            setVideoVolumeAccordingToY(event.changedTouches[0].pageY);
+            setVideoCurrentTimeAccordingToX(event.changedTouches[0].pageX);
+        });
+    }
+    else {
+        window.addEventListener("mousemove", function(event) {
+            setVideoVolumeAccordingToY(event.pageY);
+            // setVideoCurrentTimeAccordingToX(event.pageX);
+        });
+    }
+
+</script>
+
+
+</head>
+
+
+<body onload="webGLStart();">
+    <!-- <canvas id="lesson01-canvas" style="border: none;" width="100%" height="100%"></canvas> -->
+    <script>
+        function webGLStart() {
+            // var canvas = document.getElementById("lesson01-canvas");
+            var canvas = document.createElement("canvas");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            document.body.appendChild(canvas);
+            var gl = getGL(canvas);
+            var program = getProgram(gl);
+            window.gl = gl;
+            window.program = program;
+            initVideoQuads(gl, program, function() {
+                for (var i = 0; i < videoQuads.length; i++) {
+                    videoQuads[i].video.play();
+                }
+                requestAnimationFrame(raf);
+            });
+            gl.clearColor(0.2, 0.2, 0.2, 1.0);
+        }
+    </script>
+</body>
+
+</html>
