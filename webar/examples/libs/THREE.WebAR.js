@@ -105,7 +105,7 @@ THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry, point
   if (!this._vrDisplay) return;
   this._vrDisplay.getPointCloud(this._pointCloud, 
     !updateBufferGeometry, typeof(pointsToSkip) === "number" ? 
-      pointsToSkip : 0, false);
+      pointsToSkip : 0, true);
   if (!updateBufferGeometry) return;
   if (this._pointCloud.numberOfPoints > 0) {
     this._positions.needsUpdate = true;
