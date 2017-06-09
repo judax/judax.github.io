@@ -1,0 +1,54 @@
+<html>
+<body>
+
+<!-- Error handling -->
+<script>
+    window.addEventListener('error', function(event) {
+        var errorMessage = event.message;
+        var url = event.filename;
+        var lineNumber = event.lineno;
+        var columnNumber = event.colno;
+        alert("ERROR: " + errorMessage + " at " + url + " : " + lineNumber + " : " + columnNumber);
+    });
+</script>
+
+<script>
+    if (navigator.getVRDisplays) {
+        navigator.getVRDisplays().then(function(vrDisplays) {
+            if (vrDisplays && vrDisplays.length > 0) {
+                // Only get the last VRDisplay that has support for ADFs and the list of ADFs from it
+                var vrDisplay = null;
+                for (var i = 0; i < vrDisplays.length; i++) {
+                    if (vrDisplays[i].capabilities.hasMarkerSupport) {
+                        vrDisplay = vrDisplays[i];
+                    }
+                }
+                if (vrDisplay !== null) {
+                    // Constantly request for the pose to see the internal results using ADFs or not.
+                    var frameData = new VRFrameData();
+                    function raf() {
+                        if (vrDisplay.getFrameData(frameData)) {
+                          vrDisplay.detectMarkers(vrDisplay.MARKER_TYPE_AR, 0.1397);
+                        }
+                        requestAnimationFrame(raf);
+                    }
+                    requestAnimationFrame(raf);
+                }
+                else {
+                    alert("There are no VRDisplays that have marker support.");
+                }
+
+            }
+            else {
+                alert("There are no VRDisplays.");
+            }
+        });
+    }
+    else 
+    {
+        alert("No navigator.getVRDisplays");
+    }
+
+</script>
+</body>
+</html>
