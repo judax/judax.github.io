@@ -138,14 +138,15 @@
 
         stats.update();
 
-        // Make sure that the camera is correctly displayed depending on the
-        // device and camera orientations.
-        THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
-
         if (vrDisplay) {
+          vrDisplay.getPose();
           var markers = vrDisplay.detectMarkers(vrDisplay.MARKER_TYPE_AR, 0.1397);
           console.log(markers);
         }
+
+        // Make sure that the camera is correctly displayed depending on the
+        // device and camera orientations.
+        THREE.WebAR.updateCameraMeshOrientation(vrDisplay, cameraMesh);
 
         // RENDER
         
