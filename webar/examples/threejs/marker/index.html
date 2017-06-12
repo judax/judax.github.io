@@ -141,7 +141,11 @@
         if (vrDisplay) {
           vrDisplay.getPose();
           var markers = vrDisplay.detectMarkers(vrDisplay.MARKER_TYPE_QRCODE, 0.1397);
-          console.log(markers);
+          console.log(markers.length + " markers detected.");
+          for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            console.log(marker.type + ", " + marker.id + ", " + marker.content + ", " + marker.position + ", " + marker.orientation);
+          }
         }
 
         // Make sure that the camera is correctly displayed depending on the
