@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: VRDisplayCapabilities</title>
+    <title>JSDoc: Class: VRADF</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: VRDisplayCapabilities</h1>
+    <h1 class="page-title">Class: VRADF</h1>
 
     
 
@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2>VRDisplayCapabilities</h2>
+        <h2>VRADF</h2>
         
     
 </header>
@@ -40,14 +40,17 @@
 
     
 
-    <h4 class="name" id="VRDisplayCapabilities"><span class="type-signature"></span>new VRDisplayCapabilities<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="VRADF"><span class="type-signature"></span>new VRADF<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Added some properties to the VRDisplayCapabilities class of the WebVR spec <a href="https://w3c.github.io/webvr/#interface-vrdisplay">https://w3c.github.io/webvr/#interface-vrdisplay</a>.
+    A class that represents an Area Description File (ADF). An ADF can be
+generated and stored in the current device using a different application like the 
+area description example in the Tango C-Examples. An AR VRDisplay may request a list of
+all the ADFs
 </div>
 
 
@@ -91,7 +94,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line20">line 20</a>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line302">line 302</a>
     </li></ul></dd>
     
 
@@ -135,13 +138,13 @@
 
         
             
-<h4 class="name" id="hasADFSupport"><span class="type-signature">(readonly) </span>hasADFSupport<span class="type-signature"> :boolean</span></h4>
+<h4 class="name" id="creationTime"><span class="type-signature">(readonly) </span>creationTime<span class="type-signature"> :long</span></h4>
 
 
 
 
 <div class="description">
-    A flag that indicates if the VRDisplay is able to support Area Description Files (true) or not (false).
+    The time stamp in millisenconds when the ADF was created.
 </div>
 
 
@@ -150,7 +153,7 @@
     <ul>
         <li>
             
-<span class="param-type">boolean</span>
+<span class="param-type">long</span>
 
 
         </li>
@@ -189,165 +192,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line40">line 40</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="VRADF.html">VRADF</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="hasMarkerSupport"><span class="type-signature">(readonly) </span>hasMarkerSupport<span class="type-signature"> :boolean</span></h4>
-
-
-
-
-<div class="description">
-    A flag that indicates if the VRDisplay is able to support marker detection (true) or not (false).
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">boolean</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line48">line 48</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="VRMarker.html">VRMarker</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="hasPointCloud"><span class="type-signature">(readonly) </span>hasPointCloud<span class="type-signature"> :boolean</span></h4>
-
-
-
-
-<div class="description">
-    A flag that indicates if the VRDisplay is able to provide a point cloud (true) or not (false).
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">boolean</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line26">line 26</a>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line325">line 325</a>
     </li></ul></dd>
     
 
@@ -365,13 +210,13 @@
 
         
             
-<h4 class="name" id="hasSeeThroughCamera"><span class="type-signature">(readonly) </span>hasSeeThroughCamera<span class="type-signature"> :boolean</span></h4>
+<h4 class="name" id="name"><span class="type-signature">(readonly) </span>name<span class="type-signature"> :string</span></h4>
 
 
 
 
 <div class="description">
-    A flag that indicates if the VRDisplay is able to provide a VRSeeThroughCamera instance (true) or not (false).
+    A human readable name to easily identify and describe the content of the ADF.
 </div>
 
 
@@ -380,7 +225,7 @@
     <ul>
         <li>
             
-<span class="param-type">boolean</span>
+<span class="param-type">string</span>
 
 
         </li>
@@ -419,7 +264,79 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line33">line 33</a>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line318">line 318</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="uuid"><span class="type-signature">(readonly) </span>uuid<span class="type-signature"> :string</span></h4>
+
+
+
+
+<div class="description">
+    The unique identifier for the ADF. Use it to enable/disable an ADF.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">string</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line311">line 311</a>
     </li></ul></dd>
     
 

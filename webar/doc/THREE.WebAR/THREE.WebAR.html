@@ -264,7 +264,7 @@ NOTE: As a coding standard all the variables/functions starting with an undersco
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line337">line 337</a>
+        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line338">line 338</a>
     </li></ul></dd>
     
 
@@ -440,7 +440,7 @@ NOTE: As a coding standard all the variables/functions starting with an undersco
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line170">line 170</a>
+        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line171">line 171</a>
     </li></ul></dd>
     
 
@@ -597,7 +597,7 @@ orientation = 270 <-> index = 3
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line124">line 124</a>
+        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line125">line 125</a>
     </li></ul></dd>
     
 
@@ -750,7 +750,7 @@ orientation = 270 <-> index = 3
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line148">line 148</a>
+        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line149">line 149</a>
     </li></ul></dd>
     
 
@@ -803,14 +803,14 @@ orientation = 270 <-> index = 3
 
     
 
-    <h4 class="name" id=".positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud"><span class="type-signature">(static) </span>positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud<span class="signature">(pointAndPlane, object3d, scale)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".positionAndRotateObject3D"><span class="type-signature">(static) </span>positionAndRotateObject3D<span class="signature">(pointAndPlane, object3d, scale)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Transform a given THREE.Object3D instance to be correctly positioned and oriented according to a given VRPickingPointAndPlane and a scale (half the size of the object3d).
+    Transform a given THREE.Object3D instance to be correctly positioned and oriented according to an axis formed by 2 plane normals, a position and a scale (half the size of the object3d for example).
 </div>
 
 
@@ -949,7 +949,344 @@ orientation = 270 <-> index = 3
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line490">line 490</a>
+        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line514">line 514</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud"><span class="type-signature">(static) </span>positionAndRotateObject3DWithPickingPointAndPlaneInPointCloud<span class="signature">(pointAndPlane, object3d, scale)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Transform a given THREE.Object3D instance to be correctly positioned and oriented according to a given VRPickingPointAndPlane and a scale (half the size of the object3d for example).
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pointAndPlane</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">VRPickingPointandPlane</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The point and plane retrieved using the VRDisplay.getPickingPointAndPlaneInPointCloud function.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>object3d</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Object3D</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The object3d to be transformed so it is positioned and oriented according to the given point and plane.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scale</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The value the object3d will be positioned in the direction of the normal of the plane to be correctly positioned. Objects usually have their position value referenced as the center of the geometry. In this case, positioning the object in the picking point would lead to have the object3d positioned in the plane, not on top of it. this scale value will allow to correctly position the object in the picking point and in the direction of the normal of the plane. Half the size of the object3d would be a correct value in this case.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line501">line 501</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".positionObject3DWithPickingPoint"><span class="type-signature">(static) </span>positionObject3DWithPickingPoint<span class="signature">(point, object3d)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Transform a given THREE.Object3D instance to be correctly positioned according to a given point position.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>point</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Vector3</span>
+|
+
+<span class="param-type">THREE.Vector4</span>
+|
+
+<span class="param-type">Float32Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A vector that represents the position where the object3d should be positioned.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>object3d</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Object3D</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The object3d to be transformed so it is positioned according to the given point.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line483">line 483</a>
     </li></ul></dd>
     
 
@@ -1103,7 +1440,167 @@ orientation = 270 <-> index = 3
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line351">line 351</a>
+        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line352">line 352</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".rotateObject3DWithPickingPlane"><span class="type-signature">(static) </span>rotateObject3DWithPickingPlane<span class="signature">(plane, object3d)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Transform a given THREE.Object3D instance to be correctly oriented according to a given plane normal.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>plane</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Vector3</span>
+|
+
+<span class="param-type">THREE.Vector4</span>
+|
+
+<span class="param-type">Float32Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A vector that represents the normal of the plane to be used to orient the object3d.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>object3d</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">THREE.Object3D</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The object3d to be transformed so it is oriented according to the given plane.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line446">line 446</a>
     </li></ul></dd>
     
 
@@ -1257,7 +1754,7 @@ orientation = 270 <-> index = 3
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line316">line 316</a>
+        <a href="THREE.WebAR.js.html">THREE.WebAR.js</a>, <a href="THREE.WebAR.js.html#line317">line 317</a>
     </li></ul></dd>
     
 
@@ -1305,7 +1802,7 @@ orientation = 270 <-> index = 3
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed May 17 2017 16:42:27 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jul 20 2017 21:50:06 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

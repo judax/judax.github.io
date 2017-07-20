@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: VRPickingPointAndPlane</title>
+    <title>JSDoc: Class: VRPose</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: VRPickingPointAndPlane</h1>
+    <h1 class="page-title">Class: VRPose</h1>
 
     
 
@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2>VRPickingPointAndPlane</h2>
+        <h2>VRPose</h2>
         
     
 </header>
@@ -40,14 +40,14 @@
 
     
 
-    <h4 class="name" id="VRPickingPointAndPlane"><span class="type-signature"></span>new VRPickingPointAndPlane<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="VRPose"><span class="type-signature"></span>new VRPose<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    A class that represents the point where a collision happened between a ray and the VRPointCloud mesh and the normal of the plane of that same collision.
+    Added some properties to the VRPose class of the WebVR spec <a href="https://w3c.github.io/webvr/spec/1.1/#interface-vrpose">https://w3c.github.io/webvr/spec/1.1/#interface-vrpose</a>.
 </div>
 
 
@@ -91,7 +91,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line165">line 165</a>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line147">line 147</a>
     </li></ul></dd>
     
 
@@ -135,13 +135,13 @@
 
         
             
-<h4 class="name" id="plane"><span class="type-signature">(readonly) </span>plane<span class="type-signature"> :Float32Array</span></h4>
+<h4 class="name" id="localized"><span class="type-signature">(readonly) </span>localized<span class="type-signature"> :boolean</span></h4>
 
 
 
 
 <div class="description">
-    An array of 4 values representing the coeficients of the values in the equation of the plane where there was a collision between a casted ray and the point cloud mesh.
+    A flag that indicates if the VRPose has been localized to a (Tango-specific) ADF, and pose coordinates now use a localized space.
 </div>
 
 
@@ -150,7 +150,7 @@
     <ul>
         <li>
             
-<span class="param-type">Float32Array</span>
+<span class="param-type">boolean</span>
 
 
         </li>
@@ -189,79 +189,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line178">line 178</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="point"><span class="type-signature">(readonly) </span>point<span class="type-signature"> :Float32Array</span></h4>
-
-
-
-
-<div class="description">
-    An array of 3 values representing the 3D position of the collision point between a casted ray and the point cloud mesh.
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Float32Array</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line171">line 171</a>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line153">line 153</a>
     </li></ul></dd>
     
 

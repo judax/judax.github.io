@@ -91,7 +91,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line44">line 44</a>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line60">line 60</a>
     </li></ul></dd>
     
 
@@ -134,6 +134,527 @@
 
     
         <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="detectMarkers"><span class="type-signature"></span>detectMarkers<span class="signature">(markerType, markerSize)</span><span class="type-signature"> &rarr; {array.&lt;<a href="VRMarker.html">VRMarker</a>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    .
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>markerType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">long</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A number that represents the type of marker to detect. The supported types are specified as constants inside the <a href="VRDisplay.html">VRDisplay</a> MARKER_TYPE_XXX properties.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>markerSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">float</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The size in meters of the actual physical marker.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line134">line 134</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="VRADF.html">VRADF</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - An array of <a href="VRMarker.html">VRMarker</a> instances corresponding to the detected markers of the specified type.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">array.&lt;<a href="VRMarker.html">VRMarker</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="disableADF"><span class="type-signature"></span>disableADF<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Disable the last enabled ADF. The pose estimation is based on the start of service from then on once an ADF is disabled.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line114">line 114</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="VRADF.html">VRADF</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="enableADF"><span class="type-signature"></span>enableADF<span class="signature">(uuid)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Enable an ADF to be used to localize the pose estimation. Only one ADF can be enabled at the same time, so a previously emabled ADF is disabled when this call is made.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>uuid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The UUID of the ADF to enable.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line107">line 107</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="VRADF.html">VRADF</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getADFs"><span class="type-signature"></span>getADFs<span class="signature">()</span><span class="type-signature"> &rarr; {array.&lt;<a href="VRADF.html">VRADF</a>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Returns an list of existing VRADF structures in the device. The ADFs can be created with other apps like the Area Description example in the Tango C Examples <a href="https://github.com/googlesamples/tango-examples-c/tree/master/cpp_basic_examples/hello_area_description">https://github.com/googlesamples/tango-examples-c/tree/master/cpp_basic_examples/hello_area_description</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line100">line 100</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="VRADF.html">VRADF</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - An array of <a href="VRSeeThroughCamera.html">VRSeeThroughCamera</a> instances corresponding to the ADFs exisiting on the device.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">array.&lt;<a href="VRADF.html">VRADF</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
 
         
             
@@ -191,7 +712,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line50">line 50</a>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -374,7 +895,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line67">line 67</a>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line84">line 84</a>
     </li></ul></dd>
     
 
@@ -434,7 +955,7 @@
 
     
 
-    <h4 class="name" id="getPointCloud"><span class="type-signature"></span>getPointCloud<span class="signature">(pointCloud, justUpdatePointCloud, pointsToSkip)</span><span class="type-signature"> &rarr; {<a href="VRPointCloud.html">VRPointCloud</a>}</span></h4>
+    <h4 class="name" id="getPointCloud"><span class="type-signature"></span>getPointCloud<span class="signature">(pointCloud, justUpdatePointCloud, pointsToSkip, transformPoints)</span><span class="type-signature"> &rarr; {<a href="VRPointCloud.html">VRPointCloud</a>}</span></h4>
 
     
 
@@ -543,6 +1064,29 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>transformPoints</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A flag to indicate that the resulting points should be transformed in the native side. In the case the points are transformed in the native side, the VRPointCloud structure will return an identity pointsTransformMatrix and a true pointsAlreadyTransformed. On the contrary, if the points are not transformed in the native side, the matrix to correctly transform them will be provided inside the VRPointCloud structure's pointsTransformMatrix and the pointsAlreadyTransformed flag will be false.</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -580,7 +1124,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line57">line 57</a>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -691,7 +1235,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line76">line 76</a>
+        <a href="WebARAPI.js.html">WebARAPI.js</a>, <a href="WebARAPI.js.html#line93">line 93</a>
     </li></ul></dd>
     
 
@@ -762,13 +1306,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="VRDisplay.html">VRDisplay</a></li><li><a href="VRDisplayCapabilities.html">VRDisplayCapabilities</a></li><li><a href="VRPickingPointAndPlane.html">VRPickingPointAndPlane</a></li><li><a href="VRPointCloud.html">VRPointCloud</a></li><li><a href="VRSeeThroughCamera.html">VRSeeThroughCamera</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="VRADF.html">VRADF</a></li><li><a href="VRDisplay.html">VRDisplay</a></li><li><a href="VRDisplayCapabilities.html">VRDisplayCapabilities</a></li><li><a href="VRMarker.html">VRMarker</a></li><li><a href="VRPickingPointAndPlane.html">VRPickingPointAndPlane</a></li><li><a href="VRPointCloud.html">VRPointCloud</a></li><li><a href="VRPose.html">VRPose</a></li><li><a href="VRSeeThroughCamera.html">VRSeeThroughCamera</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed May 17 2017 16:45:18 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jul 20 2017 22:06:45 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
