@@ -64,10 +64,19 @@
     <script src="../../libs/third_party/three.js"></script>
     <script src="../../libs/third_party/Detector.js"></script>
     <script src="../../libs/third_party/stats.min.js"></script>
+    <script src="../../libs/third_party/VRControls.js"></script>
+    <script src="../../libs/third_party/dat.gui.min.js"></script>
 
     <script src="../../libs/THREE.WebAR.js"></script>
 
     <script>
+
+      function GUI() {
+        this.showSeeThroughCamera = true;
+        this.markerTypeString = "AR";
+        this.markerType = 1;
+        return this;
+      }
 
       if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
@@ -75,6 +84,10 @@
       var stats;
       var cameraOrtho, cameraScene, renderer, cameraMesh;
       var vrDisplay = null;
+      var scene, cameraPersp, model = null;
+      var MODEL_SIZE_IN_METERS = 0.2;
+      var vrControls = null;
+      var gui;
 
       // WebAR is currently based on the WebVR API so try to find the right
       // VRDisplay instance.
@@ -102,6 +115,21 @@
       }
 
       function init(vrDisplay) {
+        // Initialize the dat.GUI.
+        var datGUI = new dat.GUI();
+        gui = new GUI();
+        datGUI.add(gui, "showSeeThroughCamera").name("Show seethrough camera");
+        datGUI.add(gui, "markerTypeString", ["AR", "QRCODE"]).onFinishChange(function(value) {
+            console.log(value + ", " + this);
+            if (!vrDisplay) return;
+            if (value === "QRCODE") {
+              gui.markerType = vrDisplay.MARKER_TYPE_QRCODE;
+            }
+            else if (value === "AR") {
+              gui.markerType = vrDisplay.MARKER_TYPE_AR;
+            }
+          }).name("Marker type");
+
         // Create the scene
         cameraScene = new THREE.Scene();
         // Use an orthographic camera to render the video quad
@@ -110,6 +138,34 @@
         // camera with the right geometry and material.
         cameraMesh = THREE.WebAR.createVRSeeThroughCameraMesh(vrDisplay);
         cameraScene.add(cameraMesh);
+
+        // Create the 3D scene and camera
+        scene = new THREE.Scene();
+        // Use the THREE.WebAR utility to create a perspective camera
+        // suited to the actual see through camera parameters.
+        cameraPersp = 
+          THREE.WebAR.createVRSeeThroughCamera(vrDisplay, 0.01, 100);
+        // Create a model to be placed in the world using picking
+        model = new THREE.Mesh(new THREE.ConeBufferGeometry(
+          MODEL_SIZE_IN_METERS / 2, MODEL_SIZE_IN_METERS), 
+          new THREE.MeshLambertMaterial( {color: 0x888888 } ));
+        // model = new THREE.Mesh(new THREE.SphereBufferGeometry(
+        //   MODEL_SIZE_IN_METERS / 2, 20, 20), 
+        //   new THREE.MeshLambertMaterial( {color: 0x888888 } ));
+        // Apply a rotation to the model so it faces in the direction of the
+        // normal of the plane when the picking based reorientation is done
+        model.geometry.applyMatrix(
+          new THREE.Matrix4().makeTranslation(0, MODEL_SIZE_IN_METERS / 2, 0));
+        model.geometry.applyMatrix(
+          new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(90)));
+        model.position.set(0, 0, -1);
+        scene.add(model);
+        // Add some lighting
+        var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(0, 1, 0);
+        scene.add(directionalLight);
+
+        vrControls = new THREE.VRControls(cameraPersp);
 
         // Create a WebGL renderer
         renderer = new THREE.WebGLRenderer();
@@ -130,6 +186,7 @@
       }
 
       function onWindowResize() {
+        THREE.WebAR.resizeVRSeeThroughCamera(vrDisplay, cameraPersp);
         renderer.setSize( window.innerWidth, window.innerHeight );
       }
 
@@ -138,13 +195,13 @@
 
         stats.update();
 
+        vrControls.update();
+
         if (vrDisplay) {
-          vrDisplay.getPose();
-          var markers = vrDisplay.detectMarkers(vrDisplay.MARKER_TYPE_QRCODE, 0.1397);
-          console.log(markers.length + " markers detected.");
-          for (var i = 0; i < markers.length; i++) {
-            var marker = markers[i];
-            console.log(marker.type + ", " + marker.id + ", " + marker.content + ", " + marker.position + ", " + marker.orientation);
+          var markers = vrDisplay.detectMarkers(gui.markerType, 0.1397);
+          if (markers.length > 0) {
+            model.position.fromArray(markers[0].position);
+            model.quaternion.fromArray(markers[0].orientation);
           }
         }
 
@@ -156,7 +213,12 @@
         
         // Render the see through camera scene
         renderer.clear();
-        renderer.render( cameraScene, cameraOrtho );
+        if (gui.showSeeThroughCamera)
+          renderer.render( cameraScene, cameraOrtho );
+
+        // Render the perspective scene
+        renderer.clearDepth();
+        renderer.render( scene, cameraPersp );
 
         requestAnimationFrame( updateAndRender );
       }
