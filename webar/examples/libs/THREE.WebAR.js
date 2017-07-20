@@ -28,6 +28,14 @@ THREE.WebAR = {};
 
 THREE.WebAR.MAX_FLOAT32_VALUE = 3.4028e38;
 
+THREE.WebAR._isTango = function(vrDisplay) {
+  return vrDisplay && vrDisplay.displayName.toLowerCase().includes("tango");
+};
+
+THREE.WebAR._isARKit = function(vrDisplay) {
+  return vrDisplay && vrDisplay.displayName.toLowerCase().includes("arkit");
+};
+
 /**
 * A class that allows to manage the point cloud acquisition and representation in ThreeJS. A buffer geometry is generated to represent the point cloud. The point cloud is provided using a VRDisplay instance that shows the capability to do so. The point cloud is actually exposed using a TypedArray. The array includes 3 values per point in the cloud. There are 2 ways of exposing this array:
 * 1.- Using a new TypedArray for every frame/update. The advantage is that the TypedArray is always of the correct size depending on the number of points detected. The disadvantage is that there is a performance hit from the creation and copying of the array (and future garbage collection).
@@ -100,6 +108,7 @@ THREE.WebAR.VRPointCloud.prototype.getBufferGeometry = function() {
 * Update the point cloud. The THREE.BufferGeometry that this class provides will automatically be updated with the point cloud retrieved by the underlying hardware.
 * @param {boolean} updateBufferGeometry A flag to indicate if the underlying THREE.BufferGeometry should also be updated. Updating the THREE.BufferGeometry is very cost innefficient so it is better to only do it if necessary (only if the buffer geometry is going to be rendered for example). If this flag is set to false,  then the underlying point cloud is updated but not buffer geometry that represents it. Updating the point cloud is important to be able to call functions that operate with it, like the getPickingPointAndPlaneInPointCloud function.
 * @param {number} pointsToSkip A positive integer from 0-N that specifies the number of points to skip when returning the point cloud. If the updateBufferGeometry flag is activated (true) then this parameter allows to specify the density of the point cloud. A values of 0 means all the detected points need to be returned. A number of 1 means that 1 every other point needs to be skipped and thus, half of the detected points will be retrieved, and so on. If the parameter is not specified, 0 is considered.
+* @param {boolean} transformPoints A flag to specify if the points should be transformed in the native side or not. If the points are not transformed in the native side, they should be transformed in the JS side (in a vertex shader for example).
 */
 THREE.WebAR.VRPointCloud.prototype.update = function(updateBufferGeometry, pointsToSkip, transformPoints) {
   if (!this._vrDisplay) return;
@@ -171,6 +180,10 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay,
   fallbackVideoPath) {
   var video;
   var geometry = new THREE.BufferGeometry();
+
+  if (THREE.WebAR._isARKit(vrDisplay)) {
+    return new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
+  }
 
   // The camera or video and the texture coordinates may vary depending if the vrDisplay has the see through camera.
   if (vrDisplay) {
@@ -314,6 +327,7 @@ THREE.WebAR.createVRSeeThroughCameraMesh = function(vrDisplay,
 * @param {THREE.Mesh} cameraMesh The ThreeJS mesh that represents the camera quad that needs to be updated/rotated depending on the device and camera orientations. This instance should have been created by calling THREE.WebAR.createVRSeeThroughCameraMesh.
 */
 THREE.WebAR.updateCameraMeshOrientation = function(vrDisplay, cameraMesh) {
+  if (THREE.WebAR._isARKit(vrDisplay)) return;
   var textureCoordIndex = THREE.WebAR.getIndexFromScreenAndSeeThroughCameraOrientations(vrDisplay);
   if (textureCoordIndex != cameraMesh.geometry.WebAR_textureCoordIndex) {
     var uvs = cameraMesh.geometry.getAttribute("uv");
@@ -354,6 +368,14 @@ THREE.WebAR.resizeVRSeeThroughCamera = function(vrDisplay, camera) {
     var windowWidthBiggerThanHeight = window.innerWidth > window.innerHeight;
     var seeThroughCamera = vrDisplay.getSeeThroughCamera();
     if (seeThroughCamera) {
+
+      // In the case of WebARKit, the seeThroughCamera provides the projection matrix.
+      // TODO: The near-far planes are not the ones specified by the user :(
+      if (THREE.WebAR._isARKit(vrDisplay)) {
+        camera.projectionMatrix.fromArray(seeThroughCamera.projectionMatrix);
+        return;
+      }
+
       var cameraWidthBiggerThanHeight = 
         seeThroughCamera.width > seeThroughCamera.height;
       var swapWidthAndHeight = 
@@ -446,7 +468,7 @@ THREE.WebAR.rotateObject3DWithPickingPlane = function(plane, object3d) {
   if (plane instanceof THREE.Vector3 || plane instanceof THREE.Vector4) {
     THREE.WebAR._planeNormal.set(plane.x, plane.y, plane.z);
   }
-  else if (plane instanceof Float32Array) {
+  else if (plane instanceof Float32Array || plane.constructor === Array) {
     THREE.WebAR._planeNormal.set(plane[0], plane[1], plane[2]);
   }
   else {
@@ -483,7 +505,7 @@ THREE.WebAR.positionObject3DWithPickingPoint = function(point, object3d) {
   if (point instanceof THREE.Vector3 || point instanceof THREE.Vector4) {
     object3d.position.set(point.x, point.y, point.z);
   }
-  else if (point instanceof Float32Array) {
+  else if (point instanceof Float32Array || point.constructor === Array) {
     object3d.position.set(point[0], point[1], point[2]);
   }
   else {
