@@ -130,8 +130,10 @@ function update()
 {
   if( arDisplay ) {
     arDisplay.getFrameData(arFrameData);
+    arDisplay.hitTest(0.5, 0.5);
   }
   arControls.update();
+
   camera.projectionMatrix.fromArray( arFrameData.projectionMatrix );
   renderer.clearDepth();
   renderer.render( scene, camera );
