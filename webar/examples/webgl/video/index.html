@@ -342,6 +342,8 @@
   * Render the video quad/texture.
   */
   VideoQuad.prototype.render = function(gl) {
+    if (vrDisplay) vrDisplay.hitTest(0.5, 0.5);
+    
     gl.useProgram(this.program);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
