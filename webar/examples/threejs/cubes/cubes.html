@@ -145,8 +145,16 @@ function onWindowResize()
   renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
+var counter = 0;
+
 function onClick()
 {
+  counter++;
+  if (counter > 10) {
+    arDisplay.resetPose();
+    counter = 0;
+  }
+
   if( arFrameData ) {
     var pose = arFrameData.pose;
 
