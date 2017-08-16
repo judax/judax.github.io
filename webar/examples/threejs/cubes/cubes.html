@@ -134,7 +134,7 @@ function update()
   }
   arControls.update();
 
-  camera.projectionMatrix.fromArray( arFrameData.projectionMatrix );
+  camera.projectionMatrix.fromArray( arFrameData.leftProjectionMatrix );
   renderer.clearDepth();
   renderer.render( scene, camera );
   requestAnimationFrame( update );
