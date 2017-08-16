@@ -189,7 +189,7 @@
     this.vrDisplay = vrDisplay;
 
     if (this.vrDisplay) {
-      this.seeThroughCamera = vrDisplay.getSeeThroughCamera();
+      this.passThroughCamera = vrDisplay.getPassThroughCamera();
       // Use the fragment shader that uses the External Texture OES extension.
       this.program = getProgram(gl, "video-shader-vs", "video-shader-fs-oes");
     }
@@ -197,12 +197,12 @@
       // If there is no VRDisplay, fallback to a video. This feature is not
       // meant to be perfect but a way to run this example on a non WebAR
       // enable browser.
-      this.seeThroughCamera = document.createElement("video");
-      // this.seeThroughCamera.src = "../resources/videos/sintel.webm";
-      this.seeThroughCamera.src = "../../resources/videos/firefox.ogv";
-      this.seeThroughCamera.play();
+      this.passThroughCamera = document.createElement("video");
+      // this.passThroughCamera.src = "../resources/videos/sintel.webm";
+      this.passThroughCamera.src = "../../resources/videos/firefox.ogv";
+      this.passThroughCamera.play();
       // As we rely on having the VRSeeThroughCamera orientation, polyfill it.
-      this.seeThroughCamera.orientation = 0;
+      this.passThroughCamera.orientation = 0;
       // Use the regular fragment shader.
       this.program = getProgram(gl, "video-shader-vs", "video-shader-fs");
     }
@@ -235,10 +235,10 @@
     // orientations of the device depending if there is a VRDisplay or not
     var textureCoords = null;
     if (this.vrDisplay) {
-      var u = this.seeThroughCamera.width / 
-        this.seeThroughCamera.textureWidth;
-      var v = this.seeThroughCamera.height / 
-        this.seeThroughCamera.textureHeight;
+      var u = this.passThroughCamera.width / 
+        this.passThroughCamera.textureWidth;
+      var v = this.passThroughCamera.height / 
+        this.passThroughCamera.textureHeight;
       textureCoords = [
         [ 
           0.0, 0.0,
@@ -302,7 +302,7 @@
     // Store the current combined orientation to check if it has changed
     // during the update calls and use the correct texture coordinates.
     this.combinedOrientation = combineOrientations(screen.orientation.angle, 
-      this.seeThroughCamera.orientation);
+      this.passThroughCamera.orientation);
 
     gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[
       this.combinedOrientation], gl.STATIC_DRAW);
@@ -355,7 +355,7 @@
     // orientation of the VRSeeThroughCamera to determine the correct UV
     // coordinates to be used.
     var combinedOrientation = combineOrientations(screen.orientation.angle,
-      this.seeThroughCamera.orientation);
+      this.passThroughCamera.orientation);
     if (combinedOrientation !== this.combinedOrientation) {
       this.combinedOrientation = combinedOrientation;
       gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[
@@ -369,7 +369,7 @@
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     // Update the content of the texture in every frame.
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, 
-      this.seeThroughCamera );
+      this.passThroughCamera );
     gl.uniform1i(this.samplerUniform, 0);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
@@ -491,7 +491,7 @@
     {
       alert("No navigator.getVRDisplays. Falling back to a video.");
       videoQuad = new VideoQuad(gl, null);
-      videoQuad.seeThroughCamera.addEventListener("canplaythrough",
+      videoQuad.passThroughCamera.addEventListener("canplaythrough",
         readyCallback);
     }
   }
