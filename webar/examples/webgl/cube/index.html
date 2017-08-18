@@ -126,6 +126,66 @@
   }
 </script>
 <script>
+  /** 
+  * Creates and load a shader.
+  */
+  function getShader(gl, id) {
+    var shaderScript = document.getElementById(id);
+    if (!shaderScript) {
+      return null;
+    }
+
+    var str = "";
+    var k = shaderScript.firstChild;
+    while (k) {
+      if (k.nodeType == 3) {
+        str += k.textContent;
+      }
+      k = k.nextSibling;
+    }
+
+    var shader;
+    if (shaderScript.type == "x-shader/x-fragment") {
+      shader = gl.createShader(gl.FRAGMENT_SHADER);
+    } else if (shaderScript.type == "x-shader/x-vertex") {
+      shader = gl.createShader(gl.VERTEX_SHADER);
+    } else {
+      return null;
+    }
+
+    gl.shaderSource(shader, str);
+    gl.compileShader(shader);
+
+    var result = gl.getShaderParameter(shader, gl.COMPILE_STATUS)
+    if (!result) {
+      alert(gl.getShaderInfoLog(shader));
+      return null;
+    }
+
+    return shader;
+  }
+
+  function getProgram(gl, vs, fs) {
+    var vertexShader = getShader(gl, vs);
+    var fragmentShader = getShader(gl, fs);
+    if (!fragmentShader) {
+      return null;
+    }
+
+    var shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+    var result = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
+    // alert("getProgramParameter result = " + result);
+    if (!result) {
+      alert("Could not initialise shaders");
+    }
+
+    return shaderProgram;
+  }
+
   /**
   * Calculate the correct orientation depending on the device and the camera
   * orientations.
