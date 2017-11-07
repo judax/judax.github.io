@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<title>WebVR simple example</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, 
+    minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<style>
+body {
+  font-family: monospace;
+  margin: 0;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  -webkit-user-select: none;
+  user-select: none;
+}
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+</style>
+</head>
+
+<body>
+</body>
+
+<!-- three.js library -->
+<script src="libs/three/three.js"></script>
+
+<!-- VRControls.js applies the WebVR transformations to a three.js camera 
+object. -->
+<script src="libs/three/VRControls.js"></script>
+
+<!-- VREffect.js handles stereo camera setup and rendering.  -->
+<script src="libs/three/VREffect.js"></script>
+
+<!-- DaydreamController.js handles the gamepad API customized for the 
+Daydream controller.  -->
+<script src="libs/three/DaydreamController.js"></script>
+
+<!-- A polyfill for the WebVR API.  -->
+<script src="libs/webvr-polyfill/webvr-polyfill.js"></script>
+
+<!-- A helper library to handle an enter VR button.  -->
+<script src="libs/webvr-ui/webvr-ui.js"></script>
+
+<script>
+
+var vrDisplay;
+
+// Note that the WebVR polyfill will enable that at least there is one display 
+navigator.getVRDisplays().then(function(displays) {
+  if (displays.length > 0) {
+    vrDisplay = displays[0];
+    init();
+    // Start drawing.
+    vrDisplay.requestAnimationFrame(updateAndRender);
+  }
+});
+
+var renderer;
+var scene;
+var camera;
+var model;
+var vrControls;
+var vrEffect;
+var models = [];
+
+var daydreamController;
+var gamepadButtonLastPressed = false; // Flag to make sure there is only 1 click
+
+function init() {
+  // Setup three.js WebGL renderer. Note: Antialiasing is a big performance hit.
+  // Only enable it if you actually need to.
+  // Enable alpha and disable auto clear. The rendering loop wiill handle it.
+  renderer = new THREE.WebGLRenderer({antialias: false});
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.autoClear = false;
+
+  // Append the canvas element created by the renderer to document body element.
+  document.body.appendChild(renderer.domElement);
+
+  // Create a three.js scene.
+  scene = new THREE.Scene();
+
+  // Create a three.js camera only if a camera does not already exist. Check
+  // the initAR function for futher information.
+  camera = new THREE.PerspectiveCamera(75, 
+      window.innerWidth / window.innerHeight, 0.01, 100);
+
+  // Apply VR headset positional data to camera.
+  vrControls = new THREE.VRControls(camera);
+
+  // VREffect handles both monoscopic and stereoscopic rendering depending on
+  // the VRDisplay state (presentation mode was requested or not)
+  vrEffect = new THREE.VREffect(renderer);
+  vrEffect.setSize(window.innerWidth, window.innerHeight);
+
+  // Create 3D objects.
+  var geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+  var material = new THREE.MeshNormalMaterial();
+  model = new THREE.Mesh(geometry, material);
+
+  // Position the model mesh away in front of the camera that is in (0, 0, 0)
+  model.position.z = -1;
+
+  // Add the model mesh to the three.js scene
+  scene.add(model);
+  models.push(model);
+
+  // Resize the WebGL canvas when we resize and also when we change modes.
+  window.addEventListener('resize', onResize);
+  window.addEventListener('vrdisplaypresentchange', onVRDisplayPresentChange);  
+
+  // Allow to spawn a model using the spacebar
+  window.addEventListener("keydown", function(keyEvent) {
+    if (keyEvent.keyCode === 0 || keyEvent.keyCode === 32) {
+      spawnModelInFrontOfCamera();
+    }
+  });  
+
+  // Allow to spawn a model using touch.
+  window.addEventListener("touchstart", function() {
+    spawnModelInFrontOfCamera();
+  });
+
+  // Append the enter webvr button
+  var options = {}
+  var enterVR = new webvrui.EnterVRButton(renderer.domElement, options);
+  document.body.appendChild(enterVR.domElement);
+
+  // Create the Daydream gamepad controller.
+  daydreamController = new THREE.DaydreamController();  
+}
+
+// Request animation frame loop function
+var lastRenderTimestamp = 0;
+
+function updateAndRender(timestamp) {
+  // Clears color
+  renderer.clearColor();
+
+  // If there is a gamepad, update it as the gamepad API is poll based.
+  if (daydreamController) {
+    daydreamController.update();
+    var gamepad = daydreamController.getGamepad();
+    if (gamepad) {
+      if (gamepad.buttons[0].pressed) {
+        if (!gamepadButtonLastPressed) {
+          spawnModelInFrontOfCamera();
+          gamepadButtonLastPressed = true;
+        }
+      }
+      else {
+        gamepadButtonLastPressed = false;
+      }
+    }
+  }
+
+  if (lastRenderTimestamp === 0) {
+    lastRenderTimestamp = delta;
+  }
+  var delta = Math.min(timestamp - lastRenderTimestamp, 500);
+  lastRenderTimestamp = timestamp;
+
+  // Apply rotation to the model
+  for (var i = 0; i < models.length; i++) {
+    var model = models[i];
+    model.rotation.y += delta * 0.0006;
+  }
+
+  // Update VR headset position and apply to camera.
+  vrControls.update();
+
+  // Render the scene.
+  renderer.clearDepth();
+  vrEffect.render(scene, camera);
+
+  // Keep looping.
+  vrDisplay.requestAnimationFrame(updateAndRender);
+}
+
+// Avoid garbage collection.
+var cameraDirection = new THREE.Vector3();
+
+function spawnModelInFrontOfCamera() {
+  // Get the direction the camera is looking to
+  camera.updateMatrix();
+  cameraDirection.set(
+      camera.matrix.elements[ 8],
+      camera.matrix.elements[ 9],
+      camera.matrix.elements[10]);
+  // The direction needs to be negated as 3D cameras look in the -Z direction.
+  cameraDirection.negate();
+
+  // Scale the camera direction to match the distance where the model will
+  // be placed
+  cameraDirection.multiplyScalar(1.0);
+
+  // Clone the model and orient and position it correctly
+  var newModel = model.clone();
+  newModel.quaternion.copy(camera.quaternion);
+  newModel.position.copy(camera.position).add(cameraDirection);
+
+  // Add the model to the scene and to the list of models
+  scene.add(newModel);
+  models.push(newModel);
+}
+
+function onResize() {
+  vrEffect.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+}
+
+function onVRDisplayPresentChange() {
+  onResize();
+}
+
+</script>
+
+</html>
