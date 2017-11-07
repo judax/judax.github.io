@@ -91,8 +91,7 @@ function init() {
   // Create a three.js scene.
   scene = new THREE.Scene();
 
-  // Create a three.js camera only if a camera does not already exist. Check
-  // the initAR function for futher information.
+  // Create the perspective camera
   camera = new THREE.PerspectiveCamera(75, 
       window.innerWidth / window.innerHeight, 0.01, 100);
 
@@ -118,7 +117,7 @@ function init() {
 
   // Resize the WebGL canvas when we resize and also when we change modes.
   window.addEventListener('resize', onResize);
-  window.addEventListener('vrdisplaypresentchange', onVRDisplayPresentChange);  
+  window.addEventListener('vrdisplaypresentchange', onResize);  
 
   // Allow to spawn a model using the spacebar
   window.addEventListener("keydown", function(keyEvent) {
@@ -165,8 +164,9 @@ function updateAndRender(timestamp) {
     }
   }
 
+  // Calculate the delta between render frames
   if (lastRenderTimestamp === 0) {
-    lastRenderTimestamp = delta;
+    lastRenderTimestamp = timestamp;
   }
   var delta = Math.min(timestamp - lastRenderTimestamp, 500);
   lastRenderTimestamp = timestamp;
@@ -219,10 +219,6 @@ function onResize() {
   vrEffect.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-}
-
-function onVRDisplayPresentChange() {
-  onResize();
 }
 
 </script>
