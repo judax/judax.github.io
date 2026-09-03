@@ -1,0 +1,3682 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Adrian's Reading Buddy</title>
+    <style>
+      /* ==========================================================================
+       EASILY CONFIGURABLE PARAMETERS
+       Change these CSS variables to customize colors, fonts, and sizes.
+       ========================================================================== */
+      :root {
+        /* Colors */
+        --bg-color: #ffffff; /* Page background (default: pure white) */
+        --text-color: #000000; /* General text color (default: black) */
+        --word-color: #000000; /* Main focused word letters color (default: black) */
+        --context-word-color: #71717a; /* Context words color (default: lighter gray) */
+        --context-opacity: 0.5; /* Context words opacity (0.0 to 1.0) */
+        --context-scale: 0.72; /* Scale factor for context words */
+        --accent-color: #2563eb; /* Primary accent color for UI elements */
+        --accent-hover: #1d4ed8; /* Accent button hover color */
+        --card-bg: #fafafa; /* Story card background color */
+        --card-border: #e4e4e7; /* Story card border color */
+        --card-hover-border: #2563eb; /* Story card hover border */
+        --button-bg: #f4f4f5; /* Secondary button background */
+        --button-hover-bg: #e4e4e7; /* Secondary button hover */
+        --button-text: #18181b; /* Secondary button text */
+
+        /* Typography */
+        --font-family:
+          system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "OpenDyslexic",
+          "Comic Sans MS", sans-serif;
+        --current-word-size: clamp(2.4rem, 6.5vw, 4.5rem); /* Main focused word font size */
+        --letter-spacing: 0.05em; /* Dyslexia-friendly letter spacing */
+        --word-spacing: 0.15em; /* Dyslexia-friendly word spacing */
+
+        /* Transition & Animation Parameters */
+        --transition-duration: 320ms; /* Word slide & fade duration */
+        --transition-easing: cubic-bezier(0.22, 1, 0.36, 1); /* Deceleration curve */
+      }
+
+      /* ==========================================================================
+       RESET & BASE STYLES
+       ========================================================================== */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: var(--font-family);
+        overflow: hidden;
+        touch-action: manipulation;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        height: 100dvh;
+      }
+
+      /* Screen containers: STRICT isolation between Home, Story, and Add screens */
+      .screen {
+        display: none !important;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .screen.active {
+        display: flex !important;
+      }
+
+      /* ==========================================================================
+       HOME / MAIN SCREEN: Story Selection ONLY
+       ========================================================================== */
+      #home-screen {
+        padding: 2.5rem 1.5rem 3.5rem 1.5rem;
+        max-width: 920px;
+        margin: 0 auto;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        box-sizing: border-box;
+      }
+
+      .home-top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 1.25rem;
+      }
+
+      .home-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding-top: 0;
+      }
+
+      .app-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background-color: #eff6ff;
+        color: var(--accent-color);
+        padding: 0.4rem 0.95rem;
+        border-radius: 9999px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 0.85rem;
+      }
+
+      .app-title {
+        font-size: clamp(2.3rem, 5.5vw, 3.4rem);
+        font-weight: 800;
+        letter-spacing: var(--letter-spacing);
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .app-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+        color: #52525b;
+        max-width: 560px;
+        margin: 0 auto;
+        line-height: 1.5;
+      }
+
+      .stories-section-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin-bottom: 1.25rem;
+        color: #27272a;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      /* Scrollable Story List */
+      .story-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.25rem;
+        width: 100%;
+        padding-bottom: 2rem;
+      }
+
+      .story-card {
+        background: var(--card-bg);
+        border: 2px solid var(--card-border);
+        border-radius: 18px;
+        padding: 1.5rem;
+        cursor: pointer;
+        text-align: left;
+        transition:
+          transform 0.15s ease,
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1.2rem;
+        font-family: inherit;
+      }
+
+      .story-card:hover,
+      .story-card:focus-visible {
+        border-color: var(--card-hover-border);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+        outline: none;
+      }
+
+      .story-card:active {
+        transform: translateY(0);
+      }
+
+      .story-card-top {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .story-card-header-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .story-card-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--text-color);
+        line-height: 1.3;
+        letter-spacing: var(--letter-spacing);
+        word-break: break-word;
+      }
+
+      .story-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        flex-shrink: 0;
+      }
+
+      .story-action-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        font-size: 1.15rem;
+        cursor: pointer;
+        color: #a1a1aa;
+        padding: 0.25rem 0.4rem;
+        border-radius: 8px;
+        line-height: 1;
+        transition: all 0.15s ease;
+        opacity: 0.55;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .story-card:hover .story-action-btn,
+      .story-card:focus-within .story-action-btn {
+        opacity: 1;
+      }
+
+      .story-action-btn.btn-edit:hover {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+        color: var(--accent-color);
+        transform: scale(1.1);
+      }
+
+      .story-action-btn.btn-delete:hover {
+        background: #fee2e2;
+        border-color: #fca5a5;
+        color: #ef4444;
+        transform: scale(1.1);
+      }
+
+      .story-action-btn:active {
+        transform: scale(0.95);
+      }
+
+      .story-card-snippet {
+        font-size: 0.95rem;
+        color: #71717a;
+        line-height: 1.45;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        word-break: break-word;
+      }
+
+      .story-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #e4e4e7;
+        padding-top: 0.85rem;
+        font-size: 0.88rem;
+        color: #71717a;
+        font-weight: 500;
+      }
+
+      .story-card-btn {
+        color: var(--accent-color);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      /* Add Story Card (First card in the grid) */
+      .add-story-card {
+        background: #f8fafc;
+        border: 2px dashed #93c5fd;
+      }
+
+      .add-story-card:hover,
+      .add-story-card:focus-visible {
+        background: #eff6ff;
+        border-color: var(--accent-color);
+        border-style: solid;
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+      }
+
+      .add-story-icon-wrap {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #dbeafe;
+        color: var(--accent-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+        transition: all 0.15s ease;
+      }
+
+      .add-story-card:hover .add-story-icon-wrap {
+        background: var(--accent-color);
+        color: #ffffff;
+        transform: scale(1.1);
+      }
+
+      .add-story-badge {
+        background: #dbeafe;
+        color: var(--accent-color);
+        font-weight: 700;
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+        font-size: 0.78rem;
+      }
+
+      /* ==========================================================================
+       ADD STORY SCREEN: Create / Paste New Story
+       ========================================================================== */
+      #add-story-screen {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        overflow-y: auto;
+        background-color: var(--bg-color);
+        box-sizing: border-box;
+      }
+
+      .add-story-container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 2.2rem 1.5rem 3.5rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+        box-sizing: border-box;
+      }
+
+      .add-story-intro {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .add-story-heading {
+        font-size: clamp(1.4rem, 3.5vw, 1.85rem);
+        font-weight: 800;
+        color: var(--text-color);
+        letter-spacing: var(--letter-spacing);
+      }
+
+      .add-story-subheading {
+        font-size: 1.05rem;
+        color: #52525b;
+        line-height: 1.5;
+      }
+
+      .add-story-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+
+      .form-label {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-color);
+        letter-spacing: var(--letter-spacing);
+      }
+
+      .form-word-badge {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #71717a;
+        background: #f4f4f5;
+        padding: 0.2rem 0.65rem;
+        border-radius: 9999px;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 0.9rem 1.15rem;
+        font-size: 1.15rem;
+        font-family: inherit;
+        border: 2px solid #e4e4e7;
+        border-radius: 14px;
+        color: var(--text-color);
+        background: #ffffff;
+        outline: none;
+        transition:
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+        box-sizing: border-box;
+      }
+
+      .form-input:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      }
+
+      .form-textarea {
+        width: 100%;
+        padding: 1rem 1.15rem;
+        font-size: 1.1rem;
+        font-family: inherit;
+        border: 2px solid #e4e4e7;
+        border-radius: 14px;
+        color: var(--text-color);
+        background: #ffffff;
+        line-height: 1.6;
+        resize: vertical;
+        min-height: 200px;
+        outline: none;
+        transition:
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+        box-sizing: border-box;
+      }
+
+      .form-textarea:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      }
+
+      .form-error {
+        display: none;
+        color: #b91c1c;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 12px;
+        padding: 0.85rem 1.15rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      /* ==========================================================================
+       STORY / READING SCREEN
+       ========================================================================== */
+      #story-screen {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        justify-content: space-between;
+        overflow: hidden;
+      }
+
+      /* Top navigation bar */
+      .story-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f4f4f5;
+        background-color: var(--bg-color);
+        z-index: 20;
+        gap: 1rem;
+      }
+
+      .story-title-header {
+        font-size: clamp(1.1rem, 3vw, 1.4rem);
+        font-weight: 700;
+        letter-spacing: var(--letter-spacing);
+        text-align: center;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0 0.5rem;
+      }
+
+      .back-to-home-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background-color: var(--button-bg);
+        color: var(--button-text);
+        border: 1px solid #e4e4e7;
+        border-radius: 12px;
+        padding: 0.6rem 1.1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition:
+          background-color 0.15s ease,
+          border-color 0.15s ease;
+        white-space: nowrap;
+      }
+
+      .back-to-home-btn:hover {
+        background-color: var(--button-hover-bg);
+        border-color: #d4d4d8;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .icon-action-btn {
+        background: var(--button-bg);
+        border: 1px solid #e4e4e7;
+        border-radius: 10px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.1rem;
+        color: #3f3f46;
+        transition: background 0.15s;
+      }
+
+      .icon-action-btn:hover {
+        background: var(--button-hover-bg);
+      }
+
+      /* Progress bar */
+      .progress-bar-container {
+        width: 100%;
+        height: 4px;
+        background-color: #f4f4f5;
+        position: relative;
+        z-index: 20;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        background-color: var(--accent-color);
+        width: 0%;
+        transition: width 0.25s ease-out;
+      }
+
+      /* ==========================================================================
+       READING VIEWPORT & WORD TRACK
+       ========================================================================== */
+      .reading-viewport {
+        flex: 1;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 1.5rem 1rem;
+        box-sizing: border-box;
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: default;
+        overflow: hidden;
+      }
+
+      /* Left and right screen half click/touch zones */
+      .screen-touch-zone {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        z-index: 5;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.15s ease;
+      }
+
+      .touch-zone-left {
+        left: 0;
+        justify-content: flex-start;
+        padding-left: 1rem;
+      }
+
+      .touch-zone-right {
+        right: 0;
+        justify-content: flex-end;
+        padding-right: 1rem;
+      }
+
+      /* Subtle touch zone hint chevrons */
+      .zone-chevron {
+        color: #a1a1aa;
+        font-size: 2.2rem;
+        opacity: 0.18;
+        pointer-events: none;
+        transition:
+          opacity 0.15s ease,
+          transform 0.15s ease;
+      }
+
+      .touch-zone-left:hover .zone-chevron {
+        opacity: 0.45;
+        transform: translateX(-4px);
+      }
+
+      .touch-zone-right:hover .zone-chevron {
+        opacity: 0.45;
+        transform: translateX(4px);
+      }
+
+      /* Continuous Ribbon Reading Track Container */
+      .reading-track-wrapper {
+        width: 100%;
+        position: relative;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        height: 180px;
+        overflow: visible;
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      .reading-track {
+        display: inline-flex;
+        align-items: baseline;
+        gap: clamp(1.2rem, 3.5vw, 2.2rem);
+        white-space: nowrap;
+        position: absolute;
+        left: 0;
+        will-change: transform;
+      }
+
+      /* Individual Word Items in the Track */
+      .track-word {
+        display: inline-block;
+        font-size: var(--current-word-size);
+        letter-spacing: var(--letter-spacing);
+        line-height: 1.15;
+        white-space: nowrap;
+        transform-origin: center 75%;
+        transition:
+          transform var(--transition-duration) var(--transition-easing),
+          color var(--transition-duration) var(--transition-easing),
+          opacity var(--transition-duration) var(--transition-easing);
+        will-change: transform, opacity, color;
+        user-select: none;
+      }
+
+      /* Current focused word (Center) */
+      .track-word.is-current {
+        font-weight: 800;
+        color: var(--word-color, var(--text-color));
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+        cursor: pointer;
+        position: relative;
+        z-index: 15;
+        border-radius: 12px;
+        padding: 0.15rem 0.6rem;
+        margin: -0.15rem -0.6rem;
+        transition:
+          transform var(--transition-duration) var(--transition-easing),
+          color var(--transition-duration) var(--transition-easing),
+          opacity var(--transition-duration) var(--transition-easing),
+          background-color 0.2s ease;
+      }
+
+      @media (hover: hover) {
+        .track-word.is-current:not(.in-phonics):hover {
+          background-color: rgba(37, 99, 235, 0.08);
+          transform: scale(1.04);
+        }
+      }
+
+      /* Phonics Mode: Scaled Up Center Word with Letter-by-Letter Progressive Color Fill */
+      .track-word.is-current.in-phonics {
+        --phonics-fill-percent: 0%;
+        --phonics-fill-color: var(--accent-color);
+        cursor: pointer;
+        padding: 0 !important;
+        margin: 0 !important;
+        letter-spacing: 0.12em;
+        background-image: linear-gradient(
+          to right,
+          var(--phonics-fill-color) 0%,
+          var(--phonics-fill-color) var(--phonics-fill-percent, 0%),
+          var(--word-color, var(--text-color)) var(--phonics-fill-percent, 0%),
+          var(--word-color, var(--text-color)) 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        transform: scale(1.3);
+        transform-origin: center center;
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        will-change: transform;
+      }
+
+      /* Celebration pulse when phonics slider reaches 100% */
+      .track-word.is-current.in-phonics.phonics-complete {
+        animation: phonicsCelebrationPulse 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      @keyframes phonicsCelebrationPulse {
+        0% {
+          transform: scale(1.3);
+        }
+        35% {
+          transform: scale(1.44);
+          filter: drop-shadow(0 4px 18px rgba(37, 99, 235, 0.5));
+        }
+        70% {
+          transform: scale(1.26);
+        }
+        100% {
+          transform: scale(1.3);
+          filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.3));
+        }
+      }
+
+      /* When Phonics Mode is Active: Disappear Context Words & Hide Non-Phonics Controls */
+      .reading-viewport.is-phonics-active .track-word.is-context {
+        opacity: 0 !important;
+        transform: scale(0.5) !important;
+        pointer-events: none !important;
+        transition:
+          opacity 0.35s ease,
+          transform 0.35s ease !important;
+      }
+
+      .reading-viewport.is-phonics-active .speech-controls-container {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-14px);
+        pointer-events: none;
+        transition:
+          opacity 0.25s ease,
+          transform 0.25s ease;
+      }
+
+      .reading-viewport.is-phonics-active .screen-touch-zone {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #story-screen.is-phonics-active .story-footer {
+        opacity: 0;
+        transform: translateY(20px);
+        pointer-events: none;
+        transition:
+          opacity 0.25s ease,
+          transform 0.25s ease;
+      }
+
+      /* Context words (1-2 before and 1-2 after) */
+      .track-word.is-context {
+        font-weight: 600;
+        color: var(--context-word-color);
+        opacity: var(--context-opacity);
+        transform: scale(var(--context-scale));
+      }
+
+      /* Hidden words (outside context window) */
+      .track-word.is-hidden {
+        opacity: 0;
+        transform: scale(var(--context-scale));
+        pointer-events: none;
+      }
+
+      /* ==========================================================================
+       PHONICS PRACTICE SLIDER MODE UI
+       ========================================================================== */
+      /* Close Button (Positioned close to the highlighted word, just '✕') */
+      .phonics-close-btn {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 2px solid #e4e4e7;
+        color: #52525b;
+        font-size: 1.05rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.8);
+        transition:
+          opacity 0.25s ease,
+          transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+          background-color 0.15s ease,
+          color 0.15s ease,
+          border-color 0.15s ease;
+        z-index: 40;
+        font-family: inherit;
+        padding: 0;
+        line-height: 1;
+      }
+
+      .reading-viewport.is-phonics-active .phonics-close-btn {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scale(1);
+      }
+
+      .phonics-close-btn:hover {
+        background: #f4f4f5;
+        color: #18181b;
+        border-color: #cbd5e1;
+        transform: scale(1.1);
+      }
+
+      .phonics-close-btn:active {
+        transform: scale(0.92);
+      }
+
+      /* Phonics Container (Underneath and completely aligned with the word letters) */
+      .phonics-container {
+        position: absolute;
+        z-index: 30;
+        pointer-events: none;
+        opacity: 0;
+        transition:
+          opacity 0.3s ease,
+          transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+      }
+
+      .reading-viewport.is-phonics-active .phonics-container {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* White Pill Slider Track Container (Aligned with word from start to finish) */
+      .phonics-track-container {
+        position: relative;
+        width: 100%;
+        min-width: 60px;
+        height: 24px;
+        background: #ffffff;
+        border: 2.5px solid #1e1b4b;
+        border-radius: 9999px;
+        box-shadow: 0 4px 14px rgba(30, 27, 75, 0.08);
+        overflow: hidden;
+        cursor: pointer;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Continuous fill bar inside the track */
+      .phonics-track-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #3b82f6, #4f46e5);
+        border-radius: 9999px;
+        opacity: 0.25;
+        pointer-events: none;
+        transition: width 0.04s linear;
+      }
+
+      /* Letter Segments Row (Sound buttons / sound bars matching each letter) */
+      .phonics-segments-row {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 4px;
+        box-sizing: border-box;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      /* Individual letter pill segment */
+      .phonics-segment {
+        flex: 1;
+        height: 10px;
+        border-radius: 9999px;
+        margin: 0 2.5px;
+        background-color: #e0e7ff;
+        transition:
+          background-color 0.15s ease,
+          transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .phonics-segment.is-active {
+        background-color: #4f46e5;
+        transform: scaleY(1.15);
+      }
+
+      /* Last segment: vibrant pink/coral dot as shown in the reference image */
+      .phonics-segment-dot {
+        flex: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin: 0 3px;
+        background-color: #fecdd3;
+        transition:
+          background-color 0.15s ease,
+          transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .phonics-segment-dot.is-active {
+        background-color: #f43f5e;
+        transform: scale(1.25);
+        box-shadow: 0 0 8px rgba(244, 63, 94, 0.5);
+      }
+
+      /* Grabbable Tab-Like Handle */
+      .phonics-handle {
+        position: absolute;
+        top: 22px;
+        left: 0%;
+        transform: translateX(-50%);
+        width: 46px;
+        height: 40px;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        z-index: 5;
+        filter: drop-shadow(0 4px 10px rgba(30, 27, 75, 0.2));
+        transition:
+          transform 0.15s ease,
+          filter 0.15s ease;
+        outline: none;
+      }
+
+      .phonics-handle:hover {
+        transform: translateX(-50%) scale(1.06);
+        filter: drop-shadow(0 6px 14px rgba(30, 27, 75, 0.28));
+      }
+
+      .phonics-handle.is-dragging,
+      .phonics-handle:active {
+        cursor: grabbing;
+        transform: translateX(-50%) scale(1.1);
+        filter: drop-shadow(0 8px 18px rgba(30, 27, 75, 0.35));
+      }
+
+      .phonics-handle:focus-visible {
+        filter: drop-shadow(0 0 0 3px rgba(79, 70, 229, 0.4))
+          drop-shadow(0 4px 10px rgba(30, 27, 75, 0.2));
+      }
+
+      .phonics-handle-svg {
+        display: block;
+        width: 46px;
+        height: 40px;
+        pointer-events: none;
+      }
+
+      /* ==========================================================================
+       SPEECH & AUTO-READ CONTROL GROUP
+       Bigger button with integrated auto-read toggle.
+       ========================================================================== */
+      .speech-controls-container {
+        position: absolute;
+        top: clamp(1.5rem, calc(50% - 145px), 4rem);
+        left: 50%;
+        transform: translateX(-50%);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: #ffffff;
+        border: 2px solid #e4e4e7;
+        border-radius: 9999px;
+        padding: 0.35rem 0.45rem;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        z-index: 25;
+        pointer-events: auto;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      /* Manual Read Button (Bigger, prominent, dyslexia-friendly) */
+      .read-word-btn {
+        background: #eff6ff;
+        border: 1.5px solid #bfdbfe;
+        border-radius: 9999px;
+        padding: 0.55rem 1.25rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition:
+          background 0.15s ease,
+          transform 0.1s ease,
+          border-color 0.15s ease;
+        font-family: inherit;
+      }
+
+      .read-word-btn:hover {
+        background: #dbeafe;
+        border-color: #93c5fd;
+        transform: translateY(-1px);
+      }
+
+      .read-word-btn:active {
+        transform: translateY(0);
+      }
+
+      .read-word-icon {
+        font-size: 1.25rem;
+        line-height: 1;
+      }
+
+      /* The Auto-read Toggle Label & Switch */
+      .auto-read-toggle-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.5rem 0.95rem;
+        border-radius: 9999px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #52525b;
+        user-select: none;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+
+      .auto-read-toggle-label:hover {
+        background: #f4f4f5;
+        color: #18181b;
+      }
+
+      .speech-controls-container.auto-active {
+        border-color: #bfdbfe;
+      }
+
+      .speech-controls-container.auto-active .auto-read-toggle-label {
+        color: var(--accent-color);
+        font-weight: 700;
+      }
+
+      /* Toggle switch slider */
+      .toggle-switch-track {
+        width: 38px;
+        height: 22px;
+        background-color: #d4d4d8;
+        border-radius: 9999px;
+        position: relative;
+        transition: background-color 0.2s ease;
+        flex-shrink: 0;
+        display: inline-block;
+      }
+
+      .toggle-switch-thumb {
+        width: 18px;
+        height: 18px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+      }
+
+      .auto-read-checkbox {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+      }
+
+      .auto-read-checkbox:checked + .toggle-switch-track {
+        background-color: var(--accent-color);
+      }
+
+      .auto-read-checkbox:checked + .toggle-switch-track .toggle-switch-thumb {
+        transform: translateX(16px);
+      }
+
+      /* Completed Story Message */
+      .completion-container {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 1.25rem;
+        padding: 2rem;
+        z-index: 30;
+        pointer-events: auto;
+      }
+
+      .completion-container.active {
+        display: flex;
+      }
+
+      .completion-emoji {
+        font-size: 4.5rem;
+        animation: bounce 0.6s infinite alternate ease-in-out;
+      }
+
+      @keyframes bounce {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-10px);
+        }
+      }
+
+      .completion-title {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 800;
+        color: var(--text-color);
+      }
+
+      .completion-text {
+        font-size: 1.15rem;
+        color: #52525b;
+        max-width: 450px;
+      }
+
+      .completion-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      /* ==========================================================================
+       BOTTOM CONTROLS BAR
+       ========================================================================== */
+      .story-footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+        background-color: var(--bg-color);
+        border-top: 1px solid #f4f4f5;
+        z-index: 20;
+        gap: 0.75rem;
+      }
+
+      .controls-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 600px;
+        gap: 1rem;
+      }
+
+      .nav-btn {
+        flex: 1;
+        max-width: 220px;
+        min-height: 56px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: var(--letter-spacing);
+        border-radius: 14px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.15s ease;
+        border: 2px solid transparent;
+        user-select: none;
+      }
+
+      .nav-btn-prev {
+        background-color: var(--button-bg);
+        color: var(--button-text);
+        border-color: #e4e4e7;
+      }
+
+      .nav-btn-prev:hover:not(:disabled) {
+        background-color: var(--button-hover-bg);
+        border-color: #d4d4d8;
+      }
+
+      .nav-btn-next {
+        background-color: var(--accent-color);
+        color: #ffffff;
+      }
+
+      .nav-btn-next:hover:not(:disabled) {
+        background-color: var(--accent-hover);
+      }
+
+      .nav-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      .nav-btn:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+
+      .word-counter {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #71717a;
+        min-width: 90px;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .helper-hints {
+        font-size: 0.8rem;
+        color: #a1a1aa;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .kbd {
+        background: #f4f4f5;
+        border: 1px solid #d4d4d8;
+        border-radius: 5px;
+        padding: 0.15rem 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #52525b;
+      }
+
+      /* ==========================================================================
+       CONFIG & SETTINGS MODAL
+       ========================================================================== */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 1.75rem;
+        max-width: 480px;
+        width: 100%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #18181b;
+      }
+
+      .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #71717a;
+        cursor: pointer;
+        line-height: 1;
+      }
+
+      .setting-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .setting-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #27272a;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .setting-options {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .setting-pill-btn {
+        flex: 1;
+        padding: 0.5rem;
+        background: #f4f4f5;
+        border: 2px solid transparent;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #3f3f46;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.15s;
+        text-align: center;
+      }
+
+      .setting-pill-btn.active {
+        background: #eff6ff;
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+      }
+
+      /* Small Screen Adjustments */
+      @media (max-width: 640px) {
+        .helper-hints {
+          display: none;
+        }
+        .nav-btn {
+          min-height: 50px;
+          font-size: 1rem;
+        }
+        .story-header {
+          padding: 0.75rem 1rem;
+        }
+        .story-footer {
+          padding: 1rem 1rem 1.25rem 1rem;
+        }
+        .speech-controls-container {
+          top: clamp(1rem, calc(50% - 115px), 2.5rem);
+          gap: 0.35rem;
+          padding: 0.25rem 0.35rem;
+        }
+        .read-word-btn {
+          padding: 0.45rem 0.95rem;
+          font-size: 0.95rem;
+        }
+        .auto-read-toggle-label {
+          padding: 0.4rem 0.7rem;
+          font-size: 0.85rem;
+        }
+        .toggle-switch-track {
+          width: 34px;
+          height: 18px;
+        }
+        .toggle-switch-thumb {
+          width: 14px;
+          height: 14px;
+        }
+        .auto-read-checkbox:checked + .toggle-switch-track .toggle-switch-thumb {
+          transform: translateX(16px);
+        }
+        .form-actions {
+          flex-direction: column;
+        }
+        .form-actions .nav-btn,
+        .form-actions .back-to-home-btn {
+          width: 100%;
+          max-width: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ========================================================================
+       HOME SCREEN: Story Selection ONLY (Strictly isolated)
+       ======================================================================== -->
+    <main id="home-screen" class="screen active">
+      <div class="home-top-bar">
+        <div class="app-badge">📖 Adrian's Reading Buddy</div>
+        <button
+          id="btn-home-settings"
+          class="icon-action-btn"
+          title="Adjust reading settings"
+          aria-label="Settings"
+        >
+          ⚙️
+        </button>
+      </div>
+
+      <header class="home-header">
+        <h1 class="app-title">Adrian's Reading Buddy</h1>
+        <p class="app-subtitle">
+          Pick a story below or add your own to practice reading one word at a time!
+        </p>
+      </header>
+
+      <div class="stories-section-title">
+        <span>📚 Available Stories</span>
+      </div>
+
+      <!-- Scrollable list of stories (includes Add Story card at top) -->
+      <div id="story-list" class="story-list" role="list"></div>
+    </main>
+
+    <!-- ========================================================================
+       ADD STORY SCREEN: Create / Paste New Story
+       ======================================================================== -->
+    <div id="add-story-screen" class="screen">
+      <!-- Top Header Bar -->
+      <header class="story-header">
+        <button id="btn-cancel-add" class="back-to-home-btn" title="Cancel and return to stories">
+          ← Cancel
+        </button>
+
+        <h2 id="add-story-header-title" class="story-title-header">Add a New Story</h2>
+
+        <div class="header-actions" style="width: 80px; justify-content: flex-end"></div>
+      </header>
+
+      <!-- Add Story Form Container -->
+      <div class="add-story-container">
+        <div class="add-story-intro">
+          <h3 id="add-story-heading" class="add-story-heading">Create or Paste a Story</h3>
+          <p id="add-story-subheading" class="add-story-subheading">
+            Write your own story or paste text from anywhere. Line breaks are completely
+            fine—they'll be formatted automatically for one-word-at-a-time reading!
+          </p>
+        </div>
+
+        <form id="add-story-form" class="add-story-form" onsubmit="return false;">
+          <div class="form-group">
+            <label for="story-title-input" class="form-label">Story Title</label>
+            <input
+              type="text"
+              id="story-title-input"
+              class="form-input"
+              placeholder="e.g., The Moon Adventure"
+              maxlength="100"
+              autocomplete="off"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <div class="form-label-row">
+              <label for="story-content-input" class="form-label">Story Content</label>
+              <span id="story-word-count-badge" class="form-word-badge">0 words</span>
+            </div>
+            <textarea
+              id="story-content-input"
+              class="form-textarea"
+              rows="9"
+              placeholder="Type or paste your story here...
+Line breaks will automatically be formatted for reading."
+              required
+            ></textarea>
+          </div>
+
+          <div id="add-story-error" class="form-error">
+            ⚠️ Please provide both a title and at least one word of story text.
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              id="btn-save-and-read"
+              class="nav-btn nav-btn-next"
+              style="flex: 2; min-width: 180px"
+            >
+              Save & Read Now ➔
+            </button>
+            <button
+              type="button"
+              id="btn-save-story-list"
+              class="nav-btn nav-btn-prev"
+              style="flex: 1.5; min-width: 150px"
+            >
+              Save to List 📚
+            </button>
+            <button
+              type="button"
+              id="btn-cancel-add-bottom"
+              class="back-to-home-btn"
+              style="padding: 0.8rem 1.25rem"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========================================================================
+       STORY SCREEN: Word-by-Word Reading ONLY (Strictly isolated)
+       ======================================================================== -->
+    <div id="story-screen" class="screen">
+      <!-- Top Header Bar -->
+      <header class="story-header">
+        <button id="btn-back-home" class="back-to-home-btn" title="Go back to story selection">
+          ← Stories
+        </button>
+
+        <h2 id="story-title-display" class="story-title-header">Story Title</h2>
+
+        <div class="header-actions">
+          <button
+            id="btn-open-settings"
+            class="icon-action-btn"
+            title="Adjust reading settings"
+            aria-label="Settings"
+          >
+            ⚙️
+          </button>
+        </div>
+      </header>
+
+      <!-- Reading Progress Indicator -->
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar-fill"></div>
+      </div>
+
+      <!-- Central Reading Viewport -->
+      <div id="reading-viewport" class="reading-viewport">
+        <!-- Invisible Left Screen Half Touch Zone -->
+        <div
+          id="zone-left"
+          class="screen-touch-zone touch-zone-left"
+          title="Click or tap to go to previous word"
+        >
+          <span class="zone-chevron">‹</span>
+        </div>
+
+        <!-- Invisible Right Screen Half Touch Zone -->
+        <div
+          id="zone-right"
+          class="screen-touch-zone touch-zone-right"
+          title="Click or tap to go to next word"
+        >
+          <span class="zone-chevron">›</span>
+        </div>
+
+        <!-- Speech & Auto-Read Control Group (Bigger button + Integrated Auto-read Toggle) -->
+        <div id="speech-controls-container" class="speech-controls-container">
+          <!-- Bigger, prominent manual read button -->
+          <button id="btn-speak-word" class="read-word-btn" title="Read current word out loud">
+            <span class="read-word-icon">🔊</span>
+            <span>Read</span>
+          </button>
+
+          <!-- Toggle to always auto-read next word -->
+          <label
+            id="auto-read-toggle-label"
+            class="auto-read-toggle-label"
+            title="Always read the next word automatically"
+          >
+            <input type="checkbox" id="chk-auto-read" class="auto-read-checkbox" />
+            <span class="toggle-switch-track">
+              <span class="toggle-switch-thumb"></span>
+            </span>
+            <span id="auto-read-text">Auto-read next</span>
+          </label>
+        </div>
+
+        <!-- Unified Ribbon Track: Words move, scale, and change color simultaneously -->
+        <div class="reading-track-wrapper">
+          <div id="reading-track" class="reading-track"></div>
+        </div>
+
+        <!-- Phonics Practice Mode Close Button (Positioned close to the highlighted word, just '✕') -->
+        <button
+          id="btn-close-phonics"
+          class="phonics-close-btn"
+          title="Exit phonics practice (Esc)"
+          aria-label="Close phonics mode and return to reading"
+        >✕</button>
+
+        <!-- Phonics Practice Mode Slider Container (Completely aligned with word letters) -->
+        <div id="phonics-container" class="phonics-container" aria-hidden="true">
+          <!-- White Pill Track Container matching word width -->
+          <div id="phonics-track-container" class="phonics-track-container">
+            <!-- Continuous progress fill inside the track -->
+            <div id="phonics-track-fill" class="phonics-track-fill"></div>
+
+            <!-- Letter segments (pill sound bars for letters and coral dot for last sound) -->
+            <div id="phonics-segments-row" class="phonics-segments-row"></div>
+          </div>
+
+          <!-- Grabbable Tab-Like Handle pointing up to the track (as in reference image) -->
+          <div
+            id="phonics-handle"
+            class="phonics-handle"
+            role="slider"
+            tabindex="0"
+            aria-label="Phonics reading handle"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <svg
+              class="phonics-handle-svg"
+              width="46"
+              height="40"
+              viewBox="0 0 46 40"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <!-- Tab body with subtle pointed peak at top -->
+              <path
+                d="M 23 2 L 39 8 C 42.5 9.3 44 11.5 44 15 L 44 32 C 44 36 40.5 39 36.5 39 L 9.5 39 C 5.5 39 2 36 2 32 L 2 15 C 2 11.5 3.5 9.3 7 8 Z"
+                fill="#ffffff"
+                stroke="#1e1b4b"
+                stroke-width="3"
+                stroke-linejoin="round"
+              />
+              <!-- Three vertical grip lines -->
+              <line x1="18" y1="18" x2="18" y2="29" stroke="#c7d2fe" stroke-width="3" stroke-linecap="round"/>
+              <line x1="23" y1="18" x2="23" y2="29" stroke="#c7d2fe" stroke-width="3" stroke-linecap="round"/>
+              <line x1="28" y1="18" x2="28" y2="29" stroke="#c7d2fe" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Story Completion Celebration Screen -->
+        <div id="completion-container" class="completion-container">
+          <div class="completion-emoji">🎉</div>
+          <h3 class="completion-title">Great Job!</h3>
+          <p class="completion-text">
+            You read the whole story from start to finish! High five! ✋
+          </p>
+          <div class="completion-buttons">
+            <button id="btn-restart-story" class="nav-btn nav-btn-prev" style="max-width: 180px">
+              ↺ Read Again
+            </button>
+            <button id="btn-choose-another" class="nav-btn nav-btn-next" style="max-width: 200px">
+              📚 Next Story
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Controls Bar -->
+      <footer class="story-footer">
+        <div class="controls-row">
+          <button id="btn-prev-word" class="nav-btn nav-btn-prev" aria-label="Previous Word">
+            ◀ Previous
+          </button>
+
+          <span id="word-counter" class="word-counter">1 / 1</span>
+
+          <button id="btn-next-word" class="nav-btn nav-btn-next" aria-label="Next Word">
+            Next ▶
+          </button>
+        </div>
+
+        <div class="helper-hints">
+          <span>Tap <b>Left</b> / <b>Right</b> half of screen</span>
+          <span>•</span>
+          <span>Keyboard: <span class="kbd">←</span> <span class="kbd">→</span></span>
+        </div>
+      </footer>
+    </div>
+
+    <!-- ========================================================================
+       SETTINGS MODAL (Parents / Teachers Customization)
+       ======================================================================== -->
+    <div id="settings-modal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h4 class="modal-title">Reading Settings</h4>
+          <button id="btn-close-settings" class="modal-close-btn" aria-label="Close settings">
+            &times;
+          </button>
+        </div>
+
+        <!-- Auto-read Next Word Setting -->
+        <div class="setting-group">
+          <label class="setting-label">Auto-read Next Word:</label>
+          <div class="setting-options">
+            <button
+              id="btn-setting-autoread-off"
+              class="setting-pill-btn active"
+              data-autoread="off"
+            >
+              Off (Manual)
+            </button>
+            <button id="btn-setting-autoread-on" class="setting-pill-btn" data-autoread="on">
+              On (Always Read)
+            </button>
+          </div>
+        </div>
+
+        <!-- Word Transition Animation -->
+        <div class="setting-group">
+          <label class="setting-label">Word Transition Animation:</label>
+          <div class="setting-options">
+            <button class="setting-pill-btn active" data-transition="smooth">Smooth (320ms)</button>
+            <button class="setting-pill-btn" data-transition="fast">Fast (180ms)</button>
+            <button class="setting-pill-btn" data-transition="instant">Instant (Off)</button>
+          </div>
+        </div>
+
+        <!-- Context Word Count -->
+        <div class="setting-group">
+          <label class="setting-label">Context Words (before and after):</label>
+          <div class="setting-options">
+            <button class="setting-pill-btn" data-words="1">1 Word</button>
+            <button class="setting-pill-btn active" data-words="2">2 Words</button>
+          </div>
+        </div>
+
+        <!-- Text Size -->
+        <div class="setting-group">
+          <label class="setting-label">Text Size:</label>
+          <div class="setting-options">
+            <button class="setting-pill-btn" data-size="small">Normal</button>
+            <button class="setting-pill-btn" data-size="medium">Large</button>
+            <button class="setting-pill-btn active" data-size="large">Extra Large</button>
+          </div>
+        </div>
+
+        <!-- Word / Letter Color -->
+        <div class="setting-group">
+          <label class="setting-label">Word Color:</label>
+          <div class="setting-options">
+            <button class="setting-pill-btn active" data-word-color="black">
+              <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#000000;margin-right:6px;vertical-align:middle;"></span>Black
+            </button>
+            <button class="setting-pill-btn" data-word-color="purple">
+              <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#6b21a8;margin-right:6px;vertical-align:middle;"></span>Purple
+            </button>
+          </div>
+        </div>
+
+        <!-- Background Color -->
+        <div class="setting-group">
+          <label class="setting-label">Background Color:</label>
+          <div class="setting-options">
+            <button class="setting-pill-btn active" data-bg="#ffffff" data-color="#000000">
+              Pure White
+            </button>
+            <button class="setting-pill-btn" data-bg="#fef9c3" data-color="#1c1917">
+              Soft Cream
+            </button>
+            <button class="setting-pill-btn" data-bg="#f4f4f5" data-color="#18181b">
+              Muted Gray
+            </button>
+          </div>
+        </div>
+
+        <!-- Storage Management (LocalStorage) -->
+        <div
+          class="setting-group"
+          style="border-top: 1px solid #e4e4e7; padding-top: 1rem; margin-top: 0.25rem"
+        >
+          <label class="setting-label">Storage Management (LocalStorage):</label>
+          <button
+            type="button"
+            id="btn-clear-storage"
+            class="nav-btn nav-btn-prev"
+            style="
+              width: 100%;
+              min-height: 44px;
+              font-size: 0.95rem;
+              border-radius: 12px;
+              color: #dc2626;
+              border-color: #fca5a5;
+              background: #fef2f2;
+            "
+          >
+            🗑️ Clear LocalStorage & Reset Defaults
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================
+       DELETE CONFIRMATION MODAL
+       ======================================================================== -->
+    <div id="delete-modal" class="modal-overlay">
+      <div class="modal-card" style="max-width: 440px; text-align: center; gap: 1.25rem">
+        <div style="font-size: 3rem; line-height: 1">🗑️</div>
+        <h4 class="modal-title" style="font-size: 1.35rem; justify-content: center">
+          Delete Story?
+        </h4>
+        <p id="delete-modal-text" style="font-size: 1.05rem; color: #52525b; line-height: 1.5">
+          Are you sure you want to delete
+          <strong id="delete-story-title-name" style="color: var(--text-color)">Story</strong>? This
+          action cannot be undone.
+        </p>
+        <div style="display: flex; gap: 0.85rem; justify-content: center; margin-top: 0.5rem">
+          <button
+            type="button"
+            id="btn-cancel-delete"
+            class="nav-btn nav-btn-prev"
+            style="flex: 1; min-height: 48px"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            id="btn-confirm-delete"
+            class="nav-btn"
+            style="
+              flex: 1;
+              min-height: 48px;
+              background-color: #dc2626;
+              color: #ffffff;
+              border-color: transparent;
+            "
+          >
+            Delete 🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================
+       JAVASCRIPT: Logic, Data & Configuration
+       ======================================================================== -->
+    <script>
+      /* ==========================================================================
+       CONFIGURABLE PARAMETERS
+       Change these parameters to adjust the reading experience and animation.
+       ========================================================================== */
+      const CONFIG = {
+        // Number of words shown before and after current word (1 or 2 as per design)
+        wordsBefore: 2,
+        wordsAfter: 2,
+
+        // Smooth Sliding & Fade Transitions
+        enableTransitions: true, // Enable simultaneous word slide, growth & fade
+        transitionDuration: 320, // Transition duration in milliseconds
+        transitionEasing: "cubic-bezier(0.22, 1, 0.36, 1)", // Smooth deceleration curve
+
+        // Visual Colors & Appearance
+        backgroundColor: "#ffffff", // Page background (default: white)
+        wordColor: "black", // Selected color of word letters (black or purple)
+        textColor: "#000000", // Current word color (default: black)
+        contextWordColor: "#71717a", // Context words color (lighter version of wordColor)
+        contextOpacity: 0.5, // Transparency of context words (0.0 to 1.0)
+        contextScale: 0.72, // Context words visual scale factor
+
+        // Speech & Audio
+        enableSpeech: true, // Pronounce word when speech button is clicked
+        autoReadNext: false, // Automatically read next word out loud when moving forward
+
+        // Interactive controls
+        enableKeyboard: true, // Left and Right cursor keys navigate words
+        enableScreenHalfTap: true, // Clicking or touching left/right screen half navigates
+      };
+
+      /* ==========================================================================
+       STORIES & SETTINGS STORAGE & DEFAULT DATA
+       Stories and app settings are loaded from and saved to localStorage.
+       ========================================================================== */
+      const STORAGE_KEY = "reading_buddy_stories_v1";
+      const SETTINGS_STORAGE_KEY = "reading_buddy_settings_v1";
+
+      const DEFAULT_SETTINGS = {
+        autoReadNext: false,
+        transition: "smooth",
+        wordsCount: 2,
+        textSize: "medium",
+        wordColor: "black",
+        backgroundColor: "#ffffff",
+        textColor: "#000000",
+      };
+
+      let currentSettings = Object.assign({}, DEFAULT_SETTINGS);
+
+      const DEFAULT_STORIES = [
+        {
+          id: "vowels",
+          title: "Vowels",
+          content: `u o e o e i u o o a u u e e i u i e u u e u e o e u o e e i i e u a o e a o o i
+i e u e i u u e u i a i a u o a a o e e e e o u a a u o o o o i a i o e e e i u u i u o e i i e a a
+u i a u o a i a u i u i e e u u i i a a e o e o a e e u u u i e i o o a e a u e a i a o u o e o u u
+u o u a i e i a a a i a i a u o a e a i u a u e u a o u a u o u u i i i u i u e u i e a e o o i a a
+e a o o u u a i a i`,
+        },
+        {
+          id: "love-labubu",
+          title: "A Labubu Called Love",
+          content: `Love is a fuzzy little Labubu. She has big round ears and a sweet, wide smile.
+Love lives on a soft pink shelf in a bright room. She loves to sit next to a shiny red apple and a
+tiny toy bear. One day, the sun shines in. Love wants to play! She hops down off the shelf with a
+soft thud. Love walks across the rug. She finds a yellow ball. She kicks it with her tiny foot.
+Roll, roll, go! Next, Love climbs up on a chair to look out the window. She sees a little bird fly
+by in the blue sky. Chirp, chirp! Love waves her paw. When the sun starts to go down, Love feels
+sleepy. She walks back to her cozy shelf. She sits down by her red apple and closes her eyes.
+"Good night, sweet Love," whispers the room.`,
+        },
+        {
+          id: "bebe-the-axolotl",
+          title: "Bebe the Axolotl",
+          content: `Bebe is a pink axolotl. He lives in a cool, dark pool of water. Bebe is very
+cute. He has soft, pink frills on his head. They look like little flowers. He has tiny legs and a
+long tail. When Bebe wants to move, he wiggles his tail. *Swish, swish.* He swims to the top of
+the water to grab a quick breath of air. Then, Bebe looks down at the mud. He spots a bug!
+*Snap!* Bebe eats his lunch. After he eats, Bebe likes to rest on a green leaf. He smiles a big,
+happy smile. *Hello, little Bebe!*`,
+        },
+        {
+          id: "pat-and-pip",
+          title: "Pat and Pip",
+          content: `Pat is a fat cat. Pat has a red hat. Pat sat on a big tan mat. Pip is a pup. Pip
+can hop, hop, hop! Pip ran to the mat. Pip saw the red hat. "I want the hat!"
+said Pip. Pip grabbed the red hat and ran. Pip ran to the mud. Pat the cat was
+not glad. Pat was mad! "Stop, pup, stop!" yelled Pat. Pat ran fast. Pip ran
+fast. Pip went zig. Pat went zag. Pip ran past a big green log. Pip jumped on a
+red box. Plop! Pip fell into a wet mud pit. The red hat fell into the mud, too.
+"Oh no," said Pip. "I am in the mud. I am stuck!" Pat ran to the pit. Pat looked
+at the sad pup. Pat was not mad now. Pat got a long stick. "Grab the stick,
+Pip!" Pip held the stick. Pat pulled and pulled. Pop! Out came Pip! Pat and Pip
+sat in the warm sun. Pat used a wet rag to rub the red hat. Pip used a wet rag
+to rub his wet paws. "Good cat," said Pip with a wag. "Good pup," said Pat with
+a purr. Now Pat and Pip nap together on the big tan mat. Pat wears the red hat.
+Pip hugs a soft red cap. It is fun to be pals!`,
+        },
+        {
+          id: "sammy-the-sea-turtle",
+          title: "Sammy the Sea Turtle",
+          content: `Sammy was a little green sea turtle.
+He lived in a warm blue ocean with his family.
+Sammy loved to swim through the cool waves.
+One sunny morning, Sammy saw a bright yellow starfish resting on a rock.
+"Hello friend!" Sammy said with a cheerful smile.
+The starfish gently wiggled its five soft arms.
+"Hello Sammy! Do you want to play hide and seek?" asked the starfish.
+Sammy swam in happy circles around the pink coral reef.
+Together they played all afternoon under the sparkling water.
+It was the happiest day in the deep blue sea.`,
+        },
+        {
+          id: "the-brave-little-bear",
+          title: "The Brave Little Bear",
+          content: `Barnaby was a fluffy brown bear cub.
+He lived in a cozy den near the tall pine trees.
+Barnaby had never climbed the giant honey tree before.
+"You can do it, little one," whispered his mama bear with a gentle hug.
+Barnaby reached up and placed one paw on the tree bark.
+Then he placed another paw higher.
+Step by step, he climbed up into the fresh green leaves.
+When he looked all around from the highest branch, the whole forest was smiling back at him!
+Barnaby felt very proud and very brave.`,
+        },
+        {
+          id: "the-magic-paintbrush",
+          title: "The Magic Paintbrush",
+          content: `Maya found a wooden paintbrush lying near a silver river.
+She dipped the soft tip into clear water and painted a butterfly on a smooth stone.
+Suddenly, the purple butterfly came to life and fluttered its wings!
+It flew into the warm air with a soft humming sound.
+Maya smiled brightly and painted a sweet red apple on a leaf.
+A tiny green bird flew down and pecked at the delicious apple happily.
+Maya knew that kindness and art could bring wonder to the whole world.`,
+        },
+        {
+          id: "the-curious-cloud",
+          title: "The Curious Cloud",
+          content: `Clara was a small, fluffy white cloud high in the bright sky.
+She wanted to see what was underneath the tall green mountains.
+So Clara floated down very gently, just like a floating feather.
+She saw woolly sheep eating fresh green grass.
+She saw a silvery river singing sweet songs over smooth stones.
+Clara sprinkled a few cool raindrops down to say hello.
+The little yellow flowers opened their petals and smiled right back at her.`,
+        },
+        {
+          id: "pip-the-space-puppy",
+          title: "Pip the Space Puppy",
+          content: `Pip was a little white puppy with shiny silver spots.
+He had a tiny blue spacesuit and shiny yellow boots.
+Pip hopped into his rocket ship and pressed the big round red button.
+Zoom! Up into the starry sky he flew!
+He landed on the glowing moon and did five big bouncy hops.
+The stars twinkled like friendly night lights all around him.
+Pip wagged his tail and caught a floating space bubble.`,
+        },
+        {
+          id: "the-friendly-dragon",
+          title: "The Friendly Dragon",
+          content: `Barnaby the dragon did not like to roar or blow smoke.
+Barnaby loved to bake warm chamomile cookies and golden honey cakes.
+Every afternoon, the woodland rabbits and squirrels visited his kitchen cave.
+They sat on soft green moss and drank tea from acorn cups.
+"More cookies, please!" cheered the little brown bunny.
+Barnaby smiled warmly and passed a plate full of sweet treats.
+Kindness was his true superpower.`,
+        },
+        {
+          id: "leo-learns-to-fly",
+          title: "Leo Learns to Fly",
+          content: `Leo was a tiny owl with big, curious round eyes.
+His brothers and sisters could already fly from tree to tree.
+Leo stood at the edge of the high branch and felt his heart go thump thump.
+"Take a deep breath and open your wings," said his wise grandma.
+Leo took a slow deep breath.
+He opened his soft brown wings wide.
+He gave a little hop into the cool night air.
+Whoosh! The gentle breeze lifted him up!
+Leo was flying high under the glowing yellow moon.`,
+        },
+      ];
+
+      // Mutable active stories list, loaded from localStorage
+      let STORIES = [];
+
+      // Tracks story currently being edited in Add/Edit screen (null if adding a new story)
+      let storyBeingEdited = null;
+
+      /**
+       * Loads stories from localStorage, or seeds with DEFAULT_STORIES if empty/first visit.
+       */
+      function loadStoriesFromStorage() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              STORIES = parsed;
+              return;
+            }
+          }
+        } catch (err) {
+          console.warn("Unable to load stories from localStorage, using defaults.", err);
+        }
+        // First visit or empty storage: seed defaults
+        STORIES = JSON.parse(JSON.stringify(DEFAULT_STORIES));
+        saveStoriesToStorage();
+      }
+
+      /**
+       * Persists the active STORIES array into localStorage.
+       */
+      function saveStoriesToStorage() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(STORIES));
+        } catch (err) {
+          console.warn("Unable to save stories to localStorage.", err);
+        }
+      }
+
+      /**
+       * Loads settings from localStorage, or seeds with DEFAULT_SETTINGS if empty/first visit.
+       */
+      function loadSettingsFromStorage() {
+        try {
+          const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && typeof parsed === "object") {
+              currentSettings = Object.assign({}, DEFAULT_SETTINGS, parsed);
+              applySettings(currentSettings);
+              return;
+            }
+          }
+        } catch (err) {
+          console.warn("Unable to load settings from localStorage, using defaults.", err);
+        }
+        // First visit or empty storage: seed defaults
+        currentSettings = Object.assign({}, DEFAULT_SETTINGS);
+        saveSettingsToStorage();
+        applySettings(currentSettings);
+      }
+
+      /**
+       * Persists the active currentSettings object into localStorage.
+       */
+      function saveSettingsToStorage() {
+        try {
+          localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(currentSettings));
+        } catch (err) {
+          console.warn("Unable to save settings to localStorage.", err);
+        }
+      }
+
+      /**
+       * Applies settings object to CONFIG, CSS custom properties, and UI toggle buttons.
+       */
+      function applySettings(settings) {
+        if (!settings) return;
+
+        // 1. Auto-read next word
+        const autoRead = !!settings.autoReadNext;
+        currentSettings.autoReadNext = autoRead;
+        setAutoRead(autoRead, false);
+
+        // 2. Word Transition Animation
+        const mode = settings.transition || "smooth";
+        currentSettings.transition = mode;
+        document.querySelectorAll("[data-transition]").forEach((b) => {
+          b.classList.toggle("active", b.dataset.transition === mode);
+        });
+        if (mode === "smooth") {
+          CONFIG.enableTransitions = true;
+          CONFIG.transitionDuration = 320;
+          document.documentElement.style.setProperty("--transition-duration", "320ms");
+        } else if (mode === "fast") {
+          CONFIG.enableTransitions = true;
+          CONFIG.transitionDuration = 180;
+          document.documentElement.style.setProperty("--transition-duration", "180ms");
+        } else if (mode === "instant") {
+          CONFIG.enableTransitions = false;
+          CONFIG.transitionDuration = 0;
+          document.documentElement.style.setProperty("--transition-duration", "0ms");
+        }
+
+        // 3. Word count before/after
+        const count = parseInt(settings.wordsCount, 10) === 1 ? 1 : 2;
+        currentSettings.wordsCount = count;
+        CONFIG.wordsBefore = count;
+        CONFIG.wordsAfter = count;
+        document.querySelectorAll("[data-words]").forEach((b) => {
+          b.classList.toggle("active", parseInt(b.dataset.words, 10) === count);
+        });
+
+        // 4. Text size
+        const size = settings.textSize || "medium";
+        currentSettings.textSize = size;
+        document.querySelectorAll("[data-size]").forEach((b) => {
+          b.classList.toggle("active", b.dataset.size === size);
+        });
+        if (size === "small") {
+          document.documentElement.style.setProperty(
+            "--current-word-size",
+            "clamp(2.0rem, 5vw, 3.2rem)",
+          );
+        } else if (size === "medium") {
+          document.documentElement.style.setProperty(
+            "--current-word-size",
+            "clamp(2.4rem, 6.5vw, 4.5rem)",
+          );
+        } else if (size === "large") {
+          document.documentElement.style.setProperty(
+            "--current-word-size",
+            "clamp(3.0rem, 8vw, 5.5rem)",
+          );
+        }
+
+        // 5. Word text color (black or purple)
+        const wordColor = settings.wordColor || "black";
+        currentSettings.wordColor = wordColor;
+        CONFIG.wordColor = wordColor;
+        document.querySelectorAll("[data-word-color]").forEach((b) => {
+          b.classList.toggle("active", b.dataset.wordColor === wordColor);
+        });
+
+        if (wordColor === "purple") {
+          CONFIG.textColor = "#6b21a8";
+          CONFIG.contextWordColor = "#9333ea";
+          CONFIG.contextOpacity = 0.55;
+          document.documentElement.style.setProperty("--word-color", "#6b21a8");
+          document.documentElement.style.setProperty("--text-color", "#6b21a8");
+          document.documentElement.style.setProperty("--context-word-color", "#9333ea");
+          document.documentElement.style.setProperty("--context-opacity", "0.55");
+        } else {
+          // Default: black
+          CONFIG.textColor = "#000000";
+          CONFIG.contextWordColor = "#71717a";
+          CONFIG.contextOpacity = 0.5;
+          document.documentElement.style.setProperty("--word-color", "#000000");
+          document.documentElement.style.setProperty("--text-color", "#000000");
+          document.documentElement.style.setProperty("--context-word-color", "#71717a");
+          document.documentElement.style.setProperty("--context-opacity", "0.5");
+        }
+
+        // 6. Background color
+        const bg = settings.backgroundColor || "#ffffff";
+        currentSettings.backgroundColor = bg;
+        CONFIG.backgroundColor = bg;
+        document.querySelectorAll("[data-bg]").forEach((b) => {
+          b.classList.toggle("active", b.dataset.bg === bg);
+        });
+        document.documentElement.style.setProperty("--bg-color", bg);
+        if (bg !== "#ffffff") {
+          document.documentElement.style.setProperty("--card-bg", "#ffffff");
+        } else {
+          document.documentElement.style.setProperty("--card-bg", "#fafafa");
+        }
+
+        // If currently on story screen, recenter track
+        if (typeof state !== "undefined" && state.currentScreen === "story" && !state.isComplete) {
+          recenterTrack(state.currentIndex, false);
+        }
+      }
+
+      /* ==========================================================================
+       APPLICATION STATE
+       ========================================================================== */
+      const state = {
+        currentScreen: "home", // 'home' | 'story' | 'add-story'
+        activeStory: null, // Selected story object
+        words: [], // Parsed array of words for active story
+        currentIndex: 0, // Current word index (0 to words.length - 1)
+        targetIndex: 0, // Target word index during animation
+        isComplete: false, // Whether story has reached completion
+        isAnimating: false, // True during word transition
+        animationTimer: null, // Reference to transition end timer
+        isPhonicsActive: false, // True when phonics practice slider mode is active
+        phonicsCompleting: false, // True when slider reaches 100% and auto-returning
+      };
+
+      /* ==========================================================================
+       DOM ELEMENTS
+       ========================================================================== */
+      const els = {
+        homeScreen: document.getElementById("home-screen"),
+        storyScreen: document.getElementById("story-screen"),
+        addStoryScreen: document.getElementById("add-story-screen"),
+        storyList: document.getElementById("story-list"),
+
+        storyTitleDisplay: document.getElementById("story-title-display"),
+        progressBar: document.getElementById("progress-bar"),
+
+        readingViewport: document.getElementById("reading-viewport"),
+        readingTrack: document.getElementById("reading-track"),
+
+        // Phonics Practice Elements
+        btnClosePhonics: document.getElementById("btn-close-phonics"),
+        phonicsContainer: document.getElementById("phonics-container"),
+        phonicsTrackContainer: document.getElementById("phonics-track-container"),
+        phonicsTrackFill: document.getElementById("phonics-track-fill"),
+        phonicsSegmentsRow: document.getElementById("phonics-segments-row"),
+        phonicsHandle: document.getElementById("phonics-handle"),
+
+        speechControlsContainer: document.getElementById("speech-controls-container"),
+        btnSpeakWord: document.getElementById("btn-speak-word"),
+        chkAutoRead: document.getElementById("chk-auto-read"),
+        autoReadText: document.getElementById("auto-read-text"),
+
+        zoneLeft: document.getElementById("zone-left"),
+        zoneRight: document.getElementById("zone-right"),
+
+        btnPrevWord: document.getElementById("btn-prev-word"),
+        btnNextWord: document.getElementById("btn-next-word"),
+        wordCounter: document.getElementById("word-counter"),
+        btnBackHome: document.getElementById("btn-back-home"),
+
+        completionContainer: document.getElementById("completion-container"),
+        btnRestartStory: document.getElementById("btn-restart-story"),
+        btnChooseAnother: document.getElementById("btn-choose-another"),
+
+        settingsModal: document.getElementById("settings-modal"),
+        btnOpenSettings: document.getElementById("btn-open-settings"),
+        btnHomeSettings: document.getElementById("btn-home-settings"),
+        btnCloseSettings: document.getElementById("btn-close-settings"),
+        btnSettingAutoReadOff: document.getElementById("btn-setting-autoread-off"),
+        btnSettingAutoReadOn: document.getElementById("btn-setting-autoread-on"),
+        btnClearStorage: document.getElementById("btn-clear-storage"),
+
+        // Add / Edit Story Elements
+        addStoryHeaderTitle: document.getElementById("add-story-header-title"),
+        addStoryHeading: document.getElementById("add-story-heading"),
+        addStorySubheading: document.getElementById("add-story-subheading"),
+        btnCancelAdd: document.getElementById("btn-cancel-add"),
+        btnCancelAddBottom: document.getElementById("btn-cancel-add-bottom"),
+        storyTitleInput: document.getElementById("story-title-input"),
+        storyContentInput: document.getElementById("story-content-input"),
+        storyWordCountBadge: document.getElementById("story-word-count-badge"),
+        addStoryError: document.getElementById("add-story-error"),
+        btnSaveAndRead: document.getElementById("btn-save-and-read"),
+        btnSaveStoryList: document.getElementById("btn-save-story-list"),
+
+        // Delete Story Elements
+        deleteModal: document.getElementById("delete-modal"),
+        deleteStoryTitleName: document.getElementById("delete-story-title-name"),
+        btnCancelDelete: document.getElementById("btn-cancel-delete"),
+        btnConfirmDelete: document.getElementById("btn-confirm-delete"),
+      };
+
+      /* ==========================================================================
+       HELPER FUNCTIONS
+       ========================================================================== */
+      /**
+       * Safely escapes HTML special characters for safe rendering.
+       */
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      /**
+       * Splits story text into an array of words, cleanly stripping line breaks,
+       * tabs, and extra whitespace while preserving punctuation.
+       */
+      function parseStoryContent(rawContent) {
+        if (!rawContent) return [];
+        return rawContent
+          .trim()
+          .split(/\s+/)
+          .filter((word) => word.length > 0);
+      }
+
+      /**
+       * Estimates read time based on word count (approx 60 words/min for young kids).
+       */
+      function getEstimatedMinutes(wordCount) {
+        const minutes = Math.ceil(wordCount / 60);
+        return minutes === 1 ? "1 min" : `${minutes} mins`;
+      }
+
+      /* ==========================================================================
+       SCREEN NAVIGATION
+       ========================================================================== */
+      function showHomeScreen() {
+        if (state.isPhonicsActive) {
+          exitPhonicsMode(false);
+        }
+        finishAnimation();
+        stopSpeech();
+        state.currentScreen = "home";
+        els.storyScreen.classList.remove("active");
+        els.addStoryScreen.classList.remove("active");
+        els.homeScreen.classList.add("active");
+        window.scrollTo(0, 0);
+      }
+
+      function showAddStoryScreen() {
+        if (state.isPhonicsActive) {
+          exitPhonicsMode(false);
+        }
+        finishAnimation();
+        stopSpeech();
+        state.currentScreen = "add-story";
+        storyBeingEdited = null;
+
+        els.homeScreen.classList.remove("active");
+        els.storyScreen.classList.remove("active");
+        els.addStoryScreen.classList.add("active");
+
+        // Update headers for Add mode
+        els.addStoryHeaderTitle.textContent = "Add a New Story";
+        els.addStoryHeading.textContent = "Create or Paste a Story";
+        els.addStorySubheading.textContent =
+          "Write your own story or paste text from anywhere. Line breaks are completely fine—they'll be formatted automatically for one-word-at-a-time reading!";
+        els.btnSaveStoryList.textContent = "Save to List 📚";
+        els.btnSaveAndRead.textContent = "Save & Read Now ➔";
+
+        // Reset form fields
+        els.storyTitleInput.value = "";
+        els.storyContentInput.value = "";
+        els.storyWordCountBadge.textContent = "0 words";
+        els.addStoryError.style.display = "none";
+
+        window.scrollTo(0, 0);
+        setTimeout(() => {
+          els.storyTitleInput.focus();
+        }, 50);
+      }
+
+      function showEditStoryScreen(story) {
+        if (state.isPhonicsActive) {
+          exitPhonicsMode(false);
+        }
+        finishAnimation();
+        stopSpeech();
+        state.currentScreen = "add-story";
+        storyBeingEdited = story;
+
+        els.homeScreen.classList.remove("active");
+        els.storyScreen.classList.remove("active");
+        els.addStoryScreen.classList.add("active");
+
+        // Update headers for Edit mode
+        els.addStoryHeaderTitle.textContent = "Edit Story";
+        els.addStoryHeading.textContent = `Edit: ${story.title}`;
+        els.addStorySubheading.textContent =
+          "Change the title or story content below. Line breaks will be automatically formatted for reading.";
+        els.btnSaveStoryList.textContent = "Save Changes 💾";
+        els.btnSaveAndRead.textContent = "Save & Read ➔";
+
+        // Pre-fill form fields
+        els.storyTitleInput.value = story.title;
+        els.storyContentInput.value = (story.content || "").replace(/\r?\n+/g, " ").trim();
+        const words = parseStoryContent(els.storyContentInput.value);
+        els.storyWordCountBadge.textContent = `${words.length} ${words.length === 1 ? "word" : "words"}`;
+        els.addStoryError.style.display = "none";
+
+        window.scrollTo(0, 0);
+        setTimeout(() => {
+          els.storyTitleInput.focus();
+        }, 50);
+      }
+
+      function showStoryScreen(story) {
+        if (state.isPhonicsActive) {
+          exitPhonicsMode(false);
+        }
+        finishAnimation();
+        stopSpeech();
+        state.currentScreen = "story";
+        state.activeStory = story;
+        state.words = parseStoryContent(story.content);
+        state.currentIndex = 0;
+        state.targetIndex = 0;
+        state.isComplete = false;
+
+        els.storyTitleDisplay.textContent = story.title;
+        document.title = `${story.title} - Adrian's Reading Buddy`;
+
+        // STRICT SCREEN ISOLATION
+        els.homeScreen.classList.remove("active");
+        els.addStoryScreen.classList.remove("active");
+        els.storyScreen.classList.add("active");
+
+        // Build unified word ribbon track and center the first word
+        buildTrack();
+      }
+
+      /* ==========================================================================
+       STORY CARDS RENDERING (Home Page)
+       ========================================================================== */
+      let storyPendingDelete = null;
+
+      function promptDeleteStory(story) {
+        storyPendingDelete = story;
+        els.deleteStoryTitleName.textContent = `"${story.title}"`;
+        els.deleteModal.classList.add("active");
+      }
+
+      function closeDeleteModal() {
+        storyPendingDelete = null;
+        els.deleteModal.classList.remove("active");
+      }
+
+      function renderStoryCards() {
+        els.storyList.innerHTML = "";
+
+        // 1. First Card: "+" Add New Story Card
+        const addCard = document.createElement("div");
+        addCard.className = "story-card add-story-card";
+        addCard.setAttribute("role", "button");
+        addCard.setAttribute("tabindex", "0");
+        addCard.setAttribute("aria-label", "Add a new story");
+        addCard.innerHTML = `
+        <div class="story-card-top">
+          <div class="add-story-icon-wrap">
+            <span class="add-story-plus">+</span>
+          </div>
+          <h3 class="story-card-title" style="color: var(--accent-color);">Add a New Story</h3>
+          <p class="story-card-snippet">Write or paste your own story to read with Adrian's Reading Buddy!</p>
+        </div>
+        <div class="story-card-footer">
+          <span class="add-story-badge">Custom Story</span>
+          <span class="story-card-btn" style="color: var(--accent-color);">Create ➔</span>
+        </div>
+      `;
+        addCard.addEventListener("click", () => {
+          showAddStoryScreen();
+        });
+        addCard.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            showAddStoryScreen();
+          }
+        });
+        els.storyList.appendChild(addCard);
+
+        // 2. Render all stories in STORIES (newly added stories appear at top of list)
+        STORIES.forEach((story) => {
+          const words = parseStoryContent(story.content);
+          const card = document.createElement("div");
+          card.className = "story-card";
+          card.setAttribute("role", "button");
+          card.setAttribute("tabindex", "0");
+          card.setAttribute("aria-label", `Read ${story.title}`);
+
+          const snippet = words.slice(0, 14).join(" ") + "...";
+          const estTime = getEstimatedMinutes(words.length);
+
+          card.innerHTML = `
+          <div class="story-card-top">
+            <div class="story-card-header-row">
+              <h3 class="story-card-title">${escapeHtml(story.title)}</h3>
+              <div class="story-card-actions">
+                <button type="button" class="story-action-btn btn-edit" title="Edit story" aria-label="Edit ${escapeHtml(story.title)}">
+                  ✏️
+                </button>
+                <button type="button" class="story-action-btn btn-delete" title="Delete story" aria-label="Delete ${escapeHtml(story.title)}">
+                  🗑️
+                </button>
+              </div>
+            </div>
+            <p class="story-card-snippet">${escapeHtml(snippet)}</p>
+          </div>
+          <div class="story-card-footer">
+            <span>${words.length} words • ${estTime}</span>
+            <span class="story-card-btn">Read ➔</span>
+          </div>
+        `;
+
+          // Click edit button -> Open in edit mode
+          const editBtn = card.querySelector(".btn-edit");
+          editBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            showEditStoryScreen(story);
+          });
+
+          // Click delete button -> Prompt confirmation modal
+          const deleteBtn = card.querySelector(".btn-delete");
+          deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            promptDeleteStory(story);
+          });
+
+          // Click anywhere else on card -> Open story
+          card.addEventListener("click", (e) => {
+            if (e.target.closest(".story-action-btn")) return;
+            showStoryScreen(story);
+          });
+
+          // Keyboard accessible (Enter / Space)
+          card.addEventListener("keydown", (e) => {
+            if (e.target.closest(".story-action-btn")) return;
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              showStoryScreen(story);
+            }
+          });
+
+          els.storyList.appendChild(card);
+        });
+
+        // 3. If no stories remain, show friendly empty state below '+' card
+        if (STORIES.length === 0) {
+          const emptyNotice = document.createElement("div");
+          emptyNotice.style.gridColumn = "1 / -1";
+          emptyNotice.style.textAlign = "center";
+          emptyNotice.style.padding = "2rem 1rem";
+          emptyNotice.style.color = "#71717a";
+          emptyNotice.innerHTML = `
+          <p style="font-size: 1.15rem; font-weight: 700; color: #3f3f46;">No stories left!</p>
+          <p style="font-size: 0.95rem; margin-top: 0.35rem;">Click the <b>+ Add a New Story</b> card above to create one.</p>
+        `;
+          els.storyList.appendChild(emptyNotice);
+        }
+      }
+
+      /* ==========================================================================
+       ADD / EDIT STORY HANDLER
+       ========================================================================== */
+      function handleSaveStory(launchReading = false) {
+        const title = els.storyTitleInput.value.trim();
+        const content = els.storyContentInput.value.trim().replace(/\r?\n+/g, " ");
+        const words = parseStoryContent(content);
+
+        if (!title || words.length === 0) {
+          els.addStoryError.style.display = "block";
+          return;
+        }
+
+        els.addStoryError.style.display = "none";
+
+        if (storyBeingEdited) {
+          // Edit Mode: update story in-place
+          storyBeingEdited.title = title;
+          storyBeingEdited.content = content;
+          saveStoriesToStorage();
+          renderStoryCards();
+
+          const updatedStory = storyBeingEdited;
+          storyBeingEdited = null;
+
+          if (launchReading) {
+            showStoryScreen(updatedStory);
+          } else {
+            showHomeScreen();
+          }
+        } else {
+          // Add Mode: prepend new story to STORIES array
+          const newStory = {
+            id: "custom-" + Date.now(),
+            title: title,
+            content: content,
+          };
+
+          STORIES.unshift(newStory);
+          saveStoriesToStorage();
+          renderStoryCards();
+
+          if (launchReading) {
+            showStoryScreen(newStory);
+          } else {
+            showHomeScreen();
+          }
+        }
+      }
+
+      /* ==========================================================================
+       UNIFIED TRACK READING ENGINE
+       ========================================================================== */
+      /**
+       * Builds the complete word track elements once per story.
+       */
+      function buildTrack() {
+        els.readingTrack.innerHTML = "";
+        els.readingTrack.style.display = "inline-flex";
+        els.completionContainer.classList.remove("active");
+
+        state.words.forEach((word, idx) => {
+          const span = document.createElement("span");
+          span.className = "track-word";
+          span.dataset.index = idx;
+          span.textContent = word;
+          span.title = "Tap to sound out this word";
+          span.addEventListener("click", (e) => {
+            if (span.classList.contains("is-current") && !state.isComplete) {
+              e.stopPropagation();
+              if (!state.isPhonicsActive) {
+                if (state.isAnimating) {
+                  finishAnimation();
+                }
+                enterPhonicsMode();
+              } else {
+                // Tapping while in phonics mode pronounces the word
+                speakWord(state.words[state.currentIndex]);
+              }
+            }
+          });
+          els.readingTrack.appendChild(span);
+        });
+
+        // Update classes and center initial word without transition
+        recenterTrack(0, false);
+      }
+
+      /**
+       * Recalculates and positions the track so that word at targetIdx is centered.
+       * @param {number} targetIdx
+       * @param {boolean} animate Whether to smoothly transition the track and words
+       */
+      function recenterTrack(targetIdx, animate = true) {
+        const totalWords = state.words.length;
+        if (totalWords === 0) return;
+
+        const dur = animate && CONFIG.enableTransitions ? CONFIG.transitionDuration : 0;
+        const ease = CONFIG.transitionEasing;
+
+        // 1. Update Word Classes: Simultaneous scale, opacity & color change
+        const words = els.readingTrack.children;
+        for (let i = 0; i < words.length; i++) {
+          const span = words[i];
+          if (i === targetIdx) {
+            // Current Word: scales up to 1.0, turns black, fully opaque (or in-phonics state)
+            span.className = state.isPhonicsActive
+              ? "track-word is-current in-phonics"
+              : "track-word is-current";
+          } else if (i >= targetIdx - CONFIG.wordsBefore && i <= targetIdx + CONFIG.wordsAfter) {
+            // Context Word: scales down to 0.72, turns lighter gray, semi-transparent
+            span.className = "track-word is-context";
+          } else {
+            // Outside Context: fades to 0 opacity
+            span.className = "track-word is-hidden";
+          }
+        }
+
+        // 2. Calculate Subpixel Center Position
+        const targetSpan = words[targetIdx];
+        if (!targetSpan) return;
+
+        const viewportWidth = els.readingViewport.clientWidth;
+        const wordCenterInTrack = targetSpan.offsetLeft + targetSpan.offsetWidth / 2;
+        const targetTranslateX = viewportWidth / 2 - wordCenterInTrack;
+
+        // 3. Apply Sliding Translation to the Track
+        if (dur > 0) {
+          els.readingTrack.style.transition = `transform ${dur}ms ${ease}`;
+        } else {
+          els.readingTrack.style.transition = "none";
+        }
+        els.readingTrack.style.transform = `translate3d(${targetTranslateX}px, 0, 0)`;
+
+        // 4. Update Header Progress and Controls
+        els.wordCounter.textContent = `${targetIdx + 1} / ${totalWords}`;
+        const progressPercent = Math.round(((targetIdx + 1) / totalWords) * 100);
+        els.progressBar.style.width = `${progressPercent}%`;
+
+        els.btnPrevWord.disabled = targetIdx === 0;
+        if (targetIdx === totalWords - 1) {
+          els.btnNextWord.textContent = "Finish 🎉";
+        } else {
+          els.btnNextWord.textContent = "Next ▶";
+        }
+        els.btnNextWord.disabled = false;
+      }
+
+      /**
+       * Completes any running transition immediately.
+       */
+      function finishAnimation() {
+        if (!state.isAnimating) return;
+        if (state.animationTimer) {
+          clearTimeout(state.animationTimer);
+          state.animationTimer = null;
+        }
+        state.currentIndex = state.targetIndex;
+        state.isAnimating = false;
+        recenterTrack(state.currentIndex, false);
+      }
+
+      /**
+       * Navigates to the next word with simultaneous movement, scaling, and coloring.
+       * When auto-read is active, automatically pronounces the next word.
+       */
+      function nextWord() {
+        if (state.isPhonicsActive || state.isComplete) return;
+
+        // Last word reached -> Transition to completion screen
+        if (state.currentIndex >= state.words.length - 1) {
+          finishAnimation();
+          stopSpeech();
+          state.isComplete = true;
+          els.readingTrack.style.display = "none";
+          els.completionContainer.classList.add("active");
+          els.btnPrevWord.disabled = false;
+          els.btnNextWord.disabled = true;
+          els.btnNextWord.textContent = "Finished 🎉";
+          els.wordCounter.textContent = `${state.words.length} / ${state.words.length}`;
+          els.progressBar.style.width = "100%";
+          return;
+        }
+
+        if (state.isAnimating) {
+          finishAnimation();
+        }
+
+        const nextIdx = state.currentIndex + 1;
+        state.targetIndex = nextIdx;
+        state.isAnimating = true;
+
+        // Center the next word with smooth simultaneous interpolation
+        recenterTrack(nextIdx, true);
+
+        // AUTO-READ NEXT WORD: If auto-read toggle is active, pronounce the next word
+        if (CONFIG.autoReadNext) {
+          speakWord(state.words[nextIdx]);
+        }
+
+        const dur = CONFIG.enableTransitions ? CONFIG.transitionDuration : 0;
+        state.animationTimer = setTimeout(() => {
+          state.animationTimer = null;
+          state.currentIndex = nextIdx;
+          state.isAnimating = false;
+        }, dur);
+      }
+
+      /**
+       * Navigates to the previous word.
+       * Per requirement: Auto-read ONLY reads the next word, NOT the previous one.
+       */
+      function prevWord() {
+        if (state.isPhonicsActive) return;
+
+        if (state.isComplete) {
+          // Return from completion view back to last word
+          state.isComplete = false;
+          els.completionContainer.classList.remove("active");
+          els.readingTrack.style.display = "inline-flex";
+          recenterTrack(state.words.length - 1, false);
+          return;
+        }
+
+        if (state.currentIndex <= 0) return;
+
+        if (state.isAnimating) {
+          finishAnimation();
+        }
+
+        // Stop any active speech when going backwards
+        stopSpeech();
+
+        const prevIdx = state.currentIndex - 1;
+        state.targetIndex = prevIdx;
+        state.isAnimating = true;
+
+        // Recenter previous word without auto-reading
+        recenterTrack(prevIdx, true);
+
+        const dur = CONFIG.enableTransitions ? CONFIG.transitionDuration : 0;
+        state.animationTimer = setTimeout(() => {
+          state.animationTimer = null;
+          state.currentIndex = prevIdx;
+          state.isAnimating = false;
+        }, dur);
+      }
+
+      /* ==========================================================================
+       PHONICS PRACTICE ENGINE
+       Letter-by-letter sound-out mode with progressive color fill and slider.
+       ========================================================================== */
+      let phonicsCompleteTimer = null;
+      let isDraggingPhonics = false;
+
+      /**
+       * Dynamically measures the current focused word and aligns the slider track
+       * and close button with the word letters from start to finish.
+       */
+      function updatePhonicsLayout() {
+        if (!state.isPhonicsActive) return;
+        const currentWord = els.readingTrack.children[state.currentIndex];
+        if (!currentWord) return;
+
+        const wordRect = currentWord.getBoundingClientRect();
+        const viewportRect = els.readingViewport.getBoundingClientRect();
+
+        // 1. Align Slider Track completely with the word letters, from start to finish
+        const wordWidth = Math.max(60, Math.round(wordRect.width));
+        const wordCenter = wordRect.left - viewportRect.left + wordRect.width / 2;
+        const wordBottom = wordRect.bottom - viewportRect.top;
+
+        els.phonicsContainer.style.width = `${wordWidth}px`;
+        els.phonicsContainer.style.left = `${wordCenter}px`;
+        els.phonicsContainer.style.top = `${wordBottom + 16}px`;
+        els.phonicsContainer.style.transform = `translateX(-50%)`;
+
+        // 2. Position Close Button right near the top-right corner of the word
+        const wordRight = wordRect.right - viewportRect.left;
+        const wordTop = wordRect.top - viewportRect.top;
+        const closeLeft = Math.min(viewportRect.width - 42, wordRight + 8);
+        const closeTop = Math.max(10, wordTop - 12);
+
+        els.btnClosePhonics.style.left = `${closeLeft}px`;
+        els.btnClosePhonics.style.top = `${closeTop}px`;
+      }
+
+      /**
+       * Builds the sound button pill segments inside the track matching each letter.
+       */
+      function buildPhonicsSegments() {
+        if (!els.phonicsSegmentsRow) return;
+        els.phonicsSegmentsRow.innerHTML = "";
+        const word = state.words[state.currentIndex] || "";
+        const letters = word.replace(/[.,/#!$%^&*;:{}=\-_`~()?"']/g, "");
+        const count = Math.max(1, letters.length);
+
+        for (let i = 0; i < count; i++) {
+          const seg = document.createElement("div");
+          if (i === count - 1 && count > 1) {
+            // Last sound marker is a dot, like in the reference image
+            seg.className = "phonics-segment-dot";
+          } else {
+            seg.className = "phonics-segment";
+          }
+          seg.dataset.index = i;
+          els.phonicsSegmentsRow.appendChild(seg);
+        }
+      }
+
+      /**
+       * Enters phonics practice mode for the current focused word.
+       * The center word is shown slightly bigger, other words disappear, and a
+       * slider appears underneath completely aligned with the word letters.
+       */
+      function enterPhonicsMode() {
+        if (state.isPhonicsActive || state.currentScreen !== "story" || state.isComplete) {
+          return;
+        }
+
+        state.isPhonicsActive = true;
+        state.phonicsCompleting = false;
+        isDraggingPhonics = false;
+        if (phonicsCompleteTimer) {
+          clearTimeout(phonicsCompleteTimer);
+          phonicsCompleteTimer = null;
+        }
+
+        // Mark current word in phonics state
+        const currentWord = els.readingTrack.children[state.currentIndex];
+        if (currentWord) {
+          currentWord.classList.add("in-phonics");
+          currentWord.classList.remove("phonics-complete");
+          currentWord.style.setProperty("--phonics-fill-percent", "0%");
+        }
+
+        // Build sound pill segments
+        buildPhonicsSegments();
+
+        // Reset progress to 0%
+        updatePhonicsProgress(0);
+
+        // Activate UI classes
+        els.readingViewport.classList.add("is-phonics-active");
+        els.storyScreen.classList.add("is-phonics-active");
+        els.phonicsContainer.setAttribute("aria-hidden", "false");
+
+        // Align slider completely with word letters (measure immediately and next frames)
+        updatePhonicsLayout();
+        requestAnimationFrame(() => {
+          updatePhonicsLayout();
+        });
+        setTimeout(() => {
+          updatePhonicsLayout();
+        }, 120);
+      }
+
+      /**
+       * Updates progressive color fill on the word, slider handle, and letter segments.
+       */
+      function updatePhonicsProgress(val) {
+        const clamped = Math.max(0, Math.min(100, val));
+
+        // 1. Update handle position
+        if (els.phonicsHandle) {
+          els.phonicsHandle.style.left = `${clamped}%`;
+          els.phonicsHandle.dataset.percent = clamped;
+          els.phonicsHandle.setAttribute("aria-valuenow", Math.round(clamped));
+        }
+
+        // 2. Update track fill width
+        if (els.phonicsTrackFill) {
+          els.phonicsTrackFill.style.width = `${clamped}%`;
+        }
+
+        // 3. Update progressive text fill on current word
+        const currentWord = els.readingTrack.children[state.currentIndex];
+        if (currentWord) {
+          currentWord.style.setProperty("--phonics-fill-percent", `${clamped}%`);
+        }
+
+        // 4. Update letter segments
+        if (els.phonicsSegmentsRow) {
+          const segments = els.phonicsSegmentsRow.children;
+          const count = segments.length;
+          for (let i = 0; i < count; i++) {
+            const threshold = ((i + 0.35) / count) * 100;
+            if (clamped >= threshold) {
+              segments[i].classList.add("is-active");
+            } else {
+              segments[i].classList.remove("is-active");
+            }
+          }
+        }
+
+        // 5. Check for 100% completion
+        if (clamped >= 100) {
+          if (!state.phonicsCompleting) {
+            triggerPhonicsComplete();
+          }
+        } else {
+          // If dragged back below 100%, cancel completion timer so user can keep practicing
+          if (state.phonicsCompleting) {
+            state.phonicsCompleting = false;
+            if (phonicsCompleteTimer) {
+              clearTimeout(phonicsCompleteTimer);
+              phonicsCompleteTimer = null;
+            }
+            if (currentWord) {
+              currentWord.classList.remove("phonics-complete");
+            }
+          }
+        }
+      }
+
+      /**
+       * Triggers completion sequence when slider reaches 100%.
+       * Pulses the word, pronounces it, and automatically returns to standard reading mode.
+       */
+      function triggerPhonicsComplete() {
+        if (state.phonicsCompleting) return;
+        state.phonicsCompleting = true;
+
+        const currentWord = els.readingTrack.children[state.currentIndex];
+        if (currentWord) {
+          currentWord.classList.add("phonics-complete");
+        }
+
+        // Pronounce the word aloud once sounded out completely
+        const wordText = state.words[state.currentIndex];
+        if (wordText) {
+          speakWord(wordText);
+        }
+
+        // Brief celebration delay before smoothly returning to reading mode
+        if (phonicsCompleteTimer) {
+          clearTimeout(phonicsCompleteTimer);
+        }
+        phonicsCompleteTimer = setTimeout(() => {
+          phonicsCompleteTimer = null;
+          if (state.isPhonicsActive) {
+            exitPhonicsMode();
+          }
+        }, 750);
+      }
+
+      /**
+       * Exits phonics practice mode and smoothly restores standard reading navigation.
+       */
+      function exitPhonicsMode(animate = true) {
+        if (!state.isPhonicsActive) return;
+
+        state.isPhonicsActive = false;
+        state.phonicsCompleting = false;
+        isDraggingPhonics = false;
+        if (phonicsCompleteTimer) {
+          clearTimeout(phonicsCompleteTimer);
+          phonicsCompleteTimer = null;
+        }
+
+        els.readingViewport.classList.remove("is-phonics-active");
+        els.storyScreen.classList.remove("is-phonics-active");
+        els.phonicsContainer.setAttribute("aria-hidden", "true");
+
+        const currentWord = els.readingTrack.children[state.currentIndex];
+        if (currentWord) {
+          currentWord.classList.remove("in-phonics", "phonics-complete");
+          currentWord.style.removeProperty("--phonics-fill-percent");
+        }
+
+        // Reset handle and segments
+        if (els.phonicsHandle) {
+          els.phonicsHandle.classList.remove("is-dragging");
+          els.phonicsHandle.style.left = "0%";
+          els.phonicsHandle.dataset.percent = "0";
+        }
+        if (els.phonicsTrackFill) {
+          els.phonicsTrackFill.style.width = "0%";
+        }
+      }
+
+      /* ==========================================================================
+       SPEECH & AUTO-READ ENGINE
+       ========================================================================== */
+      /**
+       * Pronounces the given text word using native Web Speech API.
+       */
+      function speakWord(wordText) {
+        if (!("speechSynthesis" in window)) return;
+        if (!wordText) return;
+
+        const cleanWord = wordText.replace(/[.,/#!$%^&*;:{}=\-_`~()?"']/g, "");
+        const utterance = new SpeechSynthesisUtterance(cleanWord);
+        utterance.rate = 0.85; // Clear, relaxed cadence for young learners
+        utterance.pitch = 1.05;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function speakCurrentWord() {
+        speakWord(state.words[state.currentIndex]);
+      }
+
+      function stopSpeech() {
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+        }
+      }
+
+      /**
+       * Updates auto-read state, UI toggle visuals, and syncs settings buttons.
+       * The manual read button remains accessible so the user can repeat the sound anytime.
+       */
+      function setAutoRead(enabled, save = true) {
+        CONFIG.autoReadNext = enabled;
+        currentSettings.autoReadNext = enabled;
+        if (els && els.chkAutoRead) {
+          els.chkAutoRead.checked = enabled;
+        }
+
+        if (els && els.speechControlsContainer && els.autoReadText) {
+          if (enabled) {
+            els.speechControlsContainer.classList.add("auto-active");
+            els.autoReadText.textContent = "Auto-read: ON";
+          } else {
+            els.speechControlsContainer.classList.remove("auto-active");
+            els.autoReadText.textContent = "Auto-read next";
+          }
+        }
+
+        if (els && els.btnSettingAutoReadOn && els.btnSettingAutoReadOff) {
+          if (enabled) {
+            els.btnSettingAutoReadOn.classList.add("active");
+            els.btnSettingAutoReadOff.classList.remove("active");
+          } else {
+            els.btnSettingAutoReadOff.classList.add("active");
+            els.btnSettingAutoReadOn.classList.remove("active");
+          }
+        }
+
+        if (save) {
+          saveSettingsToStorage();
+        }
+      }
+
+      /* ==========================================================================
+       EVENT LISTENERS & INTERACTION
+       ========================================================================== */
+
+      // 1. Back to Home Button
+      els.btnBackHome.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.title = "Adrian's Reading Buddy";
+        showHomeScreen();
+      });
+
+      // 2. Navigation Buttons (Prev / Next)
+      els.btnPrevWord.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (state.isPhonicsActive) return;
+        prevWord();
+      });
+
+      els.btnNextWord.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (state.isPhonicsActive) return;
+        nextWord();
+      });
+
+      // 3. Phonics Mode Controls: Close Button, Drag Handling, and Tap-Outside Exit
+      els.btnClosePhonics.addEventListener("click", (e) => {
+        e.stopPropagation();
+        exitPhonicsMode();
+      });
+
+      function setPhonicsProgressFromClientX(clientX) {
+        if (!els.phonicsTrackContainer) return;
+        const trackRect = els.phonicsTrackContainer.getBoundingClientRect();
+        if (trackRect.width <= 0) return;
+        const pct = Math.max(0, Math.min(100, ((clientX - trackRect.left) / trackRect.width) * 100));
+        updatePhonicsProgress(pct);
+      }
+
+      function handlePhonicsPointerDown(e) {
+        if (!state.isPhonicsActive) return;
+        e.stopPropagation();
+        e.preventDefault();
+        isDraggingPhonics = true;
+        els.phonicsHandle.classList.add("is-dragging");
+        try {
+          els.phonicsHandle.setPointerCapture(e.pointerId);
+        } catch (_) {}
+        setPhonicsProgressFromClientX(e.clientX);
+      }
+
+      function handlePhonicsPointerMove(e) {
+        if (!isDraggingPhonics) return;
+        e.stopPropagation();
+        e.preventDefault();
+        setPhonicsProgressFromClientX(e.clientX);
+      }
+
+      function handlePhonicsPointerUp(e) {
+        if (!isDraggingPhonics) return;
+        e.stopPropagation();
+        isDraggingPhonics = false;
+        els.phonicsHandle.classList.remove("is-dragging");
+        try {
+          els.phonicsHandle.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      }
+
+      if (els.phonicsTrackContainer) {
+        els.phonicsTrackContainer.addEventListener("pointerdown", handlePhonicsPointerDown);
+      }
+      if (els.phonicsHandle) {
+        els.phonicsHandle.addEventListener("pointerdown", handlePhonicsPointerDown);
+      }
+      if (els.phonicsContainer) {
+        els.phonicsContainer.addEventListener("click", (e) => {
+          e.stopPropagation();
+        });
+      }
+      window.addEventListener("pointermove", handlePhonicsPointerMove);
+      window.addEventListener("pointerup", handlePhonicsPointerUp);
+      window.addEventListener("pointercancel", handlePhonicsPointerUp);
+
+      // Center word click delegation on the reading track
+      els.readingTrack.addEventListener("click", (e) => {
+        const currentWord = e.target.closest(".track-word.is-current");
+
+        if (state.isPhonicsActive) {
+          e.stopPropagation();
+          if (currentWord) {
+            speakWord(state.words[state.currentIndex]);
+          } else {
+            exitPhonicsMode();
+          }
+          return;
+        }
+
+        if (!currentWord || state.isComplete) return;
+
+        e.stopPropagation();
+        if (state.isAnimating) {
+          finishAnimation();
+        }
+        enterPhonicsMode();
+      });
+
+      // 4. Manual Speech Helper Button (reads current word)
+      els.btnSpeakWord.addEventListener("click", (e) => {
+        e.stopPropagation();
+        speakCurrentWord();
+      });
+
+      // 5. Auto-Read Toggle Checkbox
+      els.chkAutoRead.addEventListener("change", (e) => {
+        e.stopPropagation();
+        setAutoRead(e.target.checked);
+      });
+
+      // 6. Restart Story & Choose Another Story buttons
+      els.btnRestartStory.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (state.isPhonicsActive) {
+          exitPhonicsMode(false);
+        }
+        stopSpeech();
+        state.currentIndex = 0;
+        state.targetIndex = 0;
+        state.isComplete = false;
+        els.completionContainer.classList.remove("active");
+        els.readingTrack.style.display = "inline-flex";
+        recenterTrack(0, false);
+      });
+
+      els.btnChooseAnother.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (state.isPhonicsActive) {
+          exitPhonicsMode(false);
+        }
+        showHomeScreen();
+      });
+
+      // 7. Left & Right Screen Half Touch/Click Zones and Outside-Tap Listeners
+      function handleViewportClick(e) {
+        if (state.currentScreen !== "story" || state.isComplete) return;
+
+        // Phonics Mode: clicking outside of the word and slider exits phonics mode
+        if (state.isPhonicsActive) {
+          if (e.target.closest("#btn-close-phonics, #phonics-container")) {
+            return;
+          }
+          if (e.target.closest(".track-word.is-current")) {
+            e.stopPropagation();
+            speakWord(state.words[state.currentIndex]);
+            return;
+          }
+          e.stopPropagation();
+          exitPhonicsMode();
+          return;
+        }
+
+        if (!CONFIG.enableScreenHalfTap) return;
+
+        // Ignore clicks on buttons, speech controls, settings modal, phonics UI, or words
+        if (
+          e.target.closest(
+            "button, .modal-card, .speech-controls-container, .phonics-container, .phonics-close-btn, .track-word"
+          )
+        ) {
+          return;
+        }
+
+        const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : null);
+        if (clientX === null) return;
+
+        const splitX = window.innerWidth / 2;
+        if (clientX < splitX) {
+          prevWord();
+        } else {
+          nextWord();
+        }
+      }
+
+      els.zoneLeft.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (state.isPhonicsActive) {
+          exitPhonicsMode();
+          return;
+        }
+        prevWord();
+      });
+
+      els.zoneRight.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (state.isPhonicsActive) {
+          exitPhonicsMode();
+          return;
+        }
+        nextWord();
+      });
+
+      els.readingViewport.addEventListener("click", handleViewportClick);
+
+      // Story screen backdrop click listener to exit phonics mode on any outside tap
+      els.storyScreen.addEventListener("click", (e) => {
+        if (!state.isPhonicsActive) return;
+        if (e.target.closest("#btn-close-phonics, #phonics-container, .track-word.is-current")) {
+          return;
+        }
+        e.stopPropagation();
+        exitPhonicsMode();
+      });
+
+      // 8. Keyboard Navigation: Left & Right Cursor Keys & Global Escape
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (els.deleteModal.classList.contains("active")) {
+            closeDeleteModal();
+            return;
+          }
+          if (els.settingsModal.classList.contains("active")) {
+            closeSettingsModal();
+            return;
+          }
+          if (state.isPhonicsActive) {
+            exitPhonicsMode();
+            return;
+          }
+          if (state.currentScreen !== "home") {
+            showHomeScreen();
+            return;
+          }
+        }
+
+        if (state.currentScreen !== "story") return;
+
+        // In Phonics mode: Arrow keys control slider, Space pronounces word
+        if (state.isPhonicsActive) {
+          if (e.key === "ArrowRight") {
+            e.preventDefault();
+            const currentPct = parseFloat(els.phonicsHandle?.dataset.percent || "0");
+            const newVal = Math.min(100, currentPct + 10);
+            updatePhonicsProgress(newVal);
+            return;
+          } else if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            const currentPct = parseFloat(els.phonicsHandle?.dataset.percent || "0");
+            const newVal = Math.max(0, currentPct - 10);
+            updatePhonicsProgress(newVal);
+            return;
+          } else if (e.key === " ") {
+            e.preventDefault();
+            speakWord(state.words[state.currentIndex]);
+            return;
+          }
+          return;
+        }
+
+        if (!CONFIG.enableKeyboard) return;
+
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          prevWord();
+        } else if (e.key === "ArrowRight" || e.key === " ") {
+          e.preventDefault();
+          nextWord();
+        }
+      });
+
+      // 8. Add Story Screen Events
+      els.btnCancelAdd.addEventListener("click", showHomeScreen);
+      els.btnCancelAddBottom.addEventListener("click", showHomeScreen);
+
+      els.storyContentInput.addEventListener("input", () => {
+        const words = parseStoryContent(els.storyContentInput.value);
+        els.storyWordCountBadge.textContent = `${words.length} ${words.length === 1 ? "word" : "words"}`;
+        if (
+          els.addStoryError.style.display === "block" &&
+          words.length > 0 &&
+          els.storyTitleInput.value.trim()
+        ) {
+          els.addStoryError.style.display = "none";
+        }
+      });
+
+      els.storyTitleInput.addEventListener("input", () => {
+        if (
+          els.addStoryError.style.display === "block" &&
+          els.storyTitleInput.value.trim() &&
+          parseStoryContent(els.storyContentInput.value).length > 0
+        ) {
+          els.addStoryError.style.display = "none";
+        }
+      });
+
+      els.btnSaveAndRead.addEventListener("click", () => {
+        handleSaveStory(true);
+      });
+
+      els.btnSaveStoryList.addEventListener("click", () => {
+        handleSaveStory(false);
+      });
+
+      // 9. Settings Modal
+      function openSettingsModal() {
+        els.settingsModal.classList.add("active");
+      }
+
+      function closeSettingsModal() {
+        els.settingsModal.classList.remove("active");
+      }
+
+      els.btnOpenSettings.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openSettingsModal();
+      });
+
+      els.btnHomeSettings.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openSettingsModal();
+      });
+
+      els.btnCloseSettings.addEventListener("click", closeSettingsModal);
+
+      els.settingsModal.addEventListener("click", (e) => {
+        if (e.target === els.settingsModal) {
+          closeSettingsModal();
+        }
+      });
+
+      // Settings: Auto-read Next Word
+      els.btnSettingAutoReadOff.addEventListener("click", () => {
+        setAutoRead(false);
+      });
+
+      els.btnSettingAutoReadOn.addEventListener("click", () => {
+        setAutoRead(true);
+      });
+
+      // Settings: Transition Animation Speed
+      document.querySelectorAll("[data-transition]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll("[data-transition]")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const mode = btn.dataset.transition;
+          currentSettings.transition = mode;
+          if (mode === "smooth") {
+            CONFIG.enableTransitions = true;
+            CONFIG.transitionDuration = 320;
+            document.documentElement.style.setProperty("--transition-duration", "320ms");
+          } else if (mode === "fast") {
+            CONFIG.enableTransitions = true;
+            CONFIG.transitionDuration = 180;
+            document.documentElement.style.setProperty("--transition-duration", "180ms");
+          } else if (mode === "instant") {
+            CONFIG.enableTransitions = false;
+            CONFIG.transitionDuration = 0;
+            document.documentElement.style.setProperty("--transition-duration", "0ms");
+          }
+          saveSettingsToStorage();
+        });
+      });
+
+      // Settings: Word count before/after
+      document.querySelectorAll("[data-words]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("[data-words]").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const count = parseInt(btn.dataset.words, 10);
+          currentSettings.wordsCount = count;
+          CONFIG.wordsBefore = count;
+          CONFIG.wordsAfter = count;
+          if (state.currentScreen === "story" && !state.isComplete) {
+            recenterTrack(state.currentIndex, false);
+          }
+          saveSettingsToStorage();
+        });
+      });
+
+      // Settings: Text Size
+      document.querySelectorAll("[data-size]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("[data-size]").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const size = btn.dataset.size;
+          currentSettings.textSize = size;
+          if (size === "small") {
+            document.documentElement.style.setProperty(
+              "--current-word-size",
+              "clamp(2.0rem, 5vw, 3.2rem)",
+            );
+          } else if (size === "medium") {
+            document.documentElement.style.setProperty(
+              "--current-word-size",
+              "clamp(2.4rem, 6.5vw, 4.5rem)",
+            );
+          } else if (size === "large") {
+            document.documentElement.style.setProperty(
+              "--current-word-size",
+              "clamp(3.0rem, 8vw, 5.5rem)",
+            );
+          }
+          if (state.currentScreen === "story" && !state.isComplete) {
+            recenterTrack(state.currentIndex, false);
+          }
+          saveSettingsToStorage();
+        });
+      });
+
+      // Settings: Word / Letter Color (Black or Purple)
+      document.querySelectorAll("[data-word-color]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("[data-word-color]").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const wordColor = btn.dataset.wordColor;
+          currentSettings.wordColor = wordColor;
+          CONFIG.wordColor = wordColor;
+
+          if (wordColor === "purple") {
+            CONFIG.textColor = "#6b21a8";
+            CONFIG.contextWordColor = "#9333ea";
+            CONFIG.contextOpacity = 0.55;
+            document.documentElement.style.setProperty("--word-color", "#6b21a8");
+            document.documentElement.style.setProperty("--text-color", "#6b21a8");
+            document.documentElement.style.setProperty("--context-word-color", "#9333ea");
+            document.documentElement.style.setProperty("--context-opacity", "0.55");
+          } else {
+            CONFIG.textColor = "#000000";
+            CONFIG.contextWordColor = "#71717a";
+            CONFIG.contextOpacity = 0.5;
+            document.documentElement.style.setProperty("--word-color", "#000000");
+            document.documentElement.style.setProperty("--text-color", "#000000");
+            document.documentElement.style.setProperty("--context-word-color", "#71717a");
+            document.documentElement.style.setProperty("--context-opacity", "0.5");
+          }
+          saveSettingsToStorage();
+        });
+      });
+
+      // Settings: Background Color
+      document.querySelectorAll("[data-bg]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("[data-bg]").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const bg = btn.dataset.bg;
+          currentSettings.backgroundColor = bg;
+          CONFIG.backgroundColor = bg;
+          document.documentElement.style.setProperty("--bg-color", bg);
+          if (bg !== "#ffffff") {
+            document.documentElement.style.setProperty("--card-bg", "#ffffff");
+          } else {
+            document.documentElement.style.setProperty("--card-bg", "#fafafa");
+          }
+          // If wordColor is black, ensure high-contrast text color on tinted backgrounds
+          if (currentSettings.wordColor === "black") {
+            const color = btn.dataset.color || "#000000";
+            CONFIG.textColor = color;
+            document.documentElement.style.setProperty("--word-color", color);
+            document.documentElement.style.setProperty("--text-color", color);
+          }
+          saveSettingsToStorage();
+        });
+      });
+
+      // 10. Delete Confirmation Modal Events
+      els.btnCancelDelete.addEventListener("click", closeDeleteModal);
+
+      els.deleteModal.addEventListener("click", (e) => {
+        if (e.target === els.deleteModal) {
+          closeDeleteModal();
+        }
+      });
+
+      els.btnConfirmDelete.addEventListener("click", () => {
+        if (!storyPendingDelete) return;
+        const idx = STORIES.findIndex((s) => s.id === storyPendingDelete.id);
+        if (idx !== -1) {
+          STORIES.splice(idx, 1);
+          saveStoriesToStorage();
+          renderStoryCards();
+        }
+        closeDeleteModal();
+      });
+
+      // 11. Clear LocalStorage & Restore Starter Stories & Default Settings
+      els.btnClearStorage.addEventListener("click", () => {
+        if (confirm("Clear local storage and reset all stories and settings to default?")) {
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(SETTINGS_STORAGE_KEY);
+          } catch (err) {
+            console.warn("Error clearing localStorage entries:", err);
+          }
+          loadStoriesFromStorage();
+          loadSettingsFromStorage();
+          renderStoryCards();
+          closeSettingsModal();
+        }
+      });
+
+      // Handle Window Resize to keep centered word aligned
+      window.addEventListener("resize", () => {
+        if (state.isAnimating) {
+          finishAnimation();
+        }
+        if (state.currentScreen === "story" && !state.isComplete) {
+          recenterTrack(state.currentIndex, false);
+          if (state.isPhonicsActive) {
+            updatePhonicsLayout();
+            const currentWord = els.readingTrack.children[state.currentIndex];
+            if (currentWord) {
+              currentWord.classList.add("in-phonics");
+            }
+          }
+        }
+      });
+
+      /* ==========================================================================
+       INITIALIZATION
+       ======================================================================== */
+      function init() {
+        // Load settings from localStorage (or initialize with default settings)
+        loadSettingsFromStorage();
+
+        // Load stories from localStorage (or initialize with starter stories)
+        loadStoriesFromStorage();
+
+        // Build story cards (including '+' Add Story card)
+        renderStoryCards();
+
+        // Apply initial static CSS variables from CONFIG
+        document.documentElement.style.setProperty("--context-word-color", CONFIG.contextWordColor);
+        document.documentElement.style.setProperty("--context-opacity", CONFIG.contextOpacity);
+        document.documentElement.style.setProperty("--context-scale", CONFIG.contextScale);
+      }
+
+      // Run when DOM is ready
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>
