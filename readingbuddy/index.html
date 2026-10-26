@@ -665,7 +665,7 @@
         letter-spacing: var(--letter-spacing);
         line-height: 1.15;
         white-space: nowrap;
-        transform-origin: center 75%;
+        transform-origin: center center;
         transition:
           transform var(--transition-duration) var(--transition-easing),
           color var(--transition-duration) var(--transition-easing),
@@ -706,9 +706,10 @@
         --phonics-fill-percent: 0%;
         --phonics-fill-color: var(--accent-color);
         cursor: pointer;
-        padding: 0 !important;
-        margin: 0 !important;
-        letter-spacing: 0.12em;
+        /* Keep identical padding, margin & letter-spacing to prevent layout reflow/jump */
+        padding: 0.15rem 0.6rem;
+        margin: -0.15rem -0.6rem;
+        letter-spacing: var(--letter-spacing);
         background-image: linear-gradient(
           to right,
           var(--phonics-fill-color) 0%,
@@ -722,7 +723,8 @@
         color: transparent;
         transform: scale(1.3);
         transform-origin: center center;
-        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* Smooth deceleration without overshoot bounce to eliminate jumping */
+        transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
         will-change: transform;
       }
 
@@ -802,13 +804,13 @@
       /* Close Button (Positioned close to the highlighted word, just '✕') */
       .phonics-close-btn {
         position: absolute;
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         background: #ffffff;
         border: 2px solid #e4e4e7;
         color: #52525b;
-        font-size: 1.05rem;
+        font-size: 1.15rem;
         font-weight: 700;
         display: flex;
         align-items: center;
@@ -820,7 +822,7 @@
         transform: scale(0.8);
         transition:
           opacity 0.25s ease,
-          transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+          transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
           background-color 0.15s ease,
           color 0.15s ease,
           border-color 0.15s ease;
@@ -828,6 +830,17 @@
         font-family: inherit;
         padding: 0;
         line-height: 1;
+      }
+
+      /* Expanded hit area for close button */
+      .phonics-close-btn::before {
+        content: "";
+        position: absolute;
+        top: -12px;
+        bottom: -12px;
+        left: -12px;
+        right: -12px;
+        cursor: pointer;
       }
 
       .reading-viewport.is-phonics-active .phonics-close-btn {
@@ -853,17 +866,20 @@
         z-index: 30;
         pointer-events: none;
         opacity: 0;
+        transform: translateX(-50%) translateY(6px);
         transition:
-          opacity 0.3s ease,
-          transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          opacity 0.28s ease,
+          transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
         display: flex;
         flex-direction: column;
         align-items: center;
         box-sizing: border-box;
+        padding-bottom: 52px;
       }
 
       .reading-viewport.is-phonics-active .phonics-container {
         opacity: 1;
+        transform: translateX(-50%) translateY(0);
         pointer-events: auto;
       }
 
@@ -871,8 +887,8 @@
       .phonics-track-container {
         position: relative;
         width: 100%;
-        min-width: 60px;
-        height: 24px;
+        min-width: 80px;
+        height: 26px;
         background: #ffffff;
         border: 2.5px solid #1e1b4b;
         border-radius: 9999px;
@@ -923,7 +939,7 @@
         background-color: #e0e7ff;
         transition:
           background-color 0.15s ease,
-          transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+          transform 0.15s cubic-bezier(0.22, 1, 0.36, 1);
       }
 
       .phonics-segment.is-active {
@@ -941,7 +957,7 @@
         background-color: #fecdd3;
         transition:
           background-color 0.15s ease,
-          transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+          transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
       }
 
       .phonics-segment-dot.is-active {
@@ -950,14 +966,14 @@
         box-shadow: 0 0 8px rgba(244, 63, 94, 0.5);
       }
 
-      /* Grabbable Tab-Like Handle */
+      /* Grabbable Tab-Like Handle (Enlarged and with generous touch/collision hit area) */
       .phonics-handle {
         position: absolute;
-        top: 22px;
+        top: 23px;
         left: 0%;
         transform: translateX(-50%);
-        width: 46px;
-        height: 40px;
+        width: 56px;
+        height: 48px;
         cursor: grab;
         touch-action: none;
         user-select: none;
@@ -968,6 +984,18 @@
           transform 0.15s ease,
           filter 0.15s ease;
         outline: none;
+      }
+
+      /* Generous touch/collision hit area for effortless grabbing on touch and mouse */
+      .phonics-handle::before {
+        content: "";
+        position: absolute;
+        top: -20px;
+        bottom: -24px;
+        left: -24px;
+        right: -24px;
+        cursor: grab;
+        touch-action: none;
       }
 
       .phonics-handle:hover {
@@ -982,6 +1010,11 @@
         filter: drop-shadow(0 8px 18px rgba(30, 27, 75, 0.35));
       }
 
+      .phonics-handle.is-dragging::before,
+      .phonics-handle:active::before {
+        cursor: grabbing;
+      }
+
       .phonics-handle:focus-visible {
         filter: drop-shadow(0 0 0 3px rgba(79, 70, 229, 0.4))
           drop-shadow(0 4px 10px rgba(30, 27, 75, 0.2));
@@ -989,8 +1022,8 @@
 
       .phonics-handle-svg {
         display: block;
-        width: 46px;
-        height: 40px;
+        width: 56px;
+        height: 48px;
         pointer-events: none;
       }
 
@@ -1610,7 +1643,7 @@ Line breaks will automatically be formatted for reading."
         </div>
 
         <!-- Unified Ribbon Track: Words move, scale, and change color simultaneously -->
-        <div class="reading-track-wrapper">
+        <div id="reading-track-wrapper" class="reading-track-wrapper">
           <div id="reading-track" class="reading-track"></div>
         </div>
 
@@ -1646,24 +1679,24 @@ Line breaks will automatically be formatted for reading."
           >
             <svg
               class="phonics-handle-svg"
-              width="46"
-              height="40"
-              viewBox="0 0 46 40"
+              width="56"
+              height="48"
+              viewBox="0 0 56 48"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <!-- Tab body with subtle pointed peak at top -->
+              <!-- Tab body with pointed peak at top -->
               <path
-                d="M 23 2 L 39 8 C 42.5 9.3 44 11.5 44 15 L 44 32 C 44 36 40.5 39 36.5 39 L 9.5 39 C 5.5 39 2 36 2 32 L 2 15 C 2 11.5 3.5 9.3 7 8 Z"
+                d="M 28 2 L 48 9 C 52 10.5 54 13 54 17 L 54 39 C 54 44 50 47 45 47 L 11 47 C 6 47 2 44 2 39 L 2 17 C 2 13 4 10.5 8 9 Z"
                 fill="#ffffff"
                 stroke="#1e1b4b"
-                stroke-width="3"
+                stroke-width="3.5"
                 stroke-linejoin="round"
               />
               <!-- Three vertical grip lines -->
-              <line x1="18" y1="18" x2="18" y2="29" stroke="#c7d2fe" stroke-width="3" stroke-linecap="round"/>
-              <line x1="23" y1="18" x2="23" y2="29" stroke="#c7d2fe" stroke-width="3" stroke-linecap="round"/>
-              <line x1="28" y1="18" x2="28" y2="29" stroke="#c7d2fe" stroke-width="3" stroke-linecap="round"/>
+              <line x1="21" y1="21" x2="21" y2="35" stroke="#c7d2fe" stroke-width="3.5" stroke-linecap="round"/>
+              <line x1="28" y1="21" x2="28" y2="35" stroke="#c7d2fe" stroke-width="3.5" stroke-linecap="round"/>
+              <line x1="35" y1="21" x2="35" y2="35" stroke="#c7d2fe" stroke-width="3.5" stroke-linecap="round"/>
             </svg>
           </div>
         </div>
@@ -1751,8 +1784,9 @@ Line breaks will automatically be formatted for reading."
         <div class="setting-group">
           <label class="setting-label">Context Words (before and after):</label>
           <div class="setting-options">
+            <button class="setting-pill-btn active" data-words="0">0 Words (None)</button>
             <button class="setting-pill-btn" data-words="1">1 Word</button>
-            <button class="setting-pill-btn active" data-words="2">2 Words</button>
+            <button class="setting-pill-btn" data-words="2">2 Words</button>
           </div>
         </div>
 
@@ -1871,9 +1905,9 @@ Line breaks will automatically be formatted for reading."
        Change these parameters to adjust the reading experience and animation.
        ========================================================================== */
       const CONFIG = {
-        // Number of words shown before and after current word (1 or 2 as per design)
-        wordsBefore: 2,
-        wordsAfter: 2,
+        // Number of words shown before and after current word (0: just current word)
+        wordsBefore: 0,
+        wordsAfter: 0,
 
         // Smooth Sliding & Fade Transitions
         enableTransitions: true, // Enable simultaneous word slide, growth & fade
@@ -1907,7 +1941,7 @@ Line breaks will automatically be formatted for reading."
       const DEFAULT_SETTINGS = {
         autoReadNext: false,
         transition: "smooth",
-        wordsCount: 2,
+        wordsCount: 0,
         textSize: "medium",
         wordColor: "black",
         backgroundColor: "#ffffff",
@@ -2098,6 +2132,12 @@ Leo was flying high under the glowing yellow moon.`,
           if (saved) {
             const parsed = JSON.parse(saved);
             if (parsed && typeof parsed === "object") {
+              // Migrate previous default (2 words) to 0 words unless user explicitly set wordsCount
+              if (parsed.wordsCount === 2 && !parsed.userExplicitlySetWordsCount) {
+                parsed.wordsCount = 0;
+              } else if (parsed.wordsCount === undefined || parsed.wordsCount === null) {
+                parsed.wordsCount = 0;
+              }
               currentSettings = Object.assign({}, DEFAULT_SETTINGS, parsed);
               applySettings(currentSettings);
               return;
@@ -2154,8 +2194,9 @@ Leo was flying high under the glowing yellow moon.`,
           document.documentElement.style.setProperty("--transition-duration", "0ms");
         }
 
-        // 3. Word count before/after
-        const count = parseInt(settings.wordsCount, 10) === 1 ? 1 : 2;
+        // 3. Word count before/after (default: 0 words, only show current word)
+        const rawCount = parseInt(settings.wordsCount, 10);
+        const count = rawCount === 1 || rawCount === 2 ? rawCount : 0;
         currentSettings.wordsCount = count;
         CONFIG.wordsBefore = count;
         CONFIG.wordsAfter = count;
@@ -2262,6 +2303,7 @@ Leo was flying high under the glowing yellow moon.`,
         progressBar: document.getElementById("progress-bar"),
 
         readingViewport: document.getElementById("reading-viewport"),
+        readingTrackWrapper: document.getElementById("reading-track-wrapper"),
         readingTrack: document.getElementById("reading-track"),
 
         // Phonics Practice Elements
@@ -2669,6 +2711,24 @@ Leo was flying high under the glowing yellow moon.`,
                 // Tapping while in phonics mode pronounces the word
                 speakWord(state.words[state.currentIndex]);
               }
+            } else if (!state.isPhonicsActive && !state.isComplete) {
+              // Tapping a context word navigates to it
+              e.stopPropagation();
+              const target = parseInt(span.dataset.index, 10);
+              if (!isNaN(target) && target >= 0 && target < state.words.length) {
+                if (state.isAnimating) {
+                  finishAnimation();
+                }
+                state.targetIndex = target;
+                state.isAnimating = true;
+                recenterTrack(target, true);
+                const dur = CONFIG.enableTransitions ? CONFIG.transitionDuration : 0;
+                state.animationTimer = setTimeout(() => {
+                  state.animationTimer = null;
+                  state.currentIndex = target;
+                  state.isAnimating = false;
+                }, dur);
+              }
             }
           });
           els.readingTrack.appendChild(span);
@@ -2849,29 +2909,43 @@ Leo was flying high under the glowing yellow moon.`,
        * Dynamically measures the current focused word and aligns the slider track
        * and close button with the word letters from start to finish.
        */
+      /**
+       * Deterministically positions and aligns the slider track and close button
+       * with the centered focused word at its final scale (1.3x), preventing any jumping.
+       */
       function updatePhonicsLayout() {
         if (!state.isPhonicsActive) return;
         const currentWord = els.readingTrack.children[state.currentIndex];
         if (!currentWord) return;
 
-        const wordRect = currentWord.getBoundingClientRect();
         const viewportRect = els.readingViewport.getBoundingClientRect();
+        if (viewportRect.width <= 0) return;
 
-        // 1. Align Slider Track completely with the word letters, from start to finish
-        const wordWidth = Math.max(60, Math.round(wordRect.width));
-        const wordCenter = wordRect.left - viewportRect.left + wordRect.width / 2;
-        const wordBottom = wordRect.bottom - viewportRect.top;
+        const targetScale = 1.3;
+        const unscaledWidth = currentWord.offsetWidth;
+        const unscaledHeight = currentWord.offsetHeight;
+        // Align slider track completely with the word letters at final scale
+        const wordWidth = Math.max(80, Math.round(unscaledWidth * targetScale));
+
+        // In standard reading, current word is centered horizontally in viewport
+        const wordCenterX = viewportRect.width / 2;
+        const trackWrapper = els.readingTrackWrapper || document.getElementById("reading-track-wrapper");
+        const trackWrapperRect = trackWrapper
+          ? trackWrapper.getBoundingClientRect()
+          : currentWord.getBoundingClientRect();
+        const wordCenterY = (trackWrapperRect.top + trackWrapperRect.height / 2) - viewportRect.top;
+
+        const wordBottom = wordCenterY + (unscaledHeight * targetScale) / 2;
+        const wordTop = wordCenterY - (unscaledHeight * targetScale) / 2;
+        const wordRight = wordCenterX + wordWidth / 2;
 
         els.phonicsContainer.style.width = `${wordWidth}px`;
-        els.phonicsContainer.style.left = `${wordCenter}px`;
-        els.phonicsContainer.style.top = `${wordBottom + 16}px`;
-        els.phonicsContainer.style.transform = `translateX(-50%)`;
+        els.phonicsContainer.style.left = `${wordCenterX}px`;
+        els.phonicsContainer.style.top = `${Math.round(wordBottom + 18)}px`;
 
-        // 2. Position Close Button right near the top-right corner of the word
-        const wordRight = wordRect.right - viewportRect.left;
-        const wordTop = wordRect.top - viewportRect.top;
-        const closeLeft = Math.min(viewportRect.width - 42, wordRight + 8);
-        const closeTop = Math.max(10, wordTop - 12);
+        // Position Close Button right near the top-right corner of the scaled word
+        const closeLeft = Math.min(viewportRect.width - 44, Math.round(wordRight + 12));
+        const closeTop = Math.max(10, Math.round(wordTop - 14));
 
         els.btnClosePhonics.style.left = `${closeLeft}px`;
         els.btnClosePhonics.style.top = `${closeTop}px`;
@@ -2902,8 +2976,8 @@ Leo was flying high under the glowing yellow moon.`,
 
       /**
        * Enters phonics practice mode for the current focused word.
-       * The center word is shown slightly bigger, other words disappear, and a
-       * slider appears underneath completely aligned with the word letters.
+       * The center word grows smoothly to 1.3x with no jumping, and a slider appears
+       * underneath completely aligned with the word letters from start to finish.
        */
       function enterPhonicsMode() {
         if (state.isPhonicsActive || state.currentScreen !== "story" || state.isComplete) {
@@ -2932,19 +3006,13 @@ Leo was flying high under the glowing yellow moon.`,
         // Reset progress to 0%
         updatePhonicsProgress(0);
 
+        // Position slider and close button directly at their final coordinates
+        updatePhonicsLayout();
+
         // Activate UI classes
         els.readingViewport.classList.add("is-phonics-active");
         els.storyScreen.classList.add("is-phonics-active");
         els.phonicsContainer.setAttribute("aria-hidden", "false");
-
-        // Align slider completely with word letters (measure immediately and next frames)
-        updatePhonicsLayout();
-        requestAnimationFrame(() => {
-          updatePhonicsLayout();
-        });
-        setTimeout(() => {
-          updatePhonicsLayout();
-        }, 120);
       }
 
       /**
@@ -3209,6 +3277,7 @@ Leo was flying high under the glowing yellow moon.`,
         els.phonicsHandle.addEventListener("pointerdown", handlePhonicsPointerDown);
       }
       if (els.phonicsContainer) {
+        els.phonicsContainer.addEventListener("pointerdown", handlePhonicsPointerDown);
         els.phonicsContainer.addEventListener("click", (e) => {
           e.stopPropagation();
         });
@@ -3503,8 +3572,9 @@ Leo was flying high under the glowing yellow moon.`,
         btn.addEventListener("click", () => {
           document.querySelectorAll("[data-words]").forEach((b) => b.classList.remove("active"));
           btn.classList.add("active");
-          const count = parseInt(btn.dataset.words, 10);
+          const count = parseInt(btn.dataset.words, 10) || 0;
           currentSettings.wordsCount = count;
+          currentSettings.userExplicitlySetWordsCount = true;
           CONFIG.wordsBefore = count;
           CONFIG.wordsAfter = count;
           if (state.currentScreen === "story" && !state.isComplete) {
