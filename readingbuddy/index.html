@@ -102,6 +102,63 @@
         margin-bottom: 1.25rem;
       }
 
+      .home-top-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .home-copy-prompt-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: var(--button-bg);
+        border: 1px solid #e4e4e7;
+        border-radius: 10px;
+        padding: 0 0.85rem;
+        height: 40px;
+        font-family: inherit;
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #3f3f46;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        user-select: none;
+        white-space: nowrap;
+      }
+
+      .home-copy-prompt-btn:hover {
+        background: var(--button-hover-bg);
+        border-color: #cbd5e1;
+        color: #18181b;
+      }
+
+      .home-copy-prompt-btn:active {
+        transform: scale(0.97);
+      }
+
+      .home-copy-prompt-btn.is-copied {
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+        color: #065f46;
+      }
+
+      .home-copy-prompt-btn .copy-icon {
+        font-size: 1.15rem;
+        line-height: 1;
+      }
+
+      @media (max-width: 580px) {
+        .home-copy-prompt-btn .copy-text {
+          display: none;
+        }
+        .home-copy-prompt-btn {
+          width: 40px;
+          padding: 0;
+          justify-content: center;
+        }
+      }
+
       .home-header {
         text-align: center;
         margin-bottom: 2.5rem;
@@ -818,10 +875,12 @@
         cursor: pointer;
         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
         opacity: 0;
+        visibility: hidden;
         pointer-events: none;
         transform: scale(0.8);
         transition:
           opacity 0.25s ease,
+          visibility 0.25s ease,
           transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
           background-color 0.15s ease,
           color 0.15s ease,
@@ -845,6 +904,7 @@
 
       .reading-viewport.is-phonics-active .phonics-close-btn {
         opacity: 1;
+        visibility: visible;
         pointer-events: auto;
         transform: scale(1);
       }
@@ -865,10 +925,12 @@
         position: absolute;
         z-index: 30;
         pointer-events: none;
+        visibility: hidden;
         opacity: 0;
         transform: translateX(-50%) translateY(6px);
         transition:
           opacity 0.28s ease,
+          visibility 0.28s ease,
           transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
         display: flex;
         flex-direction: column;
@@ -879,6 +941,7 @@
 
       .reading-viewport.is-phonics-active .phonics-container {
         opacity: 1;
+        visibility: visible;
         transform: translateX(-50%) translateY(0);
         pointer-events: auto;
       }
@@ -1049,11 +1112,15 @@
           transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
           box-shadow 0.18s ease,
           background 0.18s ease;
-        pointer-events: auto;
+        pointer-events: none;
         white-space: nowrap;
         user-select: none;
         font-family: inherit;
         z-index: 10;
+      }
+
+      .reading-viewport.is-phonics-active .phonics-write-btn {
+        pointer-events: auto;
       }
 
       .phonics-write-btn:hover {
@@ -1087,10 +1154,12 @@
         cursor: pointer;
         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
         opacity: 0;
+        visibility: hidden;
         pointer-events: none;
         transform: scale(0.8);
         transition:
           opacity 0.25s ease,
+          visibility 0.25s ease,
           transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
           background-color 0.15s ease,
           border-color 0.15s ease;
@@ -1101,6 +1170,7 @@
 
       .reading-viewport.is-phonics-active .phonics-write-top-btn {
         opacity: 1;
+        visibility: visible;
         pointer-events: auto;
         transform: scale(1);
       }
@@ -1966,14 +2036,25 @@
     <main id="home-screen" class="screen active">
       <div class="home-top-bar">
         <div class="app-badge">📖 Adrian's Reading Buddy</div>
-        <button
-          id="btn-home-settings"
-          class="icon-action-btn"
-          title="Adjust reading settings"
-          aria-label="Settings"
-        >
-          ⚙️
-        </button>
+        <div class="home-top-actions">
+          <button
+            id="btn-copy-story-prompt"
+            class="home-copy-prompt-btn"
+            title="Copy prompt for generating a new phonics story"
+            aria-label="Copy story prompt to clipboard"
+          >
+            <span class="copy-icon">📋</span>
+            <span class="copy-text">Copy Story Prompt</span>
+          </button>
+          <button
+            id="btn-home-settings"
+            class="icon-action-btn"
+            title="Adjust reading settings"
+            aria-label="Settings"
+          >
+            ⚙️
+          </button>
+        </div>
       </div>
 
       <header class="home-header">
@@ -3011,6 +3092,7 @@ Leo was flying high under the glowing yellow moon.`,
         settingsModal: document.getElementById("settings-modal"),
         btnOpenSettings: document.getElementById("btn-open-settings"),
         btnHomeSettings: document.getElementById("btn-home-settings"),
+        btnCopyStoryPrompt: document.getElementById("btn-copy-story-prompt"),
         btnCloseSettings: document.getElementById("btn-close-settings"),
         btnSettingAutoReadOff: document.getElementById("btn-setting-autoread-off"),
         btnSettingAutoReadOn: document.getElementById("btn-setting-autoread-on"),
@@ -3581,6 +3663,7 @@ Leo was flying high under the glowing yellow moon.`,
        ========================================================================== */
       let phonicsCompleteTimer = null;
       let isDraggingPhonics = false;
+      let phonicsEnterTimestamp = 0;
 
       /**
        * Dynamically measures the current focused word and aligns the slider track
@@ -3671,6 +3754,7 @@ Leo was flying high under the glowing yellow moon.`,
         state.isPhonicsActive = true;
         state.phonicsCompleting = false;
         isDraggingPhonics = false;
+        phonicsEnterTimestamp = Date.now();
         if (phonicsCompleteTimer) {
           clearTimeout(phonicsCompleteTimer);
           phonicsCompleteTimer = null;
@@ -3797,6 +3881,7 @@ Leo was flying high under the glowing yellow moon.`,
         state.isPhonicsActive = false;
         state.phonicsCompleting = false;
         isDraggingPhonics = false;
+        phonicsEnterTimestamp = 0;
         if (phonicsCompleteTimer) {
           clearTimeout(phonicsCompleteTimer);
           phonicsCompleteTimer = null;
@@ -3935,8 +4020,8 @@ Leo was flying high under the glowing yellow moon.`,
           name: "Capital K",
           strokes: [
             { id: 1, d: "M 60 32 L 60 188", color: "#3b82f6", hint: "Slide straight down" },
-            { id: 2, d: "M 145 42 L 62 122", color: "#ef4444", hint: "Slide diagonal down-left to stem" },
-            { id: 3, d: "M 82 102 L 150 188", color: "#10b981", hint: "Slide diagonal down-right to baseline" },
+            { id: 2, d: "M 145 42 L 65 112", color: "#ef4444", hint: "Slide diagonal down-left to stem" },
+            { id: 3, d: "M 65 112 L 145 188", color: "#10b981", hint: "Slide diagonal down-right to baseline" },
           ],
         },
         L: {
@@ -4176,8 +4261,8 @@ Leo was flying high under the glowing yellow moon.`,
           name: "Lowercase k",
           strokes: [
             { id: 1, d: "M 65 32 L 65 188", color: "#3b82f6", hint: "Slide tall stem straight down" },
-            { id: 2, d: "M 135 120 L 70 160", color: "#ef4444", hint: "Slide diagonal down-left to stem" },
-            { id: 3, d: "M 85 150 L 140 188", color: "#10b981", hint: "Slide diagonal down-right to baseline" },
+            { id: 2, d: "M 135 115 L 70 150", color: "#ef4444", hint: "Slide diagonal down-left to stem" },
+            { id: 3, d: "M 70 150 L 140 188", color: "#10b981", hint: "Slide diagonal down-right to baseline" },
           ],
         },
         l: {
@@ -4401,6 +4486,7 @@ Leo was flying high under the glowing yellow moon.`,
         isSliding: false,
         isPointerDown: false,
         isTransitioning: false,
+        letterCompleted: false,
         autoAdvanceTimer: null,
         activePathEl: null,
         activeLength: 0,
@@ -4536,6 +4622,7 @@ Leo was flying high under the glowing yellow moon.`,
         writingState.isSliding = false;
         writingState.isPointerDown = false;
         writingState.isTransitioning = false;
+        writingState.letterCompleted = false;
 
         renderWritingLetterPills();
         buildLetterSvg();
@@ -4850,16 +4937,14 @@ Leo was flying high under the glowing yellow moon.`,
        * Supports continuous unbroken tracing without lifting pointer for connected strokes.
        */
       function completeCurrentStroke(svgPt = null) {
-        if (!writingState.activePathEl || writingState.isTransitioning) return;
+        if (!writingState.activePathEl || writingState.isTransitioning || writingState.letterCompleted) return;
         writingState.isTransitioning = true;
+        writingState.isSliding = false;
 
         try {
           // Snap stroke to 100%
           writingState.strokeProgress = 1.0;
           writingState.activePathEl.style.strokeDashoffset = "0";
-
-          // Play bright chime
-          playWritingSound("stroke");
 
           const char = writingState.activeLetterChar;
           const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
@@ -4867,6 +4952,9 @@ Leo was flying high under the glowing yellow moon.`,
           const nextStrokeIdx = writingState.activeStrokeIndex + 1;
 
           if (nextStrokeIdx < strokes.length) {
+            // Play bright chime between intermediate strokes within a multi-stroke letter
+            playWritingSound("stroke");
+
             // Determine if the next stroke can seamlessly continue in the same pointer motion
             let canContinueContinuously = false;
 
@@ -4900,11 +4988,19 @@ Leo was flying high under the glowing yellow moon.`,
        * 1. Letter fill animation
        * 2. Scale up and down animation
        * 3. Confetti star burst
-       * 4. Pronounces letter aloud
-       * 5. Golden star on word pill
+       * 4. Golden star on word pill
        */
       function triggerLetterComplete() {
+        if (writingState.letterCompleted) return;
+        writingState.letterCompleted = true;
         writingState.isSliding = false;
+        writingState.isPointerDown = false;
+
+        if (writingState.autoAdvanceTimer) {
+          clearTimeout(writingState.autoAdvanceTimer);
+          writingState.autoAdvanceTimer = null;
+        }
+
         els.letterSlidingPuck.innerHTML = "";
 
         // 1. Mark letter complete in state
@@ -4914,18 +5010,10 @@ Leo was flying high under the glowing yellow moon.`,
         // 2. Scale Up and Down Bounce + Stroke Expansion Fill Animation
         els.letterLayersGroup.classList.add("is-complete");
 
-        // 3. Audio: celebration fanfare + speak letter aloud
-        playWritingSound("celebrate");
-        const char = writingState.activeLetterChar;
-        const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
-        setTimeout(() => {
-          speakWord(data.name || char);
-        }, 320);
-
-        // 4. Confetti Star Burst
+        // 3. Confetti Star Burst
         createStarBurst();
 
-        // 5. Update Status Hint & Auto-Advance directly to next letter when animation finishes
+        // 4. Update Status Hint & Auto-Advance directly to next letter when animation finishes
         const currentIdx = writingState.activeLetterIndex;
         const totalLetters = writingState.letters.length;
         const hasNext = currentIdx + 1 < totalLetters;
@@ -5005,6 +5093,9 @@ Leo was flying high under the glowing yellow moon.`,
       /* ==========================================================================
        SPEECH & AUTO-READ ENGINE
        ========================================================================== */
+      let lastSpokenWord = "";
+      let lastSpokenTime = 0;
+
       /**
        * Pronounces the given text word using native Web Speech API.
        */
@@ -5013,6 +5104,14 @@ Leo was flying high under the glowing yellow moon.`,
         if (!wordText) return;
 
         const cleanWord = wordText.replace(/[.,/#!$%^&*;:{}=\-_`~()?"']/g, "");
+        const now = Date.now();
+        // Prevent duplicate speech when calls happen within 800ms
+        if (cleanWord === lastSpokenWord && now - lastSpokenTime < 800) {
+          return;
+        }
+        lastSpokenWord = cleanWord;
+        lastSpokenTime = now;
+
         const utterance = new SpeechSynthesisUtterance(cleanWord);
         utterance.rate = 0.85; // Clear, relaxed cadence for young learners
         utterance.pitch = 1.05;
@@ -5412,6 +5511,63 @@ Leo was flying high under the glowing yellow moon.`,
         openSettingsModal();
       });
 
+      // Copy Story Prompt to Clipboard
+      const STORY_PROMPT_TEMPLATE =
+        "Write an easy to read phonics based short (200 words max) story about ";
+
+      async function copyStoryPromptToClipboard() {
+        const text = STORY_PROMPT_TEMPLATE;
+        let copied = false;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          try {
+            await navigator.clipboard.writeText(text);
+            copied = true;
+          } catch (err) {
+            console.warn("navigator.clipboard failed, attempting fallback:", err);
+          }
+        }
+
+        if (!copied) {
+          try {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.top = "-9999px";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            copied = document.execCommand("copy");
+            document.body.removeChild(textArea);
+          } catch (err) {
+            console.error("execCommand fallback failed:", err);
+          }
+        }
+
+        if (copied && els.btnCopyStoryPrompt) {
+          els.btnCopyStoryPrompt.classList.add("is-copied");
+          els.btnCopyStoryPrompt.innerHTML =
+            '<span class="copy-icon">✅</span><span class="copy-text">Copied!</span>';
+          playWritingSound("tick");
+
+          setTimeout(() => {
+            if (els.btnCopyStoryPrompt) {
+              els.btnCopyStoryPrompt.classList.remove("is-copied");
+              els.btnCopyStoryPrompt.innerHTML =
+                '<span class="copy-icon">📋</span><span class="copy-text">Copy Story Prompt</span>';
+            }
+          }, 2000);
+        }
+      }
+
+      if (els.btnCopyStoryPrompt) {
+        els.btnCopyStoryPrompt.addEventListener("click", (e) => {
+          e.stopPropagation();
+          copyStoryPromptToClipboard();
+        });
+      }
+
       els.btnCloseSettings.addEventListener("click", closeSettingsModal);
 
       els.settingsModal.addEventListener("click", (e) => {
@@ -5660,6 +5816,7 @@ Leo was flying high under the glowing yellow moon.`,
       }
 
       function handleWritingPointerMove(e) {
+        if (writingState.letterCompleted) return;
         if (!writingState.isSliding && !writingState.isPointerDown) return;
         const svgPt = getSvgPoint(e, els.writingSvg);
 
@@ -5686,7 +5843,7 @@ Leo was flying high under the glowing yellow moon.`,
 
       function handleWritingPointerUp(e) {
         writingState.isPointerDown = false;
-        if (!writingState.isSliding) return;
+        if (!writingState.isSliding || writingState.letterCompleted) return;
         e.preventDefault();
         e.stopPropagation();
         writingState.isSliding = false;
@@ -5756,6 +5913,8 @@ Leo was flying high under the glowing yellow moon.`,
       if (els.btnOpenWriting) {
         els.btnOpenWriting.addEventListener("click", (e) => {
           e.stopPropagation();
+          // Guard: Only allow opening writing mode when phonics is active and settled
+          if (!state.isPhonicsActive || Date.now() - phonicsEnterTimestamp < 350) return;
           openWritingMode();
         });
       }
@@ -5763,6 +5922,7 @@ Leo was flying high under the glowing yellow moon.`,
       if (els.btnOpenWritingTop) {
         els.btnOpenWritingTop.addEventListener("click", (e) => {
           e.stopPropagation();
+          if (!state.isPhonicsActive || Date.now() - phonicsEnterTimestamp < 350) return;
           openWritingMode();
         });
       }
