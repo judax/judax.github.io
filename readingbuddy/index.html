@@ -1028,6 +1028,514 @@
       }
 
       /* ==========================================================================
+       LETTER WRITING PRACTICE BUTTONS & MODAL UI
+       ========================================================================== */
+      /* Phonics View: Write Letters button underneath the slider */
+      .phonics-write-btn {
+        margin-top: 54px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        color: #ffffff;
+        border: none;
+        border-radius: 9999px;
+        padding: 0.55rem 1.35rem;
+        font-size: 0.98rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+        transition:
+          transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow 0.18s ease,
+          background 0.18s ease;
+        pointer-events: auto;
+        white-space: nowrap;
+        user-select: none;
+        font-family: inherit;
+        z-index: 10;
+      }
+
+      .phonics-write-btn:hover {
+        transform: scale(1.06);
+        box-shadow: 0 6px 18px rgba(79, 70, 229, 0.45);
+        background: linear-gradient(135deg, #4338ca, #4f46e5);
+      }
+
+      .phonics-write-btn:active {
+        transform: scale(0.95);
+      }
+
+      .phonics-write-icon {
+        font-size: 1.15rem;
+        line-height: 1;
+      }
+
+      /* Top Write Button next to Close Button in Phonics View */
+      .phonics-write-top-btn {
+        position: absolute;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 2px solid #e4e4e7;
+        color: #4f46e5;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.8);
+        transition:
+          opacity 0.25s ease,
+          transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+          background-color 0.15s ease,
+          border-color 0.15s ease;
+        z-index: 40;
+        padding: 0;
+        line-height: 1;
+      }
+
+      .reading-viewport.is-phonics-active .phonics-write-top-btn {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scale(1);
+      }
+
+      .phonics-write-top-btn:hover {
+        background: #f5f3ff;
+        border-color: #c7d2fe;
+        color: #4338ca;
+        transform: scale(1.1);
+      }
+
+      .phonics-write-top-btn:active {
+        transform: scale(0.92);
+      }
+
+      /* Letter Writing Modal Overlay */
+      .writing-modal-overlay {
+        z-index: 100;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        box-sizing: border-box;
+      }
+
+      .writing-modal-card {
+        background: #ffffff;
+        border-radius: 28px;
+        box-shadow: 0 20px 48px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 620px;
+        max-height: 94vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        padding: 1.25rem 1.5rem;
+        box-sizing: border-box;
+        animation: writingModalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      @keyframes writingModalIn {
+        from {
+          opacity: 0;
+          transform: scale(0.92) translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      /* Writing Header */
+      .writing-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1.5px solid #f1f5f9;
+        flex-wrap: wrap;
+      }
+
+      .writing-header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        flex-wrap: wrap;
+      }
+
+      .writing-word-title {
+        font-size: 0.95rem;
+        color: #64748b;
+        font-weight: 600;
+      }
+
+      .writing-word-title strong {
+        color: #1e1b4b;
+        font-size: 1.15rem;
+      }
+
+      /* Letter Selection Pills for the word */
+      .writing-letter-pills {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+
+      .writing-pill {
+        min-width: 38px;
+        height: 38px;
+        padding: 0 0.55rem;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        color: #334155;
+        font-size: 1.15rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+        position: relative;
+        font-family: inherit;
+      }
+
+      .writing-pill:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        transform: translateY(-1px);
+      }
+
+      .writing-pill.active {
+        background: #4f46e5;
+        color: #ffffff;
+        border-color: #4338ca;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+        transform: scale(1.08);
+      }
+
+      .writing-pill.is-completed::after {
+        content: "⭐";
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        font-size: 0.75rem;
+        line-height: 1;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+      }
+
+      .writing-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .writing-action-pill-btn {
+        background: #f1f5f9;
+        border: 1.5px solid #cbd5e1;
+        color: #334155;
+        border-radius: 9999px;
+        padding: 0.4rem 0.85rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        transition: all 0.15s ease;
+        font-family: inherit;
+      }
+
+      .writing-action-pill-btn:hover {
+        background: #e2e8f0;
+        border-color: #94a3b8;
+        transform: scale(1.04);
+      }
+
+      .writing-icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        border: 1.5px solid #cbd5e1;
+        color: #334155;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-family: inherit;
+        padding: 0;
+      }
+
+      .writing-icon-btn:hover {
+        background: #e2e8f0;
+        transform: scale(1.08);
+      }
+
+      /* Guidance / Hint Banner */
+      .writing-hint-bar {
+        text-align: center;
+        padding: 0.65rem 0.5rem;
+        background: #f8fafc;
+        border-radius: 14px;
+        margin: 0.75rem 0;
+      }
+
+      .writing-hint-text {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      /* Writing Canvas / Ruled Paper Board */
+      .writing-canvas-container {
+        position: relative;
+        width: 100%;
+        background: #ffffff;
+        border: 2.5px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
+        padding: 0.5rem;
+        box-sizing: border-box;
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+        cursor: crosshair;
+      }
+
+      .writing-svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 380px;
+        margin: 0 auto;
+        touch-action: none;
+        user-select: none;
+      }
+
+      /* School Ruled Handwriting Guidelines */
+      .guideline {
+        stroke-linecap: round;
+      }
+
+      .guideline-top {
+        stroke: #93c5fd;
+        stroke-width: 1.8;
+      }
+
+      .guideline-mid {
+        stroke: #818cf8;
+        stroke-width: 1.5;
+        stroke-dasharray: 6 6;
+      }
+
+      .guideline-base {
+        stroke: #3b82f6;
+        stroke-width: 2.2;
+      }
+
+      .guideline-desc {
+        stroke: #fca5a5;
+        stroke-width: 1.8;
+      }
+
+      /* Letter Tracing SVG Elements */
+      .stroke-bg-track {
+        stroke: #f1f5f9;
+        stroke-width: 18;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+
+      .stroke-dashed-guide {
+        stroke: #cbd5e1;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 4 6;
+        fill: none;
+      }
+
+      .stroke-fill-path {
+        stroke-width: 14;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+        transition: stroke 0.2s ease;
+      }
+
+      /* Direction Arrow Chevrons */
+      .stroke-arrow-marker {
+        pointer-events: none;
+      }
+
+      /* Numbered Starting Badges */
+      .stroke-badge-circle {
+        transition: transform 0.2s ease, filter 0.2s ease;
+        cursor: pointer;
+      }
+
+      .stroke-badge-text {
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 800;
+        fill: #ffffff;
+        text-anchor: middle;
+        dominant-baseline: central;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      /* Pulsing Animation on Active Stroke Badge */
+      .stroke-badge-halo {
+        fill: none;
+        stroke-width: 2.5;
+        opacity: 0.75;
+        animation: strokeBadgePulse 1.4s ease-out infinite;
+        transform-origin: center;
+      }
+
+      @keyframes strokeBadgePulse {
+        0% {
+          r: 10px;
+          opacity: 0.9;
+        }
+        70% {
+          r: 18px;
+          opacity: 0;
+        }
+        100% {
+          r: 20px;
+          opacity: 0;
+        }
+      }
+
+      /* Sliding Puck / Stylus Follower */
+      .sliding-puck-halo {
+        animation: puckGlowPulse 1.2s ease-in-out infinite alternate;
+      }
+
+      @keyframes puckGlowPulse {
+        from {
+          opacity: 0.35;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 0.75;
+          transform: scale(1.2);
+        }
+      }
+
+      /* Letter Success Fill & Scale Up/Down Animation */
+      .letter-layers-group {
+        transform-origin: 100px 120px;
+        transition: transform 0.3s ease;
+      }
+
+      .letter-layers-group.is-complete {
+        animation: letterSuccessScaleBounce 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      .letter-layers-group.is-complete .stroke-fill-path {
+        stroke-width: 17;
+        filter: drop-shadow(0 4px 14px rgba(79, 70, 229, 0.45));
+      }
+
+      @keyframes letterSuccessScaleBounce {
+        0% {
+          transform: scale(1);
+        }
+        30% {
+          transform: scale(1.32);
+          filter: drop-shadow(0 8px 24px rgba(79, 70, 229, 0.55));
+        }
+        60% {
+          transform: scale(0.94);
+        }
+        80% {
+          transform: scale(1.08);
+        }
+        100% {
+          transform: scale(1);
+          filter: drop-shadow(0 4px 12px rgba(79, 70, 229, 0.35));
+        }
+      }
+
+      /* Celebration Star Confetti Particles */
+      .celebration-star {
+        animation: celebrationStarFly 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        transform-origin: 100px 120px;
+      }
+
+      @keyframes celebrationStarFly {
+        0% {
+          opacity: 1;
+          transform: translate(0, 0) scale(0.4) rotate(0deg);
+        }
+        60% {
+          opacity: 1;
+          transform: translate(var(--dx), var(--dy)) scale(1.2) rotate(180deg);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(var(--dx2), var(--dy2)) scale(0.7) rotate(360deg);
+        }
+      }
+
+      /* Bottom Controls Bar */
+      .writing-bottom-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-top: 0.85rem;
+        flex-wrap: wrap;
+      }
+
+      .writing-retry-btn {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        color: #475569;
+        border-radius: 9999px;
+        padding: 0.65rem 1.25rem;
+        font-size: 0.98rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: all 0.15s ease;
+        font-family: inherit;
+      }
+
+      .writing-retry-btn:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: #1e293b;
+        transform: translateY(-1px);
+      }
+
+      /* ==========================================================================
        SPEECH & AUTO-READ CONTROL GROUP
        Bigger button with integrated auto-read toggle.
        ========================================================================== */
@@ -1655,6 +2163,14 @@ Line breaks will automatically be formatted for reading."
           aria-label="Close phonics mode and return to reading"
         >✕</button>
 
+        <!-- Phonics Practice Mode Write Letters Button (Positioned next to close button) -->
+        <button
+          id="btn-open-writing-top"
+          class="phonics-write-top-btn"
+          title="Practice writing letters for this word"
+          aria-label="Practice writing letters"
+        >✏️</button>
+
         <!-- Phonics Practice Mode Slider Container (Completely aligned with word letters) -->
         <div id="phonics-container" class="phonics-container" aria-hidden="true">
           <!-- White Pill Track Container matching word width -->
@@ -1699,6 +2215,17 @@ Line breaks will automatically be formatted for reading."
               <line x1="35" y1="21" x2="35" y2="35" stroke="#c7d2fe" stroke-width="3.5" stroke-linecap="round"/>
             </svg>
           </div>
+
+          <!-- Write Letters Action Button underneath the slider -->
+          <button
+            id="btn-open-writing"
+            class="phonics-write-btn"
+            title="Practice writing this word's letters"
+            aria-label="Practice writing letters"
+          >
+            <span class="phonics-write-icon">✏️</span>
+            <span>Write Letters</span>
+          </button>
         </div>
 
         <!-- Story Completion Celebration Screen -->
@@ -1891,6 +2418,133 @@ Line breaks will automatically be formatted for reading."
             "
           >
             Delete 🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================
+       LETTER WRITING PRACTICE MODAL
+       Guided handwriting with stroke patterns, interactive sliding, and celebration.
+       ======================================================================== -->
+    <div id="writing-modal" class="modal-overlay writing-modal-overlay" aria-hidden="true">
+      <div class="writing-modal-card">
+        <!-- Header: Word pill navigation & controls -->
+        <div class="writing-header">
+          <div class="writing-header-left">
+            <span class="writing-word-title" id="writing-word-title">Word: <strong>Word</strong></span>
+            <!-- Letter selection pills for the word -->
+            <div id="writing-letter-pills" class="writing-letter-pills"></div>
+          </div>
+
+          <div class="writing-header-actions">
+            <!-- Speak / Hear Letter Sound -->
+            <button
+              id="btn-writing-speak"
+              class="writing-icon-btn"
+              title="Hear letter sound"
+              aria-label="Hear letter sound"
+            >
+              🔊
+            </button>
+
+            <!-- Close Writing Mode Button -->
+            <button
+              id="btn-close-writing"
+              class="modal-close-btn"
+              title="Exit writing practice (Esc)"
+              aria-label="Close writing practice"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <!-- Instructional Subheading / Hint -->
+        <div class="writing-hint-bar">
+          <span id="writing-hint-text" class="writing-hint-text">
+            Touch ① and slide along the pattern!
+          </span>
+        </div>
+
+        <!-- Writing Canvas / School Ruled Paper Board -->
+        <div class="writing-canvas-container" id="writing-canvas-container">
+          <!-- Canvas SVG for letter pattern, guidelines, and tracing -->
+          <svg
+            id="writing-svg"
+            class="writing-svg"
+            viewBox="0 0 200 240"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- Defs for markers and gradients -->
+            <defs>
+              <!-- Arrowhead markers for strokes -->
+              <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#ef4444"/>
+              </marker>
+              <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#3b82f6"/>
+              </marker>
+              <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981"/>
+              </marker>
+              <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#8b5cf6"/>
+              </marker>
+
+              <!-- Success Fill Gradient -->
+              <linearGradient id="letterSuccessGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4f46e5" />
+                <stop offset="50%" stop-color="#7c3aed" />
+                <stop offset="100%" stop-color="#ec4899" />
+              </linearGradient>
+            </defs>
+
+            <!-- Handwriting Guide Lines -->
+            <g class="guidelines-group">
+              <!-- Top Ascender / Cap Line (Solid light blue) -->
+              <line x1="10" y1="32" x2="190" y2="32" class="guideline guideline-top" />
+              <!-- Midline (Dashed soft indigo) -->
+              <line x1="10" y1="110" x2="190" y2="110" class="guideline guideline-mid" />
+              <!-- Baseline (Solid bold blue) -->
+              <line x1="10" y1="188" x2="190" y2="188" class="guideline guideline-base" />
+              <!-- Descender Line (Solid soft salmon) -->
+              <line x1="10" y1="228" x2="190" y2="228" class="guideline guideline-desc" />
+            </g>
+
+            <!-- Letter Drawing & Tracing Layers Group -->
+            <g id="letter-layers-group" class="letter-layers-group">
+              <!-- Background Letter Silhouette / Tracks -->
+              <g id="letter-bg-tracks"></g>
+              <!-- Filled / Completed Strokes -->
+              <g id="letter-fill-strokes"></g>
+              <!-- Active Stroke Tracing Path -->
+              <g id="letter-active-stroke"></g>
+              <!-- Stroke Direction Arrows -->
+              <g id="letter-arrows"></g>
+              <!-- Numbered Starting Badges (①, ②, ③, ④) -->
+              <g id="letter-badges"></g>
+              <!-- Sliding Puck (Stylus / star / pencil handle) -->
+              <g id="letter-sliding-puck" class="sliding-puck-group"></g>
+            </g>
+
+            <!-- Celebration Star Burst Effects Layer -->
+            <g id="letter-celebration-stars" class="celebration-stars-group"></g>
+          </svg>
+        </div>
+
+        <!-- Bottom Controls Bar -->
+        <div class="writing-bottom-bar">
+          <button id="btn-writing-prev-letter" class="nav-btn nav-btn-prev" aria-label="Previous letter">
+            ◀ Previous
+          </button>
+
+          <button id="btn-writing-retry" class="writing-retry-btn" title="Clear and practice again">
+            ↺ Try Again
+          </button>
+
+          <button id="btn-writing-next-letter" class="nav-btn nav-btn-next" aria-label="Next letter">
+            Next ▶
           </button>
         </div>
       </div>
@@ -2308,11 +2962,34 @@ Leo was flying high under the glowing yellow moon.`,
 
         // Phonics Practice Elements
         btnClosePhonics: document.getElementById("btn-close-phonics"),
+        btnOpenWritingTop: document.getElementById("btn-open-writing-top"),
         phonicsContainer: document.getElementById("phonics-container"),
         phonicsTrackContainer: document.getElementById("phonics-track-container"),
         phonicsTrackFill: document.getElementById("phonics-track-fill"),
         phonicsSegmentsRow: document.getElementById("phonics-segments-row"),
         phonicsHandle: document.getElementById("phonics-handle"),
+        btnOpenWriting: document.getElementById("btn-open-writing"),
+
+        // Letter Writing Mode Elements
+        writingModal: document.getElementById("writing-modal"),
+        writingWordTitle: document.getElementById("writing-word-title"),
+        writingLetterPills: document.getElementById("writing-letter-pills"),
+        btnWritingSpeak: document.getElementById("btn-writing-speak"),
+        btnCloseWriting: document.getElementById("btn-close-writing"),
+        writingHintText: document.getElementById("writing-hint-text"),
+        writingCanvasContainer: document.getElementById("writing-canvas-container"),
+        writingSvg: document.getElementById("writing-svg"),
+        letterLayersGroup: document.getElementById("letter-layers-group"),
+        letterBgTracks: document.getElementById("letter-bg-tracks"),
+        letterFillStrokes: document.getElementById("letter-fill-strokes"),
+        letterActiveStroke: document.getElementById("letter-active-stroke"),
+        letterArrows: document.getElementById("letter-arrows"),
+        letterBadges: document.getElementById("letter-badges"),
+        letterSlidingPuck: document.getElementById("letter-sliding-puck"),
+        letterCelebrationStars: document.getElementById("letter-celebration-stars"),
+        btnWritingPrevLetter: document.getElementById("btn-writing-prev-letter"),
+        btnWritingRetry: document.getElementById("btn-writing-retry"),
+        btnWritingNextLetter: document.getElementById("btn-writing-next-letter"),
 
         speechControlsContainer: document.getElementById("speech-controls-container"),
         btnSpeakWord: document.getElementById("btn-speak-word"),
@@ -2949,6 +3626,13 @@ Leo was flying high under the glowing yellow moon.`,
 
         els.btnClosePhonics.style.left = `${closeLeft}px`;
         els.btnClosePhonics.style.top = `${closeTop}px`;
+
+        // Position Write Letters Button right next to Close Button
+        if (els.btnOpenWritingTop) {
+          const writeTopLeft = Math.max(10, closeLeft - 44);
+          els.btnOpenWritingTop.style.left = `${writeTopLeft}px`;
+          els.btnOpenWritingTop.style.top = `${closeTop}px`;
+        }
       }
 
       /**
@@ -3137,7 +3821,1186 @@ Leo was flying high under the glowing yellow moon.`,
         if (els.phonicsTrackFill) {
           els.phonicsTrackFill.style.width = "0%";
         }
+
+        if (typeof writingState !== "undefined" && writingState.isOpen) {
+          closeWritingMode();
+        }
       }
+
+      /* ==========================================================================
+       LETTER WRITING & TRACING DATA (A-Z and a-z)
+       Matches exact stroke patterns, start points, and arrow directions from reference chart.
+       Guidelines: Topline = 32, Midline = 110, Baseline = 188, Descender = 228
+       ========================================================================== */
+      const LETTER_TRACING_DATA = {
+        // UPPERCASE
+        A: {
+          char: "A",
+          isUpper: true,
+          name: "Capital A",
+          strokes: [
+            { id: 1, d: "M 100 32 L 45 188", color: "#ef4444", hint: "Slide down-left to bottom" },
+            { id: 2, d: "M 100 32 L 155 188", color: "#3b82f6", hint: "Slide down-right to bottom" },
+            { id: 3, d: "M 66 128 L 134 128", color: "#10b981", hint: "Slide across from left to right" },
+          ],
+        },
+        B: {
+          char: "B",
+          isUpper: true,
+          name: "Capital B",
+          strokes: [
+            { id: 1, d: "M 60 32 L 60 188", color: "#ef4444", hint: "Slide straight down" },
+            { id: 2, d: "M 60 32 L 110 32 C 145 32 145 110 110 110 L 60 110", color: "#3b82f6", hint: "Curve top loop to the middle" },
+            { id: 3, d: "M 60 110 L 115 110 C 155 110 155 188 115 188 L 60 188", color: "#10b981", hint: "Curve bottom loop to the baseline" },
+          ],
+        },
+        C: {
+          char: "C",
+          isUpper: true,
+          name: "Capital C",
+          strokes: [
+            { id: 1, d: "M 150 70 C 135 32 75 32 60 85 C 45 140 75 188 135 188 C 148 188 155 180 158 170", color: "#ef4444", hint: "Start at top right and curve all the way around" },
+          ],
+        },
+        D: {
+          char: "D",
+          isUpper: true,
+          name: "Capital D",
+          strokes: [
+            { id: 1, d: "M 60 32 L 60 188", color: "#ef4444", hint: "Slide straight down" },
+            { id: 2, d: "M 60 32 L 100 32 C 160 32 160 188 100 188 L 60 188", color: "#3b82f6", hint: "Make a big curve from top to bottom" },
+          ],
+        },
+        E: {
+          char: "E",
+          isUpper: true,
+          name: "Capital E",
+          strokes: [
+            { id: 1, d: "M 65 32 L 65 188", color: "#ef4444", hint: "Slide straight down" },
+            { id: 2, d: "M 65 32 L 145 32", color: "#3b82f6", hint: "Slide top bar left to right" },
+            { id: 3, d: "M 65 110 L 130 110", color: "#10b981", hint: "Slide middle bar left to right" },
+            { id: 4, d: "M 65 188 L 145 188", color: "#8b5cf6", hint: "Slide bottom bar left to right" },
+          ],
+        },
+        F: {
+          char: "F",
+          isUpper: true,
+          name: "Capital F",
+          strokes: [
+            { id: 1, d: "M 65 32 L 65 188", color: "#ef4444", hint: "Slide straight down" },
+            { id: 2, d: "M 65 32 L 145 32", color: "#3b82f6", hint: "Slide top bar left to right" },
+            { id: 3, d: "M 65 110 L 130 110", color: "#10b981", hint: "Slide middle bar left to right" },
+          ],
+        },
+        G: {
+          char: "G",
+          isUpper: true,
+          name: "Capital G",
+          strokes: [
+            { id: 1, d: "M 150 70 C 135 32 75 32 60 85 C 45 140 75 188 135 188 C 155 188 155 170 155 125 L 115 125", color: "#ef4444", hint: "Curve around like C, go up, and slide in" },
+          ],
+        },
+        H: {
+          char: "H",
+          isUpper: true,
+          name: "Capital H",
+          strokes: [
+            { id: 1, d: "M 60 32 L 60 188", color: "#3b82f6", hint: "Slide left line straight down" },
+            { id: 2, d: "M 140 32 L 140 188", color: "#10b981", hint: "Slide right line straight down" },
+            { id: 3, d: "M 60 110 L 140 110", color: "#ef4444", hint: "Connect them across the middle" },
+          ],
+        },
+        I: {
+          char: "I",
+          isUpper: true,
+          name: "Capital I",
+          strokes: [
+            { id: 1, d: "M 100 32 L 100 188", color: "#3b82f6", hint: "Slide straight down the middle" },
+            { id: 2, d: "M 65 32 L 135 32", color: "#ef4444", hint: "Slide top bar left to right" },
+            { id: 3, d: "M 65 188 L 135 188", color: "#10b981", hint: "Slide bottom bar left to right" },
+          ],
+        },
+        J: {
+          char: "J",
+          isUpper: true,
+          name: "Capital J",
+          strokes: [
+            { id: 1, d: "M 130 32 L 130 148 C 130 188 70 188 70 148", color: "#3b82f6", hint: "Slide down and curve up to the left" },
+            { id: 2, d: "M 85 32 L 165 32", color: "#ef4444", hint: "Slide top bar left to right" },
+          ],
+        },
+        K: {
+          char: "K",
+          isUpper: true,
+          name: "Capital K",
+          strokes: [
+            { id: 1, d: "M 60 32 L 60 188", color: "#3b82f6", hint: "Slide straight down" },
+            { id: 2, d: "M 145 42 L 62 122", color: "#ef4444", hint: "Slide diagonal down-left to stem" },
+            { id: 3, d: "M 82 102 L 150 188", color: "#10b981", hint: "Slide diagonal down-right to baseline" },
+          ],
+        },
+        L: {
+          char: "L",
+          isUpper: true,
+          name: "Capital L",
+          strokes: [
+            { id: 1, d: "M 65 32 L 65 188", color: "#3b82f6", hint: "Slide straight down" },
+            { id: 2, d: "M 65 188 L 145 188", color: "#ef4444", hint: "Slide across bottom left to right" },
+          ],
+        },
+        M: {
+          char: "M",
+          isUpper: true,
+          name: "Capital M",
+          strokes: [
+            { id: 1, d: "M 50 32 L 50 188", color: "#ef4444", hint: "Slide left line straight down" },
+            { id: 2, d: "M 50 32 L 100 188", color: "#3b82f6", hint: "Slide diagonally down to center" },
+            { id: 3, d: "M 100 188 L 150 32", color: "#10b981", hint: "Slide diagonally up to top-right" },
+            { id: 4, d: "M 150 32 L 150 188", color: "#8b5cf6", hint: "Slide right line straight down" },
+          ],
+        },
+        N: {
+          char: "N",
+          isUpper: true,
+          name: "Capital N",
+          strokes: [
+            { id: 1, d: "M 55 32 L 55 188", color: "#ef4444", hint: "Slide left line straight down" },
+            { id: 2, d: "M 55 32 L 145 188", color: "#3b82f6", hint: "Slide diagonal down to bottom-right" },
+            { id: 3, d: "M 145 188 L 145 32", color: "#10b981", hint: "Slide right line straight up" },
+          ],
+        },
+        O: {
+          char: "O",
+          isUpper: true,
+          name: "Capital O",
+          strokes: [
+            { id: 1, d: "M 100 32 C 50 32 45 80 45 110 C 45 150 50 188 100 188 C 150 188 155 150 155 110 C 155 80 150 32 100 32", color: "#ef4444", hint: "Start at top and curve all the way around" },
+          ],
+        },
+        P: {
+          char: "P",
+          isUpper: true,
+          name: "Capital P",
+          strokes: [
+            { id: 1, d: "M 60 32 L 60 188", color: "#ef4444", hint: "Slide straight down" },
+            { id: 2, d: "M 60 32 L 110 32 C 150 32 150 115 110 115 L 60 115", color: "#3b82f6", hint: "Curve loop around to middle" },
+          ],
+        },
+        Q: {
+          char: "Q",
+          isUpper: true,
+          name: "Capital Q",
+          strokes: [
+            { id: 1, d: "M 100 32 C 50 32 45 80 45 110 C 45 150 50 188 100 188 C 150 188 155 150 155 110 C 155 80 150 32 100 32", color: "#ef4444", hint: "Start at top and curve all the way around" },
+            { id: 2, d: "M 115 145 L 155 195", color: "#3b82f6", hint: "Slide little tail diagonally out" },
+          ],
+        },
+        R: {
+          char: "R",
+          isUpper: true,
+          name: "Capital R",
+          strokes: [
+            { id: 1, d: "M 60 32 L 60 188", color: "#ef4444", hint: "Slide straight down" },
+            { id: 2, d: "M 60 32 L 110 32 C 150 32 150 115 110 115 L 60 115", color: "#3b82f6", hint: "Curve top loop to middle" },
+            { id: 3, d: "M 95 115 L 148 188", color: "#10b981", hint: "Slide leg diagonally down to baseline" },
+          ],
+        },
+        S: {
+          char: "S",
+          isUpper: true,
+          name: "Capital S",
+          strokes: [
+            { id: 1, d: "M 145 65 C 135 32 80 32 65 65 C 50 105 150 115 135 155 C 125 188 65 188 55 160", color: "#ef4444", hint: "Start at top right and zig-zag down to bottom left" },
+          ],
+        },
+        T: {
+          char: "T",
+          isUpper: true,
+          name: "Capital T",
+          strokes: [
+            { id: 1, d: "M 100 32 L 100 188", color: "#ef4444", hint: "Slide straight down the center" },
+            { id: 2, d: "M 50 32 L 150 32", color: "#3b82f6", hint: "Slide top bar left to right" },
+          ],
+        },
+        U: {
+          char: "U",
+          isUpper: true,
+          name: "Capital U",
+          strokes: [
+            { id: 1, d: "M 60 32 L 60 145 C 60 188 140 188 140 145 L 140 32", color: "#ef4444", hint: "Slide down, curve around bottom, and slide up" },
+          ],
+        },
+        V: {
+          char: "V",
+          isUpper: true,
+          name: "Capital V",
+          strokes: [
+            { id: 1, d: "M 50 32 L 100 188", color: "#3b82f6", hint: "Slide diagonally down to center" },
+            { id: 2, d: "M 100 188 L 150 32", color: "#10b981", hint: "Slide diagonally up to top-right" },
+          ],
+        },
+        W: {
+          char: "W",
+          isUpper: true,
+          name: "Capital W",
+          strokes: [
+            { id: 1, d: "M 40 32 L 70 188", color: "#3b82f6", hint: "Slide down to bottom" },
+            { id: 2, d: "M 70 188 L 100 70", color: "#ef4444", hint: "Slide up to middle peak" },
+            { id: 3, d: "M 100 70 L 130 188", color: "#10b981", hint: "Slide down to bottom" },
+            { id: 4, d: "M 130 188 L 160 32", color: "#8b5cf6", hint: "Slide up to top right" },
+          ],
+        },
+        X: {
+          char: "X",
+          isUpper: true,
+          name: "Capital X",
+          strokes: [
+            { id: 1, d: "M 55 32 L 145 188", color: "#3b82f6", hint: "Slide diagonal from top-left to bottom-right" },
+            { id: 2, d: "M 145 32 L 55 188", color: "#ef4444", hint: "Slide diagonal from top-right to bottom-left" },
+          ],
+        },
+        Y: {
+          char: "Y",
+          isUpper: true,
+          name: "Capital Y",
+          strokes: [
+            { id: 1, d: "M 50 32 L 100 110", color: "#ef4444", hint: "Slide diagonal from top-left to center" },
+            { id: 2, d: "M 150 32 L 100 110", color: "#10b981", hint: "Slide diagonal from top-right to center" },
+            { id: 3, d: "M 100 110 L 100 188", color: "#3b82f6", hint: "Slide straight down to baseline" },
+          ],
+        },
+        Z: {
+          char: "Z",
+          isUpper: true,
+          name: "Capital Z",
+          strokes: [
+            { id: 1, d: "M 55 32 L 145 32", color: "#ef4444", hint: "Slide top bar left to right" },
+            { id: 2, d: "M 145 32 L 55 188", color: "#10b981", hint: "Slide diagonally down to bottom-left" },
+            { id: 3, d: "M 55 188 L 145 188", color: "#3b82f6", hint: "Slide bottom bar left to right" },
+          ],
+        },
+
+        // LOWERCASE
+        a: {
+          char: "a",
+          isUpper: false,
+          name: "Lowercase a",
+          strokes: [
+            { id: 1, d: "M 135 115 C 115 110 75 110 65 135 C 50 165 75 188 115 188 C 135 188 135 155 135 115", color: "#ef4444", hint: "Start at top-right, curve around left to make circle" },
+            { id: 2, d: "M 135 115 L 135 188", color: "#3b82f6", hint: "Slide straight down to baseline" },
+          ],
+        },
+        b: {
+          char: "b",
+          isUpper: false,
+          name: "Lowercase b",
+          strokes: [
+            { id: 1, d: "M 65 32 L 65 188", color: "#3b82f6", hint: "Slide tall line straight down" },
+            { id: 2, d: "M 65 188 L 65 135 C 75 110 135 110 135 150 C 135 188 75 188 65 188", color: "#10b981", hint: "Slide back up and loop around to baseline" },
+          ],
+        },
+        c: {
+          char: "c",
+          isUpper: false,
+          name: "Lowercase c",
+          strokes: [
+            { id: 1, d: "M 135 135 C 125 110 75 110 65 150 C 55 188 115 188 135 175", color: "#3b82f6", hint: "Start near top-right and curve around to bottom" },
+          ],
+        },
+        d: {
+          char: "d",
+          isUpper: false,
+          name: "Lowercase d",
+          strokes: [
+            { id: 1, d: "M 135 150 C 125 110 75 110 65 150 C 55 188 115 188 135 170", color: "#10b981", hint: "Curve around to form circle" },
+            { id: 2, d: "M 135 32 L 135 188", color: "#3b82f6", hint: "Slide tall stem straight down on right" },
+          ],
+        },
+        e: {
+          char: "e",
+          isUpper: false,
+          name: "Lowercase e",
+          strokes: [
+            { id: 1, d: "M 65 150 L 135 150", color: "#3b82f6", hint: "Slide across the middle from left to right" },
+            { id: 2, d: "M 135 150 C 135 110 70 110 65 150 C 60 188 115 188 135 175", color: "#10b981", hint: "Curve up, around left, and down to baseline" },
+          ],
+        },
+        f: {
+          char: "f",
+          isUpper: false,
+          name: "Lowercase f",
+          strokes: [
+            { id: 1, d: "M 130 50 C 115 32 100 32 100 65 L 100 188", color: "#3b82f6", hint: "Hook over the top and slide straight down" },
+            { id: 2, d: "M 70 110 L 130 110", color: "#10b981", hint: "Cross the middle left to right" },
+          ],
+        },
+        g: {
+          char: "g",
+          isUpper: false,
+          name: "Lowercase g",
+          strokes: [
+            { id: 1, d: "M 135 115 C 115 110 75 110 65 140 C 55 175 80 188 115 188 C 135 188 135 150 135 115", color: "#3b82f6", hint: "Curve around to make circle" },
+            { id: 2, d: "M 135 115 L 135 205 C 135 230 75 230 75 210", color: "#10b981", hint: "Slide down into descender and hook left" },
+          ],
+        },
+        h: {
+          char: "h",
+          isUpper: false,
+          name: "Lowercase h",
+          strokes: [
+            { id: 1, d: "M 65 32 L 65 188", color: "#3b82f6", hint: "Slide tall stem straight down" },
+            { id: 2, d: "M 65 188 L 65 135 C 80 110 135 110 135 150 L 135 188", color: "#10b981", hint: "Slide back up and arch over to baseline" },
+          ],
+        },
+        i: {
+          char: "i",
+          isUpper: false,
+          name: "Lowercase i",
+          strokes: [
+            { id: 1, d: "M 100 110 L 100 188", color: "#3b82f6", hint: "Slide straight down from midline" },
+            { id: 2, d: "M 100 78 L 100 82", color: "#ef4444", isDot: true, hint: "Tap the dot above the line" },
+          ],
+        },
+        j: {
+          char: "j",
+          isUpper: false,
+          name: "Lowercase j",
+          strokes: [
+            { id: 1, d: "M 120 110 L 120 205 C 120 230 70 230 70 210", color: "#3b82f6", hint: "Slide down into descender and hook left" },
+            { id: 2, d: "M 120 78 L 120 82", color: "#ef4444", isDot: true, hint: "Tap the dot above the line" },
+          ],
+        },
+        k: {
+          char: "k",
+          isUpper: false,
+          name: "Lowercase k",
+          strokes: [
+            { id: 1, d: "M 65 32 L 65 188", color: "#3b82f6", hint: "Slide tall stem straight down" },
+            { id: 2, d: "M 135 120 L 70 160", color: "#ef4444", hint: "Slide diagonal down-left to stem" },
+            { id: 3, d: "M 85 150 L 140 188", color: "#10b981", hint: "Slide diagonal down-right to baseline" },
+          ],
+        },
+        l: {
+          char: "l",
+          isUpper: false,
+          name: "Lowercase l",
+          strokes: [
+            { id: 1, d: "M 100 32 L 100 188", color: "#3b82f6", hint: "Slide tall line straight down" },
+          ],
+        },
+        m: {
+          char: "m",
+          isUpper: false,
+          name: "Lowercase m",
+          strokes: [
+            { id: 1, d: "M 45 110 L 45 188", color: "#3b82f6", hint: "Slide down from midline" },
+            { id: 2, d: "M 45 188 L 45 135 C 55 110 100 110 100 145 L 100 188", color: "#10b981", hint: "Slide back up and arch over first hump" },
+            { id: 3, d: "M 100 188 L 100 135 C 110 110 155 110 155 145 L 155 188", color: "#8b5cf6", hint: "Slide back up and arch over second hump" },
+          ],
+        },
+        n: {
+          char: "n",
+          isUpper: false,
+          name: "Lowercase n",
+          strokes: [
+            { id: 1, d: "M 65 110 L 65 188", color: "#3b82f6", hint: "Slide down from midline" },
+            { id: 2, d: "M 65 188 L 65 135 C 80 110 135 110 135 150 L 135 188", color: "#10b981", hint: "Slide back up and arch over to baseline" },
+          ],
+        },
+        o: {
+          char: "o",
+          isUpper: false,
+          name: "Lowercase o",
+          strokes: [
+            { id: 1, d: "M 100 110 C 65 110 60 145 60 150 C 60 175 65 188 100 188 C 135 188 140 175 140 150 C 140 145 135 110 100 110", color: "#3b82f6", hint: "Start at top and curve all the way around" },
+          ],
+        },
+        p: {
+          char: "p",
+          isUpper: false,
+          name: "Lowercase p",
+          strokes: [
+            { id: 1, d: "M 65 110 L 65 230", color: "#3b82f6", hint: "Slide straight down into descender" },
+            { id: 2, d: "M 65 230 L 65 135 C 75 110 135 110 135 150 C 135 188 75 188 65 188", color: "#ef4444", hint: "Slide back up and loop around to baseline" },
+          ],
+        },
+        q: {
+          char: "q",
+          isUpper: false,
+          name: "Lowercase q",
+          strokes: [
+            { id: 1, d: "M 135 115 C 115 110 75 110 65 140 C 55 175 80 188 115 188 C 135 188 135 150 135 115", color: "#ef4444", hint: "Curve around to form circle" },
+            { id: 2, d: "M 135 115 L 135 230 L 150 215", color: "#3b82f6", hint: "Slide down into descender with flick up-right" },
+          ],
+        },
+        r: {
+          char: "r",
+          isUpper: false,
+          name: "Lowercase r",
+          strokes: [
+            { id: 1, d: "M 70 110 L 70 188", color: "#3b82f6", hint: "Start upper-left and slide down" },
+            { id: 2, d: "M 70 188 L 70 135 C 75 110 95 110 130 115", color: "#10b981", hint: "Slide back up and arch over to the right" },
+          ],
+        },
+        s: {
+          char: "s",
+          isUpper: false,
+          name: "Lowercase s",
+          strokes: [
+            { id: 1, d: "M 135 130 C 125 110 80 110 70 130 C 60 155 140 160 130 180 C 120 192 70 192 65 175", color: "#3b82f6", hint: "Start at upper right and zig-zag down to bottom left" },
+          ],
+        },
+        t: {
+          char: "t",
+          isUpper: false,
+          name: "Lowercase t",
+          strokes: [
+            { id: 1, d: "M 95 60 L 95 175 C 95 188 120 188 125 182", color: "#10b981", hint: "Slide down and curve slightly right" },
+            { id: 2, d: "M 70 110 L 125 110", color: "#3b82f6", hint: "Crossbar at midline left to right" },
+          ],
+        },
+        u: {
+          char: "u",
+          isUpper: false,
+          name: "Lowercase u",
+          strokes: [
+            { id: 1, d: "M 65 110 L 65 165 C 65 188 135 188 135 165 L 135 110", color: "#3b82f6", hint: "Slide down, curve around bottom, and slide up" },
+            { id: 2, d: "M 135 110 L 135 188", color: "#10b981", hint: "Slide straight down to baseline" },
+          ],
+        },
+        v: {
+          char: "v",
+          isUpper: false,
+          name: "Lowercase v",
+          strokes: [
+            { id: 1, d: "M 60 110 L 100 188", color: "#3b82f6", hint: "Slide diagonal down to center" },
+            { id: 2, d: "M 100 188 L 140 110", color: "#10b981", hint: "Slide diagonal up to right" },
+          ],
+        },
+        w: {
+          char: "w",
+          isUpper: false,
+          name: "Lowercase w",
+          strokes: [
+            { id: 1, d: "M 45 110 L 70 188", color: "#3b82f6", hint: "Slide down to bottom" },
+            { id: 2, d: "M 70 188 L 100 135", color: "#ef4444", hint: "Slide up to middle" },
+            { id: 3, d: "M 100 135 L 130 188", color: "#10b981", hint: "Slide down to bottom" },
+            { id: 4, d: "M 130 188 L 155 110", color: "#8b5cf6", hint: "Slide up to top-right" },
+          ],
+        },
+        x: {
+          char: "x",
+          isUpper: false,
+          name: "Lowercase x",
+          strokes: [
+            { id: 1, d: "M 65 110 L 135 188", color: "#3b82f6", hint: "Slide diagonal down-right" },
+            { id: 2, d: "M 135 110 L 65 188", color: "#ef4444", hint: "Slide diagonal down-left" },
+          ],
+        },
+        y: {
+          char: "y",
+          isUpper: false,
+          name: "Lowercase y",
+          strokes: [
+            { id: 1, d: "M 65 110 L 100 170", color: "#3b82f6", hint: "Slide diagonal down-right to baseline" },
+            { id: 2, d: "M 135 110 L 65 230", color: "#10b981", hint: "Slide diagonal down-left into descender" },
+          ],
+        },
+        z: {
+          char: "z",
+          isUpper: false,
+          name: "Lowercase z",
+          strokes: [
+            { id: 1, d: "M 65 110 L 135 110", color: "#ef4444", hint: "Slide across midline left to right" },
+            { id: 2, d: "M 135 110 L 65 188", color: "#10b981", hint: "Slide diagonal down-left to baseline" },
+            { id: 3, d: "M 65 188 L 135 188", color: "#3b82f6", hint: "Slide across baseline left to right" },
+          ],
+        },
+      };
+
+
+      /* ==========================================================================
+       LETTER TRACING AUDIO & CHIMES (Web Audio API)
+       ========================================================================== */
+      let audioCtx = null;
+      function getAudioContext() {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        }
+        if (audioCtx && audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      }
+
+      function playWritingSound(type) {
+        try {
+          const ctx = getAudioContext();
+          if (!ctx) return;
+
+          const now = ctx.currentTime;
+          if (type === "tick") {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(560, now);
+            osc.frequency.exponentialRampToValueAtTime(720, now + 0.04);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.04);
+          } else if (type === "stroke") {
+            [587, 880].forEach((freq, idx) => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = "triangle";
+              osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+              gain.gain.setValueAtTime(0.12, now + idx * 0.08);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.16);
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start(now + idx * 0.08);
+              osc.stop(now + idx * 0.08 + 0.16);
+            });
+          } else if (type === "celebrate") {
+            [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = "triangle";
+              osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+              gain.gain.setValueAtTime(0.15, now + idx * 0.07);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.45);
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start(now + idx * 0.07);
+              osc.stop(now + idx * 0.07 + 0.45);
+            });
+          }
+        } catch (_) {}
+      }
+
+      /* ==========================================================================
+       LETTER WRITING STATE & TRACING ENGINE
+       ========================================================================== */
+      const writingState = {
+        isOpen: false,
+        word: "",
+        letters: [],
+        activeLetterIndex: 0,
+        activeLetterChar: "A",
+        isUpper: true,
+        completedLetters: new Set(),
+        activeStrokeIndex: 0,
+        strokeProgress: 0,
+        currentWaypointIndex: 0,
+        isSliding: false,
+        isPointerDown: false,
+        isTransitioning: false,
+        autoAdvanceTimer: null,
+        activePathEl: null,
+        activeLength: 0,
+        waypoints: [],
+        lastSoundTime: 0,
+      };
+
+      /**
+       * Converts client touch/mouse coordinates to SVG coordinate space.
+       */
+      function getSvgPoint(e, svgEl) {
+        const pt = svgEl.createSVGPoint();
+        pt.x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        pt.y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+        const ctm = svgEl.getScreenCTM();
+        if (ctm) {
+          const transformed = pt.matrixTransform(ctm.inverse());
+          return { x: transformed.x, y: transformed.y };
+        }
+        const rect = svgEl.getBoundingClientRect();
+        return {
+          x: ((pt.x - rect.left) / rect.width) * 200,
+          y: ((pt.y - rect.top) / rect.height) * 240,
+        };
+      }
+
+      /**
+       * Opens the Letter Writing mode for the currently focused word.
+       */
+      function openWritingMode(targetChar = null) {
+        if (writingState.autoAdvanceTimer) {
+          clearTimeout(writingState.autoAdvanceTimer);
+          writingState.autoAdvanceTimer = null;
+        }
+        const rawWord = state.words[state.currentIndex] || "";
+        const cleanLetters = rawWord.replace(/[^a-zA-Z]/g, "").split("");
+        writingState.word = rawWord;
+        writingState.letters = cleanLetters.length > 0 ? cleanLetters : ["A"];
+        writingState.isOpen = true;
+        writingState.completedLetters.clear();
+
+        if (els.writingWordTitle) {
+          els.writingWordTitle.innerHTML = `Word: <strong>${escapeHtml(rawWord)}</strong>`;
+        }
+
+        let startIdx = 0;
+        if (targetChar) {
+          const foundIdx = writingState.letters.indexOf(targetChar);
+          if (foundIdx >= 0) startIdx = foundIdx;
+        }
+        selectWritingLetterIndex(startIdx);
+
+        els.writingModal.classList.add("active");
+        els.writingModal.setAttribute("aria-hidden", "false");
+      }
+
+      /**
+       * Closes the Letter Writing mode and returns to reading.
+       */
+      function closeWritingMode() {
+        if (writingState.autoAdvanceTimer) {
+          clearTimeout(writingState.autoAdvanceTimer);
+          writingState.autoAdvanceTimer = null;
+        }
+        writingState.isOpen = false;
+        writingState.isSliding = false;
+        writingState.isPointerDown = false;
+        els.writingModal.classList.remove("active");
+        els.writingModal.setAttribute("aria-hidden", "true");
+      }
+
+      /**
+       * Updates the top letter selection pills for the word.
+       */
+      function renderWritingLetterPills() {
+        if (!els.writingLetterPills) return;
+        els.writingLetterPills.innerHTML = "";
+
+        writingState.letters.forEach((char, idx) => {
+          const pill = document.createElement("button");
+          pill.className = "writing-pill";
+          if (idx === writingState.activeLetterIndex) {
+            pill.classList.add("active");
+          }
+          if (writingState.completedLetters.has(idx)) {
+            pill.classList.add("is-completed");
+          }
+          pill.textContent = char;
+          pill.setAttribute("aria-label", `Write letter ${char}`);
+          pill.addEventListener("click", () => {
+            selectWritingLetterIndex(idx);
+          });
+          els.writingLetterPills.appendChild(pill);
+        });
+
+        // Update Prev / Next button state
+        if (els.btnWritingPrevLetter) {
+          els.btnWritingPrevLetter.disabled = writingState.activeLetterIndex <= 0;
+        }
+        if (els.btnWritingNextLetter) {
+          els.btnWritingNextLetter.disabled =
+            writingState.activeLetterIndex >= writingState.letters.length - 1;
+        }
+      }
+
+      /**
+       * Selects a letter from the word by index.
+       */
+      function selectWritingLetterIndex(idx) {
+        if (writingState.autoAdvanceTimer) {
+          clearTimeout(writingState.autoAdvanceTimer);
+          writingState.autoAdvanceTimer = null;
+        }
+        if (idx < 0 || idx >= writingState.letters.length) return;
+        writingState.activeLetterIndex = idx;
+        const char = writingState.letters[idx];
+        loadLetterForWriting(char);
+      }
+
+      /**
+       * Loads and initializes the SVG tracing pattern for the given character.
+       */
+      function loadLetterForWriting(char) {
+        if (writingState.autoAdvanceTimer) {
+          clearTimeout(writingState.autoAdvanceTimer);
+          writingState.autoAdvanceTimer = null;
+        }
+        writingState.activeLetterChar = char;
+        writingState.isUpper = char === char.toUpperCase() && char !== char.toLowerCase();
+        writingState.activeStrokeIndex = 0;
+        writingState.strokeProgress = 0;
+        writingState.currentWaypointIndex = 0;
+        writingState.isSliding = false;
+        writingState.isPointerDown = false;
+        writingState.isTransitioning = false;
+
+        renderWritingLetterPills();
+        buildLetterSvg();
+      }
+
+      /**
+       * Renders the complete letter SVG layers, guidelines, badges, and sliding puck.
+       */
+      function buildLetterSvg() {
+        const char = writingState.activeLetterChar;
+        const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
+        const strokes = data.strokes;
+
+        // Clear existing SVG layers
+        els.letterBgTracks.innerHTML = "";
+        els.letterFillStrokes.innerHTML = "";
+        els.letterActiveStroke.innerHTML = "";
+        els.letterArrows.innerHTML = "";
+        els.letterBadges.innerHTML = "";
+        els.letterSlidingPuck.innerHTML = "";
+        els.letterCelebrationStars.innerHTML = "";
+        els.letterLayersGroup.classList.remove("is-complete");
+
+        // 1. Render all background tracks, dashed guidelines, arrows, and start badges
+        strokes.forEach((stroke, idx) => {
+          // A. Wide background track
+          const bgPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          bgPath.setAttribute("class", "stroke-bg-track");
+          bgPath.setAttribute("d", stroke.d);
+          els.letterBgTracks.appendChild(bgPath);
+
+          // B. Dashed center guide
+          const dashedPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          dashedPath.setAttribute("class", "stroke-dashed-guide");
+          dashedPath.setAttribute("d", stroke.d);
+          els.letterBgTracks.appendChild(dashedPath);
+
+          // C. Completed fill path (initially hidden by stroke-dashoffset)
+          const fillPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          fillPath.setAttribute("class", "stroke-fill-path");
+          fillPath.setAttribute("d", stroke.d);
+          fillPath.setAttribute("stroke", stroke.color);
+          fillPath.dataset.strokeIndex = idx;
+
+          // Compute length for dashoffset
+          const len = bgPath.getTotalLength();
+          fillPath.style.strokeDasharray = `${len} ${len}`;
+          fillPath.style.strokeDashoffset = `${len}`;
+          els.letterFillStrokes.appendChild(fillPath);
+
+          // D. Direction Arrow Chevron (placed along the stroke)
+          if (!stroke.isDot && len > 35) {
+            const midPt = bgPath.getPointAtLength(len * 0.48);
+            const nextPt = bgPath.getPointAtLength(len * 0.54);
+            const angle = Math.atan2(nextPt.y - midPt.y, nextPt.x - midPt.x) * (180 / Math.PI);
+
+            const arrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            arrow.setAttribute("class", "stroke-arrow-marker");
+            arrow.setAttribute("d", "M -5 -4 L 3 0 L -5 4 Z");
+            arrow.setAttribute("fill", stroke.color);
+            arrow.setAttribute("transform", `translate(${midPt.x}, ${midPt.y}) rotate(${angle})`);
+            els.letterArrows.appendChild(arrow);
+          }
+
+          // E. Numbered Start Badge (①, ②, ③, ④)
+          const startPt = bgPath.getPointAtLength(0);
+          const badgeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          badgeGroup.setAttribute("class", "stroke-badge-group");
+          badgeGroup.dataset.strokeIndex = idx;
+          badgeGroup.setAttribute("transform", `translate(${startPt.x}, ${startPt.y})`);
+
+          // Pulsing halo circle for active badge
+          const halo = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          halo.setAttribute("class", "stroke-badge-halo");
+          halo.setAttribute("r", "14");
+          halo.setAttribute("stroke", stroke.color);
+          badgeGroup.appendChild(halo);
+
+          // Solid badge background circle
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("class", "stroke-badge-circle");
+          circle.setAttribute("r", "10.5");
+          circle.setAttribute("fill", stroke.color);
+          badgeGroup.appendChild(circle);
+
+          // Stroke number text inside badge
+          const numText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          numText.setAttribute("class", "stroke-badge-text");
+          numText.textContent = String(stroke.id);
+          badgeGroup.appendChild(numText);
+
+          badgeGroup.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (writingState.activeStrokeIndex === idx) {
+              speakWritingHint();
+            }
+          });
+
+          els.letterBadges.appendChild(badgeGroup);
+        });
+
+        // 2. Set up the first active stroke
+        setupActiveStroke(0);
+      }
+
+      /**
+       * Sets up the given stroke as active, sampling waypoints and positioning the puck.
+       * If continueSliding is true, preserves the active sliding state for continuous multi-stroke tracing.
+       */
+      function setupActiveStroke(strokeIdx, continueSliding = false) {
+        const char = writingState.activeLetterChar;
+        const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
+        const strokes = data.strokes;
+
+        if (strokeIdx >= strokes.length) {
+          triggerLetterComplete();
+          return;
+        }
+
+        writingState.activeStrokeIndex = strokeIdx;
+        writingState.strokeProgress = 0;
+        writingState.currentWaypointIndex = 0;
+        writingState.isSliding = !!continueSliding;
+
+        const currentStroke = strokes[strokeIdx];
+        const fillPath = els.letterFillStrokes.children[strokeIdx];
+        writingState.activePathEl = fillPath;
+        const len = fillPath.getTotalLength();
+        writingState.activeLength = len;
+
+        // Sample equidistant waypoints along the stroke path
+        const waypoints = [];
+        const numSamples = Math.max(30, Math.min(80, Math.round(len / 3)));
+        for (let i = 0; i <= numSamples; i++) {
+          const frac = i / numSamples;
+          const pt = fillPath.getPointAtLength(frac * len);
+          waypoints.push({ x: pt.x, y: pt.y, frac });
+        }
+        writingState.waypoints = waypoints;
+
+        // Update badge states
+        const badges = els.letterBadges.children;
+        for (let i = 0; i < badges.length; i++) {
+          const badge = badges[i];
+          const halo = badge.querySelector(".stroke-badge-halo");
+          if (i === strokeIdx) {
+            badge.style.display = "block";
+            badge.classList.add("is-active");
+            if (halo) halo.style.display = continueSliding ? "none" : "block";
+          } else if (i < strokeIdx) {
+            badge.style.display = "block";
+            badge.classList.remove("is-active");
+            if (halo) halo.style.display = "none";
+          } else {
+            badge.style.display = "block";
+            badge.classList.remove("is-active");
+            if (halo) halo.style.display = "none";
+          }
+        }
+
+        // Update Instruction Hint
+        if (els.writingHintText) {
+          els.writingHintText.innerHTML = `Stroke <strong>${strokeIdx + 1}</strong>: ${escapeHtml(currentStroke.hint)}`;
+        }
+
+        // Position Sliding Puck at start of stroke
+        renderSlidingPuck(waypoints[0].x, waypoints[0].y, currentStroke.color);
+      }
+
+      /**
+       * Renders the interactive sliding puck / stylus at coordinates (x, y).
+       */
+      function renderSlidingPuck(x, y, color) {
+        els.letterSlidingPuck.innerHTML = "";
+
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("transform", `translate(${x}, ${y})`);
+        g.setAttribute("class", "sliding-puck");
+
+        // Outer glowing pulse ring
+        const halo = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        halo.setAttribute("class", "sliding-puck-halo");
+        halo.setAttribute("r", "16");
+        halo.setAttribute("fill", color);
+        halo.setAttribute("opacity", "0.3");
+        g.appendChild(halo);
+
+        // Solid puck circle with white border
+        const puck = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        puck.setAttribute("r", "12.5");
+        puck.setAttribute("fill", color);
+        puck.setAttribute("stroke", "#ffffff");
+        puck.setAttribute("stroke-width", "2.5");
+        puck.style.filter = "drop-shadow(0 2px 6px rgba(0,0,0,0.3))";
+        g.appendChild(puck);
+
+        // Pencil / Star Icon inside puck
+        const icon = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        icon.setAttribute("text-anchor", "middle");
+        icon.setAttribute("dominant-baseline", "central");
+        icon.setAttribute("font-size", "12px");
+        icon.textContent = "✏️";
+        g.appendChild(icon);
+
+        els.letterSlidingPuck.appendChild(g);
+      }
+
+      /**
+       * Updates puck position smoothly along the curve.
+       */
+      function updatePuckPosition(x, y) {
+        const puck = els.letterSlidingPuck.firstElementChild;
+        if (puck) {
+          puck.setAttribute("transform", `translate(${x}, ${y})`);
+        }
+      }
+
+      /**
+       * Advances the progress along the active stroke as the user touches/slides.
+       * Uses a bounded forward search window so loops (like o, O, e, a, d) cannot
+       * jump to completion on a simple tap at the start point.
+       */
+      function advanceStrokeProgress(svgPt) {
+        if (!writingState.activePathEl || writingState.waypoints.length === 0) return;
+
+        const waypoints = writingState.waypoints;
+        const totalWaypoints = waypoints.length;
+        const char = writingState.activeLetterChar;
+        const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
+        const currentStroke = data.strokes[writingState.activeStrokeIndex];
+
+        // For dots (like lowercase i and j): any tap on or near the dot completes it immediately!
+        if (currentStroke && currentStroke.isDot) {
+          completeCurrentStroke();
+          return;
+        }
+
+        let currIndex = writingState.currentWaypointIndex || 0;
+        // Bounded forward search window: only check nearby forward waypoints (never jump across a loop to the end!)
+        const maxLookahead = Math.max(4, Math.round(totalWaypoints * 0.12));
+        const maxAdvanceAllowed = Math.max(8, Math.round(totalWaypoints * 0.25));
+        const maxPossibleIndex = Math.min(totalWaypoints - 1, currIndex + maxAdvanceAllowed);
+
+        let advanced = false;
+        let loopLimit = 5;
+
+        while (currIndex < maxPossibleIndex && loopLimit-- > 0) {
+          const searchEnd = Math.min(maxPossibleIndex, currIndex + maxLookahead);
+          let bestIdx = currIndex;
+          let minDist = Infinity;
+
+          for (let i = currIndex; i <= searchEnd; i++) {
+            const wp = waypoints[i];
+            const dist = Math.hypot(wp.x - svgPt.x, wp.y - svgPt.y);
+            if (dist < minDist) {
+              minDist = dist;
+              bestIdx = i;
+            }
+          }
+
+          if (minDist <= 42 && bestIdx > currIndex) {
+            currIndex = bestIdx;
+            advanced = true;
+          } else {
+            break;
+          }
+        }
+
+        if (advanced) {
+          writingState.currentWaypointIndex = currIndex;
+          let bestFrac = waypoints[currIndex].frac;
+          writingState.strokeProgress = bestFrac;
+
+          // Check if user is close to the finish of the trace to snap to final position
+          const lastWp = waypoints[totalWaypoints - 1];
+          const distToEnd = Math.hypot(lastWp.x - svgPt.x, lastWp.y - svgPt.y);
+          // Snap when progress is >= 94% or within 16px of the end (if past 80%)
+          const isNearFinish = (bestFrac >= 0.94) || (distToEnd <= 16 && bestFrac >= 0.80);
+
+          if (isNearFinish) {
+            // b) Snap to the final position of the trace
+            currIndex = totalWaypoints - 1;
+            writingState.currentWaypointIndex = currIndex;
+            bestFrac = 1.0;
+            writingState.strokeProgress = 1.0;
+            writingState.activePathEl.style.strokeDashoffset = "0";
+            updatePuckPosition(lastWp.x, lastWp.y);
+
+            completeCurrentStroke(svgPt);
+            return;
+          }
+
+          // Update SVG stroke fill
+          const len = writingState.activeLength;
+          writingState.activePathEl.style.strokeDashoffset = `${len * (1 - bestFrac)}`;
+
+          // Find coordinates for bestFrac
+          const pt = writingState.activePathEl.getPointAtLength(bestFrac * len);
+          updatePuckPosition(pt.x, pt.y);
+
+          // Audio feedback: gentle soft tick (rate limited)
+          const now = Date.now();
+          if (now - writingState.lastSoundTime > 65) {
+            writingState.lastSoundTime = now;
+            playWritingSound("tick");
+          }
+        }
+      }
+
+      /**
+       * Completes the current stroke with celebration chime and transitions to next.
+       * Supports continuous unbroken tracing without lifting pointer for connected strokes.
+       */
+      function completeCurrentStroke(svgPt = null) {
+        if (!writingState.activePathEl || writingState.isTransitioning) return;
+        writingState.isTransitioning = true;
+
+        try {
+          // Snap stroke to 100%
+          writingState.strokeProgress = 1.0;
+          writingState.activePathEl.style.strokeDashoffset = "0";
+
+          // Play bright chime
+          playWritingSound("stroke");
+
+          const char = writingState.activeLetterChar;
+          const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
+          const strokes = data.strokes;
+          const nextStrokeIdx = writingState.activeStrokeIndex + 1;
+
+          if (nextStrokeIdx < strokes.length) {
+            // Determine if the next stroke can seamlessly continue in the same pointer motion
+            let canContinueContinuously = false;
+
+            if (writingState.isPointerDown) {
+              const nextFillPath = els.letterFillStrokes.children[nextStrokeIdx];
+              if (nextFillPath) {
+                const nextStartPt = nextFillPath.getPointAtLength(0);
+                const prevEndPt = writingState.activePathEl.getPointAtLength(writingState.activeLength);
+
+                const distEndToStart = Math.hypot(nextStartPt.x - prevEndPt.x, nextStartPt.y - prevEndPt.y);
+                const distPointerToStart = svgPt ? Math.hypot(svgPt.x - nextStartPt.x, svgPt.y - nextStartPt.y) : Infinity;
+
+                // Connected if endpoints meet (<= 25px) OR user pointer is near next start (<= 35px)
+                if (distEndToStart <= 25 || distPointerToStart <= 35) {
+                  canContinueContinuously = true;
+                }
+              }
+            }
+
+            setupActiveStroke(nextStrokeIdx, canContinueContinuously);
+          } else {
+            triggerLetterComplete();
+          }
+        } finally {
+          writingState.isTransitioning = false;
+        }
+      }
+
+      /**
+       * Celebrates successful completion of the entire letter:
+       * 1. Letter fill animation
+       * 2. Scale up and down animation
+       * 3. Confetti star burst
+       * 4. Pronounces letter aloud
+       * 5. Golden star on word pill
+       */
+      function triggerLetterComplete() {
+        writingState.isSliding = false;
+        els.letterSlidingPuck.innerHTML = "";
+
+        // 1. Mark letter complete in state
+        writingState.completedLetters.add(writingState.activeLetterIndex);
+        renderWritingLetterPills();
+
+        // 2. Scale Up and Down Bounce + Stroke Expansion Fill Animation
+        els.letterLayersGroup.classList.add("is-complete");
+
+        // 3. Audio: celebration fanfare + speak letter aloud
+        playWritingSound("celebrate");
+        const char = writingState.activeLetterChar;
+        const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
+        setTimeout(() => {
+          speakWord(data.name || char);
+        }, 320);
+
+        // 4. Confetti Star Burst
+        createStarBurst();
+
+        // 5. Update Status Hint & Auto-Advance directly to next letter when animation finishes
+        const currentIdx = writingState.activeLetterIndex;
+        const totalLetters = writingState.letters.length;
+        const hasNext = currentIdx + 1 < totalLetters;
+
+        if (hasNext) {
+          if (els.writingHintText) {
+            els.writingHintText.innerHTML = `⭐ <strong>Great job!</strong> Next letter coming up...`;
+          }
+          // The scale bounce animation takes ~850ms. At 1150ms, animation is done: advance directly to next letter!
+          writingState.autoAdvanceTimer = setTimeout(() => {
+            writingState.autoAdvanceTimer = null;
+            selectWritingLetterIndex(currentIdx + 1);
+          }, 1150);
+        } else {
+          // All letters in the word finished!
+          if (els.writingHintText) {
+            els.writingHintText.innerHTML = `🎉 <strong>Fantastic!</strong> You wrote every letter in <strong>${escapeHtml(writingState.word)}</strong>! ⭐`;
+          }
+          writingState.autoAdvanceTimer = setTimeout(() => {
+            writingState.autoAdvanceTimer = null;
+            playWritingSound("celebrate");
+            createStarBurst();
+            speakWord(writingState.word);
+          }, 1150);
+        }
+      }
+
+      /**
+       * Creates 16 festive star confetti particles exploding outwards around the letter.
+       */
+      function createStarBurst() {
+        els.letterCelebrationStars.innerHTML = "";
+        const starColors = ["#f59e0b", "#ec4899", "#3b82f6", "#10b981", "#8b5cf6", "#ef4444"];
+        const numStars = 16;
+
+        for (let i = 0; i < numStars; i++) {
+          const angle = (i / numStars) * (2 * Math.PI) + (Math.random() - 0.5) * 0.3;
+          const dist = 55 + Math.random() * 45;
+          const dist2 = dist + 25 + Math.random() * 20;
+
+          const dx = Math.cos(angle) * dist;
+          const dy = Math.sin(angle) * dist;
+          const dx2 = Math.cos(angle) * dist2;
+          const dy2 = Math.sin(angle) * dist2;
+
+          const star = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          star.setAttribute("class", "celebration-star");
+          star.setAttribute("x", "100");
+          star.setAttribute("y", "120");
+          star.setAttribute("text-anchor", "middle");
+          star.setAttribute("dominant-baseline", "central");
+          star.setAttribute("font-size", `${14 + Math.round(Math.random() * 8)}px`);
+          star.textContent = Math.random() > 0.3 ? "⭐" : "✨";
+          star.style.setProperty("--dx", `${Math.round(dx)}px`);
+          star.style.setProperty("--dy", `${Math.round(dy)}px`);
+          star.style.setProperty("--dx2", `${Math.round(dx2)}px`);
+          star.style.setProperty("--dy2", `${Math.round(dy2)}px`);
+          star.style.animationDelay = `${(i * 0.02).toFixed(2)}s`;
+
+          els.letterCelebrationStars.appendChild(star);
+        }
+      }
+
+      /**
+       * Speaks the current writing instruction hint aloud.
+       */
+      function speakWritingHint() {
+        const char = writingState.activeLetterChar;
+        const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
+        const stroke = data.strokes[writingState.activeStrokeIndex];
+        if (stroke) {
+          speakWord(stroke.hint);
+        }
+      }
+
 
       /* ==========================================================================
        SPEECH & AUTO-READ ENGINE
@@ -3243,6 +5106,7 @@ Leo was flying high under the glowing yellow moon.`,
 
       function handlePhonicsPointerDown(e) {
         if (!state.isPhonicsActive) return;
+        if (e.target.closest("#btn-open-writing, #btn-open-writing-top")) return;
         e.stopPropagation();
         e.preventDefault();
         isDraggingPhonics = true;
@@ -3350,7 +5214,7 @@ Leo was flying high under the glowing yellow moon.`,
 
         // Phonics Mode: clicking outside of the word and slider exits phonics mode
         if (state.isPhonicsActive) {
-          if (e.target.closest("#btn-close-phonics, #phonics-container")) {
+          if (e.target.closest("#btn-close-phonics, #btn-open-writing-top, #phonics-container, #writing-modal")) {
             return;
           }
           if (e.target.closest(".track-word.is-current")) {
@@ -3408,7 +5272,7 @@ Leo was flying high under the glowing yellow moon.`,
       // Story screen backdrop click listener to exit phonics mode on any outside tap
       els.storyScreen.addEventListener("click", (e) => {
         if (!state.isPhonicsActive) return;
-        if (e.target.closest("#btn-close-phonics, #phonics-container, .track-word.is-current")) {
+        if (e.target.closest("#btn-close-phonics, #btn-open-writing-top, #phonics-container, #writing-modal, .track-word.is-current")) {
           return;
         }
         e.stopPropagation();
@@ -3418,6 +5282,10 @@ Leo was flying high under the glowing yellow moon.`,
       // 8. Keyboard Navigation: Left & Right Cursor Keys & Global Escape
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
+          if (typeof writingState !== "undefined" && writingState.isOpen) {
+            closeWritingMode();
+            return;
+          }
           if (els.deleteModal.classList.contains("active")) {
             closeDeleteModal();
             return;
@@ -3437,6 +5305,26 @@ Leo was flying high under the glowing yellow moon.`,
         }
 
         if (state.currentScreen !== "story") return;
+
+        // In Writing mode: Left/Right arrows navigate letters, Space pronounces letter
+        if (typeof writingState !== "undefined" && writingState.isOpen) {
+          if (e.key === "ArrowRight") {
+            e.preventDefault();
+            selectWritingLetterIndex(writingState.activeLetterIndex + 1);
+            return;
+          } else if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            selectWritingLetterIndex(writingState.activeLetterIndex - 1);
+            return;
+          } else if (e.key === " ") {
+            e.preventDefault();
+            const char = writingState.activeLetterChar;
+            const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
+            speakWord(data.name || char);
+            return;
+          }
+          return;
+        }
 
         // In Phonics mode: Arrow keys control slider, Space pronounces word
         if (state.isPhonicsActive) {
@@ -3721,6 +5609,163 @@ Leo was flying high under the glowing yellow moon.`,
           }
         }
       });
+
+
+      // ========================================================================
+      // LETTER WRITING & TRACING EVENT LISTENERS
+      // ========================================================================
+      function handleWritingPointerDown(e) {
+        if (!writingState.isOpen) return;
+        writingState.isPointerDown = true;
+        const svgPt = getSvgPoint(e, els.writingSvg);
+        if (!writingState.activePathEl) return;
+
+        const char = writingState.activeLetterChar;
+        const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
+        const currentStroke = data.strokes[writingState.activeStrokeIndex];
+
+        // For dots (like lowercase i and j): tap directly on or near the dot completes it!
+        if (currentStroke && currentStroke.isDot) {
+          const waypoints = writingState.waypoints;
+          if (waypoints && waypoints.length > 0) {
+            const distToDot = Math.hypot(svgPt.x - waypoints[0].x, svgPt.y - waypoints[0].y);
+            if (distToDot <= 65) {
+              e.preventDefault();
+              e.stopPropagation();
+              completeCurrentStroke(svgPt);
+              return;
+            }
+          }
+        }
+
+        const waypoints = writingState.waypoints;
+        if (!waypoints || waypoints.length === 0) return;
+
+        const currentFrac = writingState.strokeProgress;
+        const targetPt = writingState.activePathEl.getPointAtLength(currentFrac * writingState.activeLength);
+        const distToCurrent = Math.hypot(svgPt.x - targetPt.x, svgPt.y - targetPt.y);
+        const distToStart = Math.hypot(svgPt.x - waypoints[0].x, svgPt.y - waypoints[0].y);
+
+        // Allow starting from puck, or from start badge when near start of stroke
+        const canStart = (distToCurrent <= 50) || (currentFrac < 0.25 && distToStart <= 50);
+        if (canStart) {
+          e.preventDefault();
+          e.stopPropagation();
+          writingState.isSliding = true;
+          try {
+            els.writingSvg.setPointerCapture(e.pointerId);
+          } catch (_) {}
+          advanceStrokeProgress(svgPt);
+        }
+      }
+
+      function handleWritingPointerMove(e) {
+        if (!writingState.isSliding && !writingState.isPointerDown) return;
+        const svgPt = getSvgPoint(e, els.writingSvg);
+
+        // If pointer is down but was not yet sliding, check if pointer moved near the active stroke
+        if (!writingState.isSliding && writingState.isPointerDown && writingState.activePathEl) {
+          const waypoints = writingState.waypoints;
+          if (waypoints && waypoints.length > 0) {
+            const currentFrac = writingState.strokeProgress;
+            const targetPt = writingState.activePathEl.getPointAtLength(currentFrac * writingState.activeLength);
+            const distToCurrent = Math.hypot(svgPt.x - targetPt.x, svgPt.y - targetPt.y);
+            const distToStart = Math.hypot(svgPt.x - waypoints[0].x, svgPt.y - waypoints[0].y);
+            if (distToCurrent <= 45 || (currentFrac < 0.25 && distToStart <= 45)) {
+              writingState.isSliding = true;
+            }
+          }
+        }
+
+        if (writingState.isSliding) {
+          e.preventDefault();
+          e.stopPropagation();
+          advanceStrokeProgress(svgPt);
+        }
+      }
+
+      function handleWritingPointerUp(e) {
+        writingState.isPointerDown = false;
+        if (!writingState.isSliding) return;
+        e.preventDefault();
+        e.stopPropagation();
+        writingState.isSliding = false;
+        try {
+          els.writingSvg.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+
+        if (writingState.strokeProgress >= 0.88) {
+          writingState.strokeProgress = 1.0;
+          if (writingState.activePathEl) {
+            writingState.activePathEl.style.strokeDashoffset = "0";
+          }
+          if (writingState.waypoints && writingState.waypoints.length > 0) {
+            const lastWp = writingState.waypoints[writingState.waypoints.length - 1];
+            updatePuckPosition(lastWp.x, lastWp.y);
+          }
+          completeCurrentStroke();
+        }
+      }
+
+      if (els.writingSvg) {
+        els.writingSvg.addEventListener("pointerdown", handleWritingPointerDown);
+      }
+      window.addEventListener("pointermove", handleWritingPointerMove);
+      window.addEventListener("pointerup", handleWritingPointerUp);
+      window.addEventListener("pointercancel", handleWritingPointerUp);
+
+      // Writing Navigation & Action Buttons
+      if (els.btnCloseWriting) {
+        els.btnCloseWriting.addEventListener("click", (e) => {
+          e.stopPropagation();
+          closeWritingMode();
+        });
+      }
+
+      if (els.btnWritingPrevLetter) {
+        els.btnWritingPrevLetter.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectWritingLetterIndex(writingState.activeLetterIndex - 1);
+        });
+      }
+
+      if (els.btnWritingNextLetter) {
+        els.btnWritingNextLetter.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectWritingLetterIndex(writingState.activeLetterIndex + 1);
+        });
+      }
+
+      if (els.btnWritingRetry) {
+        els.btnWritingRetry.addEventListener("click", (e) => {
+          e.stopPropagation();
+          loadLetterForWriting(writingState.activeLetterChar);
+        });
+      }
+
+      if (els.btnWritingSpeak) {
+        els.btnWritingSpeak.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const char = writingState.activeLetterChar;
+          const data = LETTER_TRACING_DATA[char] || LETTER_TRACING_DATA["A"];
+          speakWord(data.name || char);
+        });
+      }
+
+      // Phonics Mode Write Buttons
+      if (els.btnOpenWriting) {
+        els.btnOpenWriting.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openWritingMode();
+        });
+      }
+
+      if (els.btnOpenWritingTop) {
+        els.btnOpenWritingTop.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openWritingMode();
+        });
+      }
 
       /* ==========================================================================
        INITIALIZATION
